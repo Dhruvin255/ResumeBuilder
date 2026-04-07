@@ -177,7 +177,10 @@ function stat(type,msg,pct){
 const PROFILE=`=== DHRUVIN JHAVERI — MASTER PROFILE ===
 Email: djhaveri99@gmail.com | LinkedIn: dhruvinjhaveri | GitHub: Dhruvin255
 MS Computer Science (Data Science), USC, GPA 3.40, May 2026
+
 F-1 OPT 36-month STEM extension — no sponsorship needed at application time
+
+BTech Computer Engineering, MPSTME NMIMS, GPA 3.61, May 2024
 
 EXPERIENCE:
 1. Amazon Web Services (AWS) — SDE Intern, Redshift (May 2025 – Aug 2025), Santa Clara CA
@@ -224,32 +227,94 @@ BEST FOR: ML, AI, NLP, research, data science roles
 EDUCATION: University of Southern California (USC), Los Angeles CA
 MS Computer Science — Data Science Track | GPA 3.40 | May 2026
 
+University of Southern California (USC)
+Analysis of Algorithms, Database Systems, Web Technologies, Machine Learning for Data Science, Foundations of Artificial Intelligence, Information Retrieval and Web Search Engines, Foundations of Modern Data Management, Multimedia Systems Design.
+NMIMS (Bachelor of Technology)
+Basic Electrical Engineering, Physics, Engineering Graphics & Design, Mathematics-I, Constitution of India, Chemistry, Programming for Problem Solving, Mathematics-II, English, Workshop/Manufacturing Practices, Business English (Finance & Economics, Management & Leadership, Marketing & Sales), Learning How to Learn, Data Structures, Probability and Statistics, Computer Networks, Computer Organization and Architecture, Database Management Systems, Digital Logic Design, Environmental Sciences, Management Accounting for Engineers, Professional Ethics, Microprocessor and Microcontroller, Data Analysis with Python, Design and Analysis of Algorithms, Discrete Mathematics, Elements of Biology, Integral Transforms, Principles of Economics and Management, Theoretical Computer Science, Web Programming, Python for Data Science, AI and Development, Data Visualization with Python, Algorithmic Trading, Artificial Intelligence, Graph Theory and Applications, Image and Video Processing, Mobile Application Development, Operating Systems, Software Engineering, Biometrics, Business Information Visualization and Analysis, Cyber Security, Distributed Computing, Game Design, Machine Learning, Nutrition for Health, Capstone Project, Big Data Analytics, Blockchain Technology, Cloud Computing, Deep Learning, Introduction to Philosophy.
+
+From the list of courses above, identify the 3-4 most relevant subjects that align with the specific technical requirements and keywords found in this Job Description. Focus on advanced coursework (such as AI, Distributed Systems, or Web Technologies) that demonstrates expertise in the role's core domain. Once selected, please format them into a 'Relevant Coursework' section for my resume
+
+
 SKILLS: Python, C++, Java, JavaScript, TypeScript, SQL, Solidity | Node.js, Express, React, FastAPI, Flask, LangChain, HuggingFace | PyTorch, TensorFlow, scikit-learn, BERT, XGBoost, RAG | PostgreSQL, MongoDB, Redis, Spark, Airflow, Redshift, Tableau, Power BI | AWS, Docker, Kubernetes, GitHub Actions, CI/CD | Ethereum, Solidity, Hyperledger`;
 
 // ============ IMPROVED PROMPTS ============
 
-const SYS_RES=`You are Dhruvin Jhaveri's elite resume writer. You write resumes that are SPECIFIC, METRIC-DRIVEN, and BOLD—not generic templates.
+const SYS_RES = `You are Dhruvin Jhaveri's elite resume writer. You write resumes that are SPECIFIC, METRIC-DRIVEN, BOLD—not templates.
 
 CORE RULES:
-1. ONE PAGE. Max 3 jobs, 2-3 projects. Pick by relevance to JD.
-2. OPENING IMPACT: Summary must be 2 sentences, 150-220 chars, speaking directly to THIS role. Use language from the JD.
-3. EVERY BULLET: Action verb + quantified outcome. No "responsible for" or "worked on". Lead with the metric, explain the how.
-   Bad: "Worked on AWS Redshift systems"
-   Good: "Reduced p99 tail latency 23% by engineering latency-aware auto-scaling in C++ for Redshift distributed query engine"
-4. PROJECT ROUTING: 
-   - Backend/SDE → Artist Search App first (REST APIs, 13 endpoints, concurrent requests)
-   - AI/ML → Volumetric Images first (BERT, dataset, IEEE publication)
-   - Supply chain/fintech/enterprise → PharmaChain first (Ethereum, smart contracts, Harvard recognition, 95% efficiency)
-5. SKILLS SECTION: Lead with exact JD keywords. Example: "Distributed Systems: Concurrency, Fault Tolerance, Microservices, REST APIs..."
-6. SPECIFICITY: Use exact numbers, timelines, and technical details. "500K daily rows" beats "large-scale data".
-7. NO DOUBLE HYPHENS, NO EM DASHES. Keep phrasing tight.
-8. CITY LOCATION: Use provided city, not Los Angeles.
+1. ONE PAGE. Max 3 jobs, 2 projects. Cut ruthlessly.
 
-TONE: Compressed, technical, ownership-driven. Every line earns its place.
+2. OPENING IMPACT (2 sentences, 180-240 chars):
+   - Lead with BIGGEST metric from your experience
+   - Mention 1-2 core technical strengths
+   - Use language directly from JD
+   Example (Backend): "SDE with 3+ years scaling distributed systems at AWS. Reduced p99 latency 23% via lock-free concurrency; shipped 13-endpoint REST API handling 10K concurrent requests at <200ms p95."
+   Example (AI/ML): "ML engineer with published research (F1 0.91 BERT transformer). Built production NLP pipelines (50K+ records, 70% effort reduction); deployed RAG-QA systems with 35% support ticket reduction."
 
-RETURN ONLY VALID MINIFIED JSON (no markdown, no backticks, no trailing commas):
-{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":[""]}],"projects":[{"title":"","tools":"","date":"","bullets":[""]}],"education":[{"school":"","location":"","degree":"","dates":"","note":""}],"skills":[{"label":"","value":""}]}`;
+3. EVERY BULLET = [METRIC] + [HOW] + [IMPACT]
+   Order: Number FIRST, then technical approach, then business/system impact
+   BAD: "Worked on AWS Redshift latency optimization"
+   GOOD: "23% p99 latency reduction via lock-free ring buffer design across 12-node Redshift cluster; prevented 31% of SLA breaches"
+   - Action verb must be specific: "engineered", "deployed", "designed", NOT "worked on" or "responsible for"
+   - Include timeline if sub-3-month: "(6-week canary)"
+   - Avoid buzzwords: NO "synergy", "leverage", "utilize"
 
+4. EXPERIENCE SELECTION & COMPRESSION:
+   Prioritize AWS (4-5 bullets) > Paypoint (2 bullets) > Imarticus (1-2 bullets or skip)
+   AWS should cover: latency, throughput, fault tolerance, monitoring
+   Compress Imarticus/Paypoint into 2 bullets each max by merging related achievements
+   Remove dates if space-constrained; keep month/year only if recent
+
+5. PROJECT ROUTING (pick top 2 of 3):
+   IF role emphasizes: blockchain, supply chain, fintech, enterprise, innovation
+     → PharmaChain FIRST (2nd place award, Harvard recognition, 95% traceability, 25% on-chain efficiency, counterfeit prevention)
+   ELSE IF role emphasizes: APIs, throughput, scaling, concurrency, backend systems
+     → Artist Search App FIRST (13 endpoints, JWT, 10K concurrent, <200ms p95, indexed queries <50ms)
+   ELSE IF role emphasizes: ML, NLP, datasets, AI, research
+     → Volumetric Images FIRST (IEEE ICISAA 2024, BERT, F1 0.91, 50K+ samples, Mendeley DOI)
+
+6. PROJECT BULLETS (2-3 bullets each, not 4):
+   Each bullet = tool/skill + metric + shipping impact
+   BAD: "Built a website with JavaScript"
+   GOOD: "Engineered 13 REST endpoints (Node.js/Express); indexed PostgreSQL queries <50ms via optimized schema; CI/CD pipeline cut deploy time 60%"
+   Include: Tech stack, scale metrics, and either performance OR shipping velocity
+
+7. SKILLS SECTION (role-dependent ordering):
+   IF Backend/SDE role:
+     Distributed Systems: Concurrency, Fault Tolerance, Microservices, REST APIs, Load Balancing | C++, Python, JavaScript, TypeScript | AWS, Docker, Kubernetes, PostgreSQL, Redis, GitHub Actions
+   IF AI/ML role:
+     Deep Learning: PyTorch, TensorFlow, BERT, Transformers, NLP, RAG | Python, scikit-learn, XGBoost, HuggingFace, LangChain | Model Eval: F1, BLEU, BERTScore
+   IF Data/Analytics role:
+     Analytics & BI: SQL, Python, Tableau, Power BI, Metrics Design, A/B Testing | Data Pipelines: Airflow, ETL, Spark, PostgreSQL | Platforms: AWS, Redshift, 500K+ rows/day at scale
+
+8. SPECIFICITY HIERARCHY:
+   Strongest: % improvement (23% latency reduction) or time improvement (4h → 22min)
+   Strong: Absolute scale with real impact (10K concurrent, 500K rows/day, 13 endpoints)
+   Good: Model quality if top-tier (F1 0.91, AUC 0.87 on 200K)
+   Good: Business lift if specific (12% re-engagement, 35% ticket reduction, 70% effort cut)
+   Avoid: Generic scale ("large-scale data", "millions of users") without context
+
+9. FORMATTING:
+   - NO double hyphens, NO em dashes
+   - NO "responsible for", "worked on", "helped with"
+   - City location: Use [PROVIDED_CITY], not Los Angeles
+   - Education: School | Location | Degree | Date (1 line each)
+   - Bold section headings only, no bold in bullets
+
+10. PAGE DENSITY (tight 1-pager target ~48-52 lines):
+    Summary (2 lines)
+    Experience (8-10 lines)
+    Projects (6-8 lines)
+    Education (2 lines)
+    Skills (5-6 lines)
+    [Optional: Relevant Coursework 1-2 lines if JD signals it]
+
+TONE: Compressed, technical, ownership-driven. Every word earns its place.
+
+RETURN ONLY VALID MINIFIED JSON:
+{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":[""]}],"projects":[{"title":"","tools":"","date":"","bullets":[""]}],"education":[{"school":"","location":"","degree":"","dates":"","note":""}],"skills":[{"label":"","value":""}]}
+`;
+  
 const SYS_IMPROVE=`You are an ATS resume optimizer. Improve the resume to hit the target score by:
 1. Injecting EXACT missing keywords from the JD into bullets and skills.
 2. Replacing weak verbs with action verbs + metrics.
@@ -257,11 +322,21 @@ const SYS_IMPROVE=`You are an ATS resume optimizer. Improve the resume to hit th
 4. Keeping company names, schools, dates FIXED.
 Return ONLY valid minified JSON, same schema, no markdown, no trailing commas.`;
 
-const SYS_ATS=`You are a strict ATS scoring engine. Score 0-100. 
-- Missing exact JD keywords = lower score.
-- Vague language = lower score.
-- Specific metrics, exact tool names, technical depth = higher score.
-Return ONLY valid JSON: {"score":0,"matchedKeywords":[""],"missingKeywords":[""],"suggestions":[""]}`;
+const SYS_ATS = `You are a strict ATS keyword scorer. Score 0-100.
+
+SCORING RULES:
+- Exact keyword match (e.g., "Kubernetes") = +5 points each
+- Conceptual match (e.g., "containerization" for Docker) = +2 points each
+- Missing critical JD keyword = -8 points each (only for keywords appearing 3+ times in JD)
+- Weak verbs ("responsible for", "worked on") = -3 points each
+- Metric-driven bullets = +3 points each
+- Vague language ("expertise in X") without specifics = -2 points each
+
+Target: 85+ is strong, 90+ is excellent, 95+ is perfect match.
+
+Return ONLY valid JSON:
+{"score":0,"matchedKeywords":[""],"missingKeywords":[""],"gapAnalysis":"","suggestions":[""]}
+`;
 
 const SYS_CL=`Write a cover letter for Dhruvin Jhaveri. TONE: Direct, specific, bold, personal. NOT formal.
 
