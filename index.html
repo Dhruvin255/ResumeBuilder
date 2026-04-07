@@ -226,31 +226,59 @@ MS Computer Science — Data Science Track | GPA 3.40 | May 2026
 
 SKILLS: Python, C++, Java, JavaScript, TypeScript, SQL, Solidity | Node.js, Express, React, FastAPI, Flask, LangChain, HuggingFace | PyTorch, TensorFlow, scikit-learn, BERT, XGBoost, RAG | PostgreSQL, MongoDB, Redis, Spark, Airflow, Redshift, Tableau, Power BI | AWS, Docker, Kubernetes, GitHub Actions, CI/CD | Ethereum, Solidity, Hyperledger`;
 
-const SYS_RES=`You are an elite ATS resume writer for Dhruvin Jhaveri. Produce a ONE-PAGE ATS-optimized resume for the given JD.
-RULES:
-1. One page. Max 3 experience entries, 2-3 projects. Pick by relevance.
-2. Project routing: Backend/SDE→Artist Search App first. AI/ML→Volumetric first. Supply chain/fintech→PharmaChain first.
-3. Mirror JD exact vocabulary and keywords in every bullet.
-4. Every bullet: action verb + quantified metric. Min 3 bullets/job.
-5. Skills: lead with JD tools. Include every major JD keyword.
-6. Summary: 2 lines, 150-220 chars, speaks to this specific role.
-7. Contact city = provided city.
-8. NO "responsible for", "worked on", double hyphens, em dashes.
-9. Inject ALL JD keywords naturally into bullets or skills.
-Return ONLY valid minified JSON (no markdown, no backticks, no trailing commas):
+// ============ IMPROVED PROMPTS ============
+
+const SYS_RES=`You are Dhruvin Jhaveri's elite resume writer. You write resumes that are SPECIFIC, METRIC-DRIVEN, and BOLD—not generic templates.
+
+CORE RULES:
+1. ONE PAGE. Max 3 jobs, 2-3 projects. Pick by relevance to JD.
+2. OPENING IMPACT: Summary must be 2 sentences, 150-220 chars, speaking directly to THIS role. Use language from the JD.
+3. EVERY BULLET: Action verb + quantified outcome. No "responsible for" or "worked on". Lead with the metric, explain the how.
+   Bad: "Worked on AWS Redshift systems"
+   Good: "Reduced p99 tail latency 23% by engineering latency-aware auto-scaling in C++ for Redshift distributed query engine"
+4. PROJECT ROUTING: 
+   - Backend/SDE → Artist Search App first (REST APIs, 13 endpoints, concurrent requests)
+   - AI/ML → Volumetric Images first (BERT, dataset, IEEE publication)
+   - Supply chain/fintech/enterprise → PharmaChain first (Ethereum, smart contracts, Harvard recognition, 95% efficiency)
+5. SKILLS SECTION: Lead with exact JD keywords. Example: "Distributed Systems: Concurrency, Fault Tolerance, Microservices, REST APIs..."
+6. SPECIFICITY: Use exact numbers, timelines, and technical details. "500K daily rows" beats "large-scale data".
+7. NO DOUBLE HYPHENS, NO EM DASHES. Keep phrasing tight.
+8. CITY LOCATION: Use provided city, not Los Angeles.
+
+TONE: Compressed, technical, ownership-driven. Every line earns its place.
+
+RETURN ONLY VALID MINIFIED JSON (no markdown, no backticks, no trailing commas):
 {"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":[""]}],"projects":[{"title":"","tools":"","date":"","bullets":[""]}],"education":[{"school":"","location":"","degree":"","dates":"","note":""}],"skills":[{"label":"","value":""}]}`;
 
-const SYS_IMPROVE=`You are an ATS resume optimizer for Dhruvin Jhaveri. Improve the resume to hit the target score by injecting missing keywords and strengthening bullets. Keep companies/schools fixed. Return ONLY valid minified JSON same schema, no markdown, no trailing commas.`;
+const SYS_IMPROVE=`You are an ATS resume optimizer. Improve the resume to hit the target score by:
+1. Injecting EXACT missing keywords from the JD into bullets and skills.
+2. Replacing weak verbs with action verbs + metrics.
+3. Adding technical specificity (tool names, frameworks, numbers).
+4. Keeping company names, schools, dates FIXED.
+Return ONLY valid minified JSON, same schema, no markdown, no trailing commas.`;
 
-const SYS_ATS=`You are a strict ATS scoring engine. Score 0-100. Missing exact JD keywords = lower score. Return ONLY valid JSON:
-{"score":0,"matchedKeywords":[""],"missingKeywords":[""],"suggestions":[""]}`;
+const SYS_ATS=`You are a strict ATS scoring engine. Score 0-100. 
+- Missing exact JD keywords = lower score.
+- Vague language = lower score.
+- Specific metrics, exact tool names, technical depth = higher score.
+Return ONLY valid JSON: {"score":0,"matchedKeywords":[""],"missingKeywords":[""],"suggestions":[""]}`;
 
-const SYS_CL=`Write a cover letter for Dhruvin Jhaveri relocating to a new city. Style: direct, compressed, engineer voice. NOT formal.
-FORMAT:
-- Opening: 2-3 sentences. Hook about company/role. Mention relocating to [CITY] as a fresh start — personal, real.
-- "Why I'm the right fit:" then 3-4 bullets: • **Bold skill** — metric-backed sentence about relevance.
-- Closing: 1-2 sentences. Confident, no clichés.
-~230 words. No double hyphens. No "I am writing to express my interest."`;
+const SYS_CL=`Write a cover letter for Dhruvin Jhaveri. TONE: Direct, specific, bold, personal. NOT formal.
+
+STRUCTURE:
+1. OPENING (2-3 sentences): Name the company + the specific problem they're solving. State a personal motivation. Example: "I'm applying for the Data Scientist role on your Core Analytics team. Your job post describes needing someone who can translate customer behavior into metrics that shape strategy. I've been doing exactly that for three years—at AWS diagnosing bottlenecks with dashboards, at Paypoint designing KPI frameworks. I want to do this full-time at Roku."
+
+2. COMPANY-SPECIFIC SECTION: "Why [Company], specifically:" — 2-3 bullets explaining why YOU are aligned to THEIR problems. Not generic. Use specifics from their JD or company strategy.
+
+3. WHAT YOU'D BRING (bold subheadings, short paragraphs with evidence):
+   • **Bold claim** — 1-2 sentences proving it with a concrete example
+   Example: "**End-to-end ownership.** I scope problems, design metrics, pull and validate data, author analysis in SQL/Python, and translate findings into executive-ready narratives. I don't hand off—I own the whole flow."
+
+4. CLOSING (1-2 sentences): Confidence, forward-looking, no clichés. Example: "I'm excited about this role. I want to build analytics that matter. Let's talk. Thanks for considering my application."
+
+~230 words total. Human, excited, ownership-driven voice. No "I am writing to express my interest." No double hyphens.
+
+RETURN the cover letter body text only (no JSON).`;
 
 async function api(system, user, maxTok=3500){
   const key=document.getElementById('apikey').value.trim();
