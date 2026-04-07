@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeForge — Dhruvin</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F5F0;--surface:#fff;--surface2:#F0EDE6;--border:#DDD9D0;--border-s:#B8B3A8;
+  --text:#1A1916;--text2:#6B6760;--text3:#9B978F;
+  --accent:#1a4f8a;--accent-l:#EEF4FF;
+  --green:#2C5F2E;--green-l:#EDF4EE;--green-b:#9DC89F;
+  --red:#C0392B;--red-l:#FDF0EE;--amber:#8B6914;--amber-l:#FDF8EC;
+}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--text);color:#fff;padding:13px 32px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:700;color:#fff}.logo span{color:#9DC89F}
+.sub{font-size:10px;color:#888;margin-top:1px}
+.app{display:grid;grid-template-columns:390px 1fr;min-height:calc(100vh - 50px)}
+.left{padding:22px;border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 50px)}
+.right{background:#FAFAF8;overflow-y:auto;max-height:calc(100vh - 50px)}
+.sect{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin:16px 0 7px}
+.sect:first-child{margin-top:0}
+label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px}
+textarea,input[type=text],input[type=password]{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:inherit;font-size:12.5px;color:var(--text);background:var(--surface);resize:vertical;line-height:1.6;transition:border-color .15s}
+textarea:focus,input:focus{outline:none;border-color:var(--accent)}
+textarea::placeholder,input::placeholder{color:var(--text3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border-s);font-size:11px;cursor:pointer;transition:all .15s;color:var(--text2);background:var(--surface)}
+.chip.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff;width:100%;justify-content:center;display:flex;align-items:center;gap:6px;padding:11px 18px;border-radius:7px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;margin-top:2px}
+.btn-primary:hover{background:#133d6e}
+.btn-primary:disabled{background:var(--border-s);color:var(--text3);cursor:not-allowed}
+.btn-sm{padding:6px 13px;font-size:11.5px;border:1px solid var(--border-s);background:var(--surface);color:var(--text2);border-radius:6px;cursor:pointer;transition:all .15s}
+.btn-sm:hover{background:var(--text);color:#fff;border-color:var(--text)}
+.btn-dl{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-dl:hover{background:#133d6e}
+.btn-dl:disabled{background:var(--border-s);cursor:not-allowed}
+.btn-dl.green{background:var(--green)}.btn-dl.green:hover{background:#1e4520}
+.status{border-radius:7px;padding:11px 13px;margin-bottom:12px;font-size:12px;line-height:1.5;display:none}
+.status.info{background:var(--amber-l);border:1px solid #F0D98A;display:block}
+.status.ok{background:var(--green-l);border:1px solid var(--green-b);display:block}
+.status.err{background:var(--red-l);border:1px solid #F5C6C2;display:block}
+.prog{height:3px;background:var(--surface2);border-radius:99px;margin-top:8px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .4s ease}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:#FAFAF8;position:sticky;top:0;z-index:5}
+.tab{padding:11px 16px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:0.4px;transition:all .15s}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.pane{padding:20px 24px;display:none}
+.pane.on{display:block;padding-bottom:30px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;text-align:center;color:var(--text3);gap:8px}
+.empty-ico{font-size:34px;opacity:.2}
+.empty-h{font-size:16px;font-weight:600;color:var(--text2)}
+.empty-d{font-size:12px;max-width:210px;line-height:1.6}
+hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+.resume-card{border:1px solid var(--border);border-radius:9px;padding:20px 22px;background:var(--surface)}
+.resume-name{font-size:20px;font-weight:700;text-align:center;margin-bottom:2px}
+.resume-contact{font-size:10px;color:var(--text2);text-align:center;margin-bottom:10px}
+.resume-rule{border:none;border-top:1.5px solid var(--text);margin:0 0 12px}
+.sec-head{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);padding-bottom:4px;margin:12px 0 7px}
+.exp-co{font-weight:700;font-size:12.5px}
+.exp-loc,.exp-dates{font-size:10px;color:var(--text3)}
+.exp-title{font-size:11px;color:var(--text2);font-style:italic}
+.row-sb{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+ul.bl{list-style:none;padding:0;margin:4px 0 8px}
+ul.bl li{font-size:11px;line-height:1.55;padding:1px 0 1px 12px;position:relative}
+ul.bl li::before{content:"•";position:absolute;left:0;color:var(--green);top:1px}
+.proj-title{font-weight:700;font-size:11.5px}
+.proj-tools{font-size:10px;color:var(--text3);font-style:italic}
+.skill-row{font-size:11px;margin-bottom:3px;line-height:1.5}
+.cl-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cl-head{padding:11px 15px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cl-body{padding:13px 15px;font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+.apirow{display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--amber-l);border:1px solid #F0D98A;border-radius:7px;margin-bottom:14px}
+.apirow input{margin:0;flex:1;background:transparent;border-color:#D4B96A;font-size:11.5px;padding:5px 9px}
+.api-lbl{font-size:10px;font-weight:700;color:var(--amber);white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px}
+.iter-row{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:6px}
+.iter-label{color:var(--text3);width:70px;flex-shrink:0}
+.iter-track{flex:1;height:5px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.iter-fill{height:100%;border-radius:99px}
+.kw-wrap{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 14px}
+.kw{font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid;font-weight:500}
+.kw.ok{background:var(--green-l);color:var(--green);border-color:var(--green-b)}
+.kw.no{background:var(--red-l);color:var(--red);border-color:#F5C6C2}
+.dl-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.usage-note{font-size:9.5px;color:var(--text3);margin-top:8px;padding:6px 9px;background:var(--surface2);border-radius:5px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><div class="logo">Resume<span>Forge</span></div><div class="sub">Dhruvin Jhaveri · ATS Iterator · DOCX Download</div></div>
+  <div style="font-size:10px;color:#666">Direct CORS + Anthropic API</div>
+</div>
+<div class="app">
+<div class="left">
+  <div class="apirow">
+    <span class="api-lbl">🔑 Key</span>
+    <input type="password" id="apikey" placeholder="sk-ant-api03-...">
+  </div>
+  <div style="font-size:10px;color:var(--text3);padding:6px 9px;background:var(--surface);border-radius:5px;margin-bottom:10px">
+    Your API key stays in your browser. Never sent to us.
+  </div>
+  <div class="sect">Role Info</div>
+  <div style="margin-bottom:10px"><label>Company</label><input type="text" id="company" placeholder="e.g. Stripe"></div>
+  <div class="row2" style="margin-bottom:10px">
+    <div><label>Role Title</label><input type="text" id="role" placeholder="e.g. Backend SWE"></div>
+    <div><label>City</label><input type="text" id="city" placeholder="New York, NY"></div>
+  </div>
+  <div style="margin-bottom:10px"><label>Recruiter <span style="font-weight:400;text-transform:none;font-size:10px;color:var(--text3)">(optional)</span></label><input type="text" id="recruiter" placeholder="e.g. Sarah Johnson"></div>
+  <div class="sect">Track</div>
+  <div class="chips" id="chips">
+    <div class="chip sel" data-v="sde">SDE / Startup</div>
+    <div class="chip" data-v="backend">Backend / Enterprise</div>
+    <div class="chip" data-v="analytics">Analytics / BI</div>
+    <div class="chip" data-v="aiml">AI / ML</div>
+  </div>
+  <div class="sect">ATS Target</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+    <input type="range" id="target" min="75" max="96" value="88" step="1" style="flex:1">
+    <span id="tval" style="font-size:13px;font-weight:700;color:var(--accent);min-width:36px">88</span>
+  </div>
+  <div style="font-size:10.5px;color:var(--text3);margin-bottom:4px">Runs up to 4 iterations to hit target</div>
+  <hr>
+  <div class="sect">Job Description</div>
+  <textarea id="jd" rows="10" placeholder="Paste the full JD — the more complete, the higher the ATS score."></textarea>
+  <hr>
+  <div id="status" class="status"></div>
+  <button class="btn-primary" id="genbtn" onclick="generate()">✦ Generate &amp; Iterate</button>
+  <div class="usage-note">💡 Uses official Anthropic CORS header. Fully secure.</div>
+</div>
+
+<div class="right">
+  <div class="tabs" id="tabs" style="display:none">
+    <div class="tab on" onclick="sw('resume')">📄 Resume</div>
+    <div class="tab" onclick="sw('cover')">✉ Cover Letter</div>
+    <div class="tab" onclick="sw('ats')">🎯 ATS</div>
+  </div>
+  <div id="pane-resume" class="pane on">
+    <div class="empty" id="e-res"><div class="empty-ico">⊙</div><div class="empty-h">Resume appears here</div><div class="empty-d">Pick track, paste JD, hit Generate.</div></div>
+    <div id="r-out" style="display:none"></div>
+  </div>
+  <div id="pane-cover" class="pane">
+    <div class="empty" id="e-cl"><div class="empty-ico">✉</div><div class="empty-h">Cover letter appears here</div><div class="empty-d">Generated alongside resume.</div></div>
+    <div id="cl-out" style="display:none"></div>
+  </div>
+  <div id="pane-ats" class="pane">
+    <div class="empty" id="e-ats"><div class="empty-ico">🎯</div><div class="empty-h">ATS analysis appears here</div><div class="empty-d">Keyword match, iteration history.</div></div>
+    <div id="ats-out" style="display:none"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const TRACKS={sde:'SDE / Startup',backend:'Backend / Enterprise',analytics:'Analytics / Data',aiml:'AI / ML'};
+let track='sde', rData=null, clData=null, atsHistory=[], finalATS=null;
+
+document.getElementById('target').addEventListener('input',e=>document.getElementById('tval').textContent=e.target.value);
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));
+  c.classList.add('sel'); track=c.dataset.v;
+}));
+
+function sw(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',['resume','cover','ats'][i]===t));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+t).classList.add('on');
+}
+
+function stat(type,msg,pct){
+  const el=document.getElementById('status');
+  el.className='status '+type;
+  el.innerHTML=msg+(pct!==undefined?`<div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>`:'');
+}
+
+const PROFILE=`=== DHRUVIN JHAVERI — MASTER PROFILE ===
+Email: djhaveri99@gmail.com | LinkedIn: dhruvinjhaveri | GitHub: Dhruvin255
+MS Computer Science (Data Science), USC, GPA 3.40, May 2026
+F-1 OPT 36-month STEM extension — no sponsorship needed at application time
+
+EXPERIENCE:
+1. Amazon Web Services (AWS) — SDE Intern, Redshift (May 2025 – Aug 2025), Santa Clara CA
+- Engineered latency-aware auto-scaling in C++ for Redshift distributed query engine; reduced p99 tail latency 23%
+- Built distributed throughput throttling across 12 nodes using lock-free ring buffers; cut SLA breaches 31%
+- Designed fault-tolerant retry logic with adaptive back-off; 99.97% uptime over 6-week canary deployment
+- Instrumented CloudWatch dashboards tracking 40+ latency/throughput metrics across query execution pipelines
+
+2. Imarticus Learning — Product Enablement Intern (2023), Mumbai India
+- Built NLP pipeline (BERT + LangChain) auto-tagging 50K+ course records; cut manual effort 70%
+- Deployed RAG-based QA system; reduced support tickets 35% in 8-week A/B test
+- Integrated OpenAI and Cohere APIs into 3 product surfaces used by 10K+ learners
+- Built LLM eval harness (BLEU, BERTScore); improved response precision 18%
+
+3. Paypoint India — SWE Intern (2022), Ahmedabad India
+- Built MERN stack merchant portal handling 15K+ daily transactions; JWT auth, RBAC
+- Built XGBoost churn model AUC 0.87 on 200K records; 12% re-engagement lift
+- Engineered ETL pipeline 500K daily rows from 6 sources into PostgreSQL; cut data lag 4h to 22min
+- Tableau/Power BI dashboards tracking 20+ KPIs for exec team
+
+PROJECTS:
+A. Full Stack Artist Search App (with Dhiren Oswal) — Node.js, Express, React, PostgreSQL, JWT, Docker
+- 13 REST endpoints, JWT auth, 10K+ concurrent requests at <200ms p95 latency
+- Normalized PostgreSQL schema; queries <50ms via indexed views
+- Dockerized; CI/CD pipeline cut deploy time 60%
+- Rate limiting, input validation, SQL injection prevention
+BEST FOR: Backend, SDE, API roles
+
+B. PharmaChain — Blockchain Supply Chain Analytics Platform (May 2023-Jan 2024) — Ethereum, Solidity, React, Node.js, Hyperledger
+- 2nd place Study Australia Entrepreneurship Challenge; recognized by Harvard; AUD 4,000 awarded
+- Solidity smart contracts for pharma supply chain traceability across 3 stakeholder tiers
+- Data tracking and audit trail systems for decentralized Ethereum platform
+- Off-chain data aggregation and reporting layer; projected 95% traceability improvement
+- On-chain efficiency optimized 25% via test-driven validation
+- Addresses counterfeit drug prevention, quality control, regulatory compliance via decentralized consensus
+BEST FOR: Blockchain, supply chain, logistics, fintech, enterprise, innovation roles
+
+C. Volumetric Images ML Dataset + IEEE Research — Python, TensorFlow, PyTorch, BERT, scikit-learn
+- Published dataset Mendeley Data Commons DOI: 10.17632/ywnjr7gnty.1
+- IEEE ICISAA 2024: BERT transformer for toxic comment classification; F1 0.91
+- 50K+ samples, benchmarked 5 baselines, outperformed by 11% recall
+BEST FOR: ML, AI, NLP, research, data science roles
+
+EDUCATION: University of Southern California (USC), Los Angeles CA
+MS Computer Science — Data Science Track | GPA 3.40 | May 2026
+
+SKILLS: Python, C++, Java, JavaScript, TypeScript, SQL, Solidity | Node.js, Express, React, FastAPI, Flask, LangChain, HuggingFace | PyTorch, TensorFlow, scikit-learn, BERT, XGBoost, RAG | PostgreSQL, MongoDB, Redis, Spark, Airflow, Redshift, Tableau, Power BI | AWS, Docker, Kubernetes, GitHub Actions, CI/CD | Ethereum, Solidity, Hyperledger`;
+
+const SYS_RES=`You are an elite ATS resume writer for Dhruvin Jhaveri. Produce a ONE-PAGE ATS-optimized resume for the given JD.
+RULES:
+1. One page. Max 3 experience entries, 2-3 projects. Pick by relevance.
+2. Project routing: Backend/SDE→Artist Search App first. AI/ML→Volumetric first. Supply chain/fintech→PharmaChain first.
+3. Mirror JD exact vocabulary and keywords in every bullet.
+4. Every bullet: action verb + quantified metric. Min 3 bullets/job.
+5. Skills: lead with JD tools. Include every major JD keyword.
+6. Summary: 2 lines, 150-220 chars, speaks to this specific role.
+7. Contact city = provided city.
+8. NO "responsible for", "worked on", double hyphens, em dashes.
+9. Inject ALL JD keywords naturally into bullets or skills.
+Return ONLY valid minified JSON (no markdown, no backticks, no trailing commas):
+{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":[""]}],"projects":[{"title":"","tools":"","date":"","bullets":[""]}],"education":[{"school":"","location":"","degree":"","dates":"","note":""}],"skills":[{"label":"","value":""}]}`;
+
+const SYS_IMPROVE=`You are an ATS resume optimizer for Dhruvin Jhaveri. Improve the resume to hit the target score by injecting missing keywords and strengthening bullets. Keep companies/schools fixed. Return ONLY valid minified JSON same schema, no markdown, no trailing commas.`;
+
+const SYS_ATS=`You are a strict ATS scoring engine. Score 0-100. Missing exact JD keywords = lower score. Return ONLY valid JSON:
+{"score":0,"matchedKeywords":[""],"missingKeywords":[""],"suggestions":[""]}`;
+
+const SYS_CL=`Write a cover letter for Dhruvin Jhaveri relocating to a new city. Style: direct, compressed, engineer voice. NOT formal.
+FORMAT:
+- Opening: 2-3 sentences. Hook about company/role. Mention relocating to [CITY] as a fresh start — personal, real.
+- "Why I'm the right fit:" then 3-4 bullets: • **Bold skill** — metric-backed sentence about relevance.
+- Closing: 1-2 sentences. Confident, no clichés.
+~230 words. No double hyphens. No "I am writing to express my interest."`;
+
+async function api(system, user, maxTok=3500){
+  const key=document.getElementById('apikey').value.trim();
+  if(!key) throw new Error('API key required');
+  
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:maxTok,
+      messages:[{role:'user',content:user}],
+      system:system
+    })
+  });
+
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}));
+    const msg=e.error?.message||`HTTP ${r.status}`;
+    throw new Error(msg);
+  }
+
+  const d=await r.json();
+  return d.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+}
+
+function parseJSON(raw){
+  let s=raw.indexOf('{'), e=raw.lastIndexOf('}');
+  if(s===-1) throw new Error('No JSON found in response');
+  let str=raw.slice(s,e+1);
+  str=str.replace(/,\s*([}\]])/g,'$1').replace(/[\u0000-\u001F\u007F]/g,' ');
+  try{return JSON.parse(str);}catch(err){
+    str=str.replace(/:\s*"([^"]*?)"/gs,(m,v)=>':"'+v.replace(/"/g,"'")+'"');
+    try{return JSON.parse(str);}catch(e2){throw new Error('JSON parse failed — regenerate');}
+  }
+}
+
+async function generate(){
+  const jd=document.getElementById('jd').value.trim();
+  if(!jd){stat('err','❌ Paste the job description first.');return;}
+  const company=document.getElementById('company').value.trim()||'the company';
+  const role=document.getElementById('role').value.trim()||'the role';
+  const city=document.getElementById('city').value.trim()||'New York, NY';
+  const recruiter=document.getElementById('recruiter').value.trim()||'Hiring Manager';
+  const target=parseInt(document.getElementById('target').value);
+  const tLabel=TRACKS[track];
+
+  document.getElementById('genbtn').disabled=true;
+  document.getElementById('tabs').style.display='flex';
+  atsHistory=[];rData=null;clData=null;finalATS=null;
+
+  try{
+    stat('info',`⧖ Iteration 1 — Generating resume (${tLabel})...`,12);
+    const u1=`TRACK:${tLabel}\nCITY:${city}\nCOMPANY:${company}\nROLE:${role}\n\nPROFILE:\n${PROFILE}\n\nJD:\n${jd}\n\nReturn resume JSON now.`;
+    rData=parseJSON(await api(SYS_RES,u1,3500));
+    rData._n='Dhruvin Jhaveri';
+    rData._c=`${city}  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255`;
+
+    let iter=1;
+    while(iter<=4){
+      stat('info',`⧖ Iteration ${iter} — ATS scoring...`,12+iter*18);
+      finalATS=parseJSON(await api(SYS_ATS,`JD:\n${jd}\n\nRESUME:\n${JSON.stringify(rData)}`,1000));
+      atsHistory.push({iter,score:finalATS.score});
+      if(finalATS.score>=target) break;
+      if(iter<4){
+        stat('info',`⧖ Score ${finalATS.score} < ${target} — Improving (attempt ${iter+1})...`,12+(iter+1)*18);
+        const u2=`TARGET:${target}\nMISSING:${finalATS.missingKeywords.join(', ')}\nSUGGESTIONS:${finalATS.suggestions.join('; ')}\n\nCURRENT RESUME:\n${JSON.stringify(rData)}\n\nPROFILE:\n${PROFILE}\n\nJD:\n${jd}\n\nReturn improved JSON now.`;
+        rData=parseJSON(await api(SYS_IMPROVE,u2,3500));
+        rData._n='Dhruvin Jhaveri';
+        rData._c=`${city}  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255`;
+      }
+      iter++;
+    }
+
+    renderResume(rData);
+    renderATS(finalATS,atsHistory,target);
+
+    stat('info','⧖ Writing cover letter...',90);
+    const u3=`COMPANY:${company}\nROLE:${role}\nRECRUITER:${recruiter}\nCITY:${city}\nTRACK:${tLabel}\n\nPROFILE:\n${PROFILE}\n\nJD:\n${jd}`;
+    clData={text:await api(SYS_CL,u3,1200),company,role,recruiter,city};
+    renderCover(clData);
+
+    const ok=finalATS.score>=target;
+    stat('ok',`${ok?'✅':'⚠️'} ATS: ${finalATS.score}/100 (target ${target}) · ${atsHistory.length} iteration${atsHistory.length>1?'s':''} · Resume + Cover ready`);
+  }catch(err){
+    stat('err',`❌ ${err.message}`);
+  }finally{
+    document.getElementById('genbtn').disabled=false;
+  }
+}
+
+function renderResume(d){
+  document.getElementById('e-res').style.display='none';
+  const rc=document.getElementById('r-out');rc.style.display='block';
+  const exp=(d.experience||[]).map(j=>`
+    <div style="margin-bottom:9px">
+      <div class="row-sb"><span class="exp-co">${j.company}</span><span class="exp-loc">${j.location||''}</span></div>
+      <div class="row-sb" style="margin-bottom:4px"><span class="exp-title">${j.title}</span><span class="exp-dates">${j.dates||''}</span></div>
+      <ul class="bl">${(j.bullets||[]).map(b=>`<li>${b}</li>`).join('')}</ul>
+    </div>`).join('');
+  const proj=(d.projects||[]).map(p=>`
+    <div style="margin-bottom:8px">
+      <div class="row-sb" style="margin-bottom:2px">
+        <span><span class="proj-title">${p.title}</span> · <span class="proj-tools">${p.tools}</span></span>
+        <span style="font-size:10px;color:var(--text3)">${p.date||''}</span>
+      </div>
+      <ul class="bl">${(p.bullets||[]).map(b=>`<li>${b}</li>`).join('')}</ul>
+    </div>`).join('');
+  const edu=(d.education||[]).map(e=>`
+    <div style="margin-bottom:6px">
+      <div class="row-sb"><span class="exp-co">${e.school}</span><span class="exp-loc">${e.location||''}</span></div>
+      <div class="row-sb"><span class="exp-title">${e.degree}</span><span class="exp-dates">${e.dates||''}</span></div>
+      ${e.note?`<div style="font-size:10px;color:var(--text3);margin-top:1px">${e.note}</div>`:''}
+    </div>`).join('');
+  const skills=(d.skills||[]).map(s=>`<div class="skill-row"><strong>${s.label}:</strong> ${s.value}</div>`).join('');
+  rc.innerHTML=`
+    <div class="dl-row">
+      <button class="btn-dl" onclick="dlResume()">⬇ Download Resume DOCX</button>
+      <button class="btn-dl green" onclick="dlCover()">⬇ Download Cover Letter DOCX</button>
+      <button class="btn-sm" onclick="copyTxt()">⎘ Copy Text</button>
+    </div>
+    <div class="resume-card">
+      <div class="resume-name">${d._n}</div>
+      <div class="resume-contact">${d._c}</div>
+      <hr class="resume-rule">
+      <div class="sec-head">Summary</div>
+      <div style="font-size:11.5px;line-height:1.65;padding:8px 11px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--accent)">${d.summary}</div>
+      <div class="sec-head">Experience</div>${exp}
+      <div class="sec-head">Projects</div>${proj}
+      <div class="sec-head">Education</div>${edu}
+      <div class="sec-head">Skills</div>${skills}
+    </div>`;
+}
+
+function renderCover(cl){
+  document.getElementById('e-cl').style.display='none';
+  const cc=document.getElementById('cl-out');cc.style.display='block';
+  const fmt=cl.text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  cc.innerHTML=`
+    <div class="dl-row">
+      <button class="btn-dl green" onclick="dlCover()">⬇ Download Cover Letter DOCX</button>
+      <button class="btn-sm" id="copycl" onclick="copyCL()">⎘ Copy Text</button>
+    </div>
+    <div class="cl-card">
+      <div class="cl-head">
+        <span style="font-size:11.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px">Cover Letter · ${cl.company}</span>
+      </div>
+      <div style="padding:10px 15px 4px;font-size:10px;color:var(--text3)">To: ${cl.recruiter} · ${cl.company} · ${cl.role}</div>
+      <div class="cl-body" id="cl-raw">${fmt}</div>
+    </div>`;
+}
+
+function renderATS(a,hist,target){
+  document.getElementById('e-ats').style.display='none';
+  const ac=document.getElementById('ats-out');ac.style.display='block';
+  const s=a.score||0;
+  const col=s>=90?'var(--green)':s>=70?'var(--amber)':'var(--red)';
+  const histH=(hist||[]).map(h=>{
+    const c=h.score>=90?'var(--green)':h.score>=70?'var(--amber)':'var(--red)';
+    return `<div class="iter-row"><span class="iter-label">Attempt ${h.iter}</span><div class="iter-track"><div class="iter-fill" style="width:${h.score}%;background:${c}"></div></div><span style="font-weight:700;min-width:32px;text-align:right;color:${c}">${h.score}</span></div>`;
+  }).join('');
+  ac.innerHTML=`
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:16px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:9px">
+      <div>
+        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">ATS Score</div>
+        <div style="font-size:30px;font-weight:700;color:${col}">${s}<span style="font-size:13px;color:var(--text3)">/100</span></div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">${(a.matchedKeywords||[]).length} / ${(a.matchedKeywords||[]).length+(a.missingKeywords||[]).length} keywords</div>
+      </div>
+      <div style="flex:1">
+        <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden"><div style="width:${s}%;height:100%;background:${col};border-radius:99px"></div></div>
+        <div style="font-size:10.5px;margin-top:5px;color:${s>=target?'var(--green)':col}">${s>=target?'✓ Target achieved':'Below target — try regenerating'}</div>
+      </div>
+    </div>
+    ${hist&&hist.length>1?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px"><div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Iteration History</div>${histH}</div>`:''}
+    <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Matched ✓</div>
+    <div class="kw-wrap">${(a.matchedKeywords||[]).map(k=>`<span class="kw ok">${k}</span>`).join('')}</div>
+    ${(a.missingKeywords||[]).length?`<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Missing ✗</div><div class="kw-wrap">${a.missingKeywords.map(k=>`<span class="kw no">${k}</span>`).join('')}</div>`:''}
+    ${(a.suggestions||[]).length?`<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">Suggestions</div>${a.suggestions.map(s=>`<div style="font-size:11.5px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border)">• ${s}</div>`).join('')}`:''}`;
+}
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function makePara(runs,opts={}){const jc=opts.center?'<w:jc w:val="center"/>':'';const spacing=opts.spacing?`<w:spacing w:after="${opts.spacing}"/>`:opts.noSpacing?'<w:spacing w:after="0"/>':'<w:spacing w:after="60"/>';const indent=opts.indent?`<w:ind w:left="${opts.indent}"/>`:'';const border=opts.borderBottom?`<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="${opts.borderColor||'1A4F8A'}"/></w:pBdr>`:'';const ruleBottom=opts.thickBorderBottom?`<w:pBdr><w:bottom w:val="single" w:sz="12" w:space="1" w:color="1A1916"/></w:pBdr>`:'';const spaceBefore=opts.spaceBefore?`<w:spacing w:before="${opts.spaceBefore}" w:after="${opts.spaceAfter||60}"/>`:'';return `<w:p><w:pPr>${jc}${opts.thickBorderBottom?ruleBottom:border}${opts.spaceBefore?spaceBefore:spacing}${indent}</w:pPr>${runs}</w:p>`;}
+function makeRun(text,opts={}){const b=opts.bold?'<w:b/>':'';const i=opts.italic?'<w:i/>':'';const sz=`<w:sz w:val="${(opts.size||11)*2}"/><w:szCs w:val="${(opts.size||11)*2}"/>`;const col=opts.color?`<w:color w:val="${opts.color}"/>`:'';const font=`<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>`;return `<w:r><w:rPr>${font}${b}${i}${sz}${col}</w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;}
+function secHead(title){const r=makeRun(title.toUpperCase(),{bold:true,size:9,color:'1A4F8A'});return makePara(r,{borderBottom:true,spaceBefore:true,spaceBefore:160,spaceAfter:80});}
+function bullet(text){const r=makeRun('• ',{color:'2C5F2E',size:10})+makeRun(text,{size:10});return makePara(r,{indent:180,spacing:40});}
+function buildResumeXML(d){let body='';body+=makePara(makeRun(d._n,{bold:true,size:18}),{center:true,spacing:40});body+=makePara(makeRun(d._c,{size:9,color:'6B6760'}),{center:true,spacing:60});body+=makePara('',{thickBorderBottom:true,spacing:100});body+=secHead('Summary');body+=makePara(makeRun(d.summary,{size:10}),{spacing:80});body+=secHead('Experience');(d.experience||[]).forEach(j=>{body+=makePara(makeRun(j.company,{bold:true,size:11})+makeRun('   '+(j.location||''),{size:9,color:'9B978F'}),{spaceBefore:true,spaceBefore:80,spaceAfter:20});body+=makePara(makeRun(j.title,{italic:true,size:10,color:'6B6760'})+makeRun('   '+(j.dates||''),{size:9,color:'9B978F'}),{spacing:40});(j.bullets||[]).forEach(b=>body+=bullet(b));});body+=secHead('Projects');(d.projects||[]).forEach(p=>{body+=makePara(makeRun(p.title,{bold:true,size:11})+makeRun(' · ',{size:9,color:'9B978F'})+makeRun(p.tools,{italic:true,size:9,color:'9B978F'})+makeRun('   '+(p.date||''),{size:9,color:'9B978F'}),{spaceBefore:true,spaceBefore:80,spaceAfter:40});(p.bullets||[]).forEach(b=>body+=bullet(b));});body+=secHead('Education');(d.education||[]).forEach(e=>{body+=makePara(makeRun(e.school,{bold:true,size:11})+makeRun('   '+(e.location||''),{size:9,color:'9B978F'}),{spaceBefore:true,spaceBefore:80,spaceAfter:20});body+=makePara(makeRun(e.degree,{italic:true,size:10,color:'6B6760'})+makeRun('   '+(e.dates||''),{size:9,color:'9B978F'}),{spacing:40});if(e.note)body+=makePara(makeRun(e.note,{size:9,color:'9B978F'}),{spacing:30});});body+=secHead('Skills');(d.skills||[]).forEach(s=>{body+=makePara(makeRun(s.label+': ',{bold:true,size:10})+makeRun(s.value,{size:10}),{spacing:40});});return body;}
+function buildCoverXML(cl){let body='';body+=makePara(makeRun('Dhruvin Jhaveri',{bold:true,size:14,color:'1A4F8A'}),{borderBottom:true,borderColor:'1A4F8A',spacing:40});body+=makePara(makeRun('djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255',{size:9,color:'6B6760'}),{spacing:160});const dt=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});body+=makePara(makeRun(dt,{size:10,color:'9B978F'}),{spacing:80});body+=makePara(makeRun(cl.recruiter,{bold:true,size:11}),{spacing:20});body+=makePara(makeRun(cl.company,{size:11}),{spacing:160});const lines=cl.text.split('\n');lines.forEach(line=>{if(!line.trim()){body+=makePara('',{spacing:80});return;}const isBullet=line.trim().startsWith('•');const clean=line.replace(/^•\s*/,'');const parts=clean.split(/\*\*(.*?)\*\*/g);let runs='';if(isBullet)runs+=makeRun('• ',{color:'1A4F8A',bold:true,size:11});parts.forEach((p,i)=>{if(p)runs+=makeRun(p,{bold:i%2===1,size:11});});body+=makePara(runs,{spacing:isBullet?60:100,indent:isBullet?240:0});});return body;}
+function wrapDocx(bodyXML,margins='720,720,864,864'){const [top,bottom,left,right]=margins.split(',');return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="mv mo w14 wp14"><w:body>${bodyXML}<w:sectPr><w:pgMar w:top="${top}" w:right="${right}" w:bottom="${bottom}" w:left="${left}" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>`;}
+async function makeDocx(documentXML){const files={'[Content_Types].xml':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':documentXML,'word/_rels/document.xml.rels':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`};const zip=await buildZip(files);return zip;}
+function buildZip(files){return new Promise(resolve=>{const enc=new TextEncoder();let offset=0;const chunks=[];const centralDir=[];for(const [name,content] of Object.entries(files)){const nameBytes=enc.encode(name);const dataBytes=enc.encode(content);const crc=crc32(dataBytes);const localHeader=new Uint8Array([0x50,0x4b,0x03,0x04,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,...u32le(crc),...u32le(dataBytes.length),...u32le(dataBytes.length),...u16le(nameBytes.length),0x00,0x00]);chunks.push(localHeader,nameBytes,dataBytes);const centralEntry=new Uint8Array([0x50,0x4b,0x01,0x02,0x14,0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,...u32le(crc),...u32le(dataBytes.length),...u32le(dataBytes.length),...u16le(nameBytes.length),0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,...u32le(offset)]);centralDir.push({entry:centralEntry,name:nameBytes});offset+=localHeader.length+nameBytes.length+dataBytes.length;}const centralStart=offset;let centralSize=0;const cdChunks=[];for(const{entry,name}of centralDir){cdChunks.push(entry,name);centralSize+=entry.length+name.length;}const eocd=new Uint8Array([0x50,0x4b,0x05,0x06,0x00,0x00,0x00,0x00,...u16le(centralDir.length),...u16le(centralDir.length),...u32le(centralSize),...u32le(centralStart),0x00,0x00]);const all=[...chunks,...cdChunks,eocd];const total=all.reduce((s,a)=>s+a.length,0);const out=new Uint8Array(total);let pos=0;for(const a of all){out.set(a,pos);pos+=a.length;}resolve(out);});}
+function u32le(n){return[n&0xff,(n>>8)&0xff,(n>>16)&0xff,(n>>24)&0xff];}
+function u16le(n){return[n&0xff,(n>>8)&0xff];}
+function crc32(data){let crc=0xFFFFFFFF;const table=crc32.table||(crc32.table=(()=>{const t=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[i]=c;}return t;})());for(let i=0;i<data.length;i++)crc=table[(crc^data[i])&0xff]^(crc>>>8);return (crc^0xFFFFFFFF)>>>0;}
+function triggerDownload(bytes,filename){const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},1000);}
+async function dlResume(){if(!rData){alert('Generate a resume first.');return;}const xml=wrapDocx(buildResumeXML(rData));const bytes=await makeDocx(xml);triggerDownload(bytes,`Dhruvin_Jhaveri_Resume_ATS${finalATS?.score||''}.docx`);}
+async function dlCover(){if(!clData){alert('Generate first — cover letter not ready yet.');return;}const xml=wrapDocx(buildCoverXML(clData),'864,864,1008,1008');const bytes=await makeDocx(xml);triggerDownload(bytes,`Dhruvin_Jhaveri_CoverLetter_${(clData.company||'').replace(/\s+/g,'_')}.docx`);}
+function copyTxt(){if(!rData)return;let t=`${rData._n}\n${rData._c}\n\nSUMMARY\n${rData.summary}\n\nEXPERIENCE\n`;(rData.experience||[]).forEach(j=>{t+=`${j.company} | ${j.title} | ${j.dates}\n`;(j.bullets||[]).forEach(b=>t+=`• ${b}\n`);t+='\n';});t+='PROJECTS\n';(rData.projects||[]).forEach(p=>{t+=`${p.title} | ${p.tools}\n`;(p.bullets||[]).forEach(b=>t+=`• ${b}\n`);t+='\n';});t+='EDUCATION\n';(rData.education||[]).forEach(e=>t+=`${e.school} | ${e.degree} | ${e.dates}\n`);t+='\nSKILLS\n';(rData.skills||[]).forEach(s=>t+=`${s.label}: ${s.value}\n`);navigator.clipboard.writeText(t);}
+function copyCL(){const el=document.getElementById('cl-raw');if(!el)return;navigator.clipboard.writeText(el.innerText).then(()=>{const b=document.getElementById('copycl');b.textContent='✓ Copied!';setTimeout(()=>b.textContent='⎘ Copy Text',2000);});}
+</script>
+</body>
+</html>
