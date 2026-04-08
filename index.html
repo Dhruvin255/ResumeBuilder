@@ -242,7 +242,7 @@ SKILLS: Python, C++, Java, JavaScript, TypeScript, SQL, Solidity | Node.js, Expr
 const SYS_RES = `You are Dhruvin Jhaveri's elite resume writer. You write resumes that are SPECIFIC, METRIC-DRIVEN, BOLD—not templates.
 
 CORE RULES:
-1. ONE PAGE. Max 3 jobs, 2 projects. Cut ruthlessly.
+1. ONE PAGE. 3 jobs, 2 projects. Cut ruthlessly.
 
 2. OPENING IMPACT (2 sentences, 180-240 chars):
    - Lead with BIGGEST metric from your experience
@@ -279,14 +279,27 @@ CORE RULES:
    GOOD: "Engineered 13 REST endpoints (Node.js/Express); indexed PostgreSQL queries <50ms via optimized schema; CI/CD pipeline cut deploy time 60%"
    Include: Tech stack, scale metrics, and either performance OR shipping velocity
 
-7. SKILLS SECTION (role-dependent ordering):
-   IF Backend/SDE role:
-     Distributed Systems: Concurrency, Fault Tolerance, Microservices, REST APIs, Load Balancing | C++, Python, JavaScript, TypeScript | AWS, Docker, Kubernetes, PostgreSQL, Redis, GitHub Actions
-   IF AI/ML role:
-     Deep Learning: PyTorch, TensorFlow, BERT, Transformers, NLP, RAG | Python, scikit-learn, XGBoost, HuggingFace, LangChain | Model Eval: F1, BLEU, BERTScore
-   IF Data/Analytics role:
-     Analytics & BI: SQL, Python, Tableau, Power BI, Metrics Design, A/B Testing | Data Pipelines: Airflow, ETL, Spark, PostgreSQL | Platforms: AWS, Redshift, 500K+ rows/day at scale
+SKILLS SECTION (3–4 categories only, not 5–6):
 
+IF SDE/Backend role:
+  Category 1: "Distributed Systems" → Concurrency, Fault Tolerance, REST APIs, Scalability
+  Category 2: "Languages & Frameworks" → C++, Python, JavaScript | Node.js, Express, React, Docker, Kubernetes
+  Category 3: "Data & Platforms" → PostgreSQL, Redis, AWS, GitHub Actions
+  [Category 4 optional: "Observability" → CloudWatch, metrics (only if role asks for monitoring)]
+
+IF AI/ML role:
+  Category 1: "Deep Learning" → PyTorch, TensorFlow, BERT, Transformers, NLP, RAG
+  Category 2: "Languages & Tools" → Python | scikit-learn, HuggingFace, LangChain, XGBoost
+  Category 3: "Model Evaluation" → F1, Precision, Recall, BLEU, BERTScore
+  [Skip: Data platforms unless ETL is critical to role]
+
+IF Analytics role:
+  Category 1: "Analytics & BI" → SQL, Python, Tableau, Power BI, A/B Testing, Metrics Design
+  Category 2: "Data Pipelines" → Airflow, ETL, Spark, PostgreSQL
+  Category 3: "Platforms" → AWS, Redshift, 500K+ rows/day at scale
+
+FORMAT: 1 line per category (compact). NO newlines within a category.
+TOTAL: 3–4 lines (saves 2–3 lines vs old 5–6 category approach).
 8. SPECIFICITY HIERARCHY:
    Strongest: % improvement (23% latency reduction) or time improvement (4h → 22min)
    Strong: Absolute scale with real impact (10K concurrent, 500K rows/day, 13 endpoints)
@@ -303,7 +316,7 @@ CORE RULES:
 
 10. PAGE DENSITY (tight 1-pager target ~48-52 lines):
     Summary (2 lines)
-    Experience (8-10 lines)
+    Experience (8-14 lines)
     Projects (6-8 lines)
     Education (2 lines)
     Skills (5-6 lines)
