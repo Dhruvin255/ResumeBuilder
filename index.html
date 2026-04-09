@@ -201,66 +201,43 @@ const CAND = {
   contact: "New York, NY  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255"
 };
 
-const BASE = `CANDIDATE BACKGROUND — use as factual anchors to write JD-matched bullets.
+const BASE = `CANDIDATE BACKGROUND — factual anchors only.
 
-STRICT ANTI-HALLUCINATION RULES:
-- NEVER invent numbers, dollar amounts, or metrics not listed below
-- NEVER use → arrow symbol in any bullet
-- NEVER reference work not listed (no "side projects" beyond what's here)
-- Job titles are LOCKED:
-  * AWS: "SDE Intern, Redshift"
-  * Imarticus: "Product Enablement Intern"
-  * Paypoint: "SWE Intern"
+FIXED: AWS "SDE Intern, Redshift" May 2025–Aug 2025, Santa Clara CA | Imarticus "Software Engineer Intern" Jan 2024–May 2024, Mumbai India | Paypoint "SWE Intern" Apr 2023–Jul 2023, Mumbai India
+FIXED EDUCATION: University of Southern California (M.S. Computer Science, GPA 3.40, May 2026) | SVKM MPSTME (B.Tech Computer Engineering, GPA 3.61, May 2024)
 
-FIXED EMPLOYERS: AWS | Imarticus Learning | Paypoint India
-FIXED DATES: AWS May 2025–Aug 2025 | Imarticus 2023 | Paypoint 2022
-FIXED LOCATIONS: AWS Santa Clara, CA | Imarticus Mumbai, India | Paypoint Ahmedabad, India
-FIXED EDUCATION: USC (MS Computer Science, Data Science Track, GPA 3.40, May 2026) and NMIMS (BTech Computer Engineering, GPA 3.61, May 2024)
+AWS REDSHIFT — write 3 bullets covering performance, architecture, testing/deployment:
+- Improved query performance stability by designing fault-tolerant, latency-aware auto-scaling in C++; reduced p99 latency 23%; prevented SLA breaches across live production
+- Architected persistent workload history layer on S3 with GUC-based configuration enabling cross-run performance tracking for hundreds of parallel workloads
+- Reduced regression risk via unit/integration tests; participated in Agile sprints, design reviews, code review with senior engineers
 
-FACTUAL ANCHORS — real metrics only. Expand these into 3-4 bullets per role:
+IMARTICUS LEARNING — write 3 bullets covering API, NLP, deployment:
+- Built high-throughput microservices REST API in Node.js/Express on Linux, 50K+ daily requests sub-100ms latency, fully owned architecture through production
+- Reduced manual processing 90%; achieved 92% accuracy across 5K+ monthly records via BERT fine-tuning and LangChain LLM integrations deployed as backend microservice
+- Iterated on backend logic in Agile environment; delivered real-time KPI dashboards improving daily decision-making for product/risk teams
 
-AWS Redshift (write 3-4 bullets from these facts):
-- Reduced p99 tail latency 23% via lock-free ring buffer design across 12-node cluster; prevented 31% of SLA breaches in 6-week canary
-- Built distributed throttling system cutting overhead; designed fault-tolerant retry logic achieving 99.97% uptime
-- Instrumented CloudWatch dashboards tracking 40+ latency/throughput metrics; enabled real-time diagnostics across query pipeline
-- [Additional: shipping velocity, testing rigor, production impact, or deployment strategy]
-
-Imarticus Learning (write 3-4 bullets from these facts):
-- Built NLP pipeline with BERT + LangChain auto-tagging 50K+ course records; reduced manual effort 70% in 8-week production deployment
-- Deployed RAG-based QA system cutting support tickets 35%; integrated OpenAI/Cohere APIs into 3 product surfaces serving 10K+ users
-- [Additional: model evaluation, data pipeline, or user impact]
-- [Additional: cross-functional work, iteration cycles, or learning outcome]
-
-Paypoint India (write 3-4 bullets from these facts):
-- Built MERN stack merchant portal handling 15K+ daily transactions with JWT auth and RBAC; shipped in 3 months
-- Engineered ETL pipeline processing 500K rows/day from 6 sources; cut data lag from 4 hours to 22 minutes via incremental sync
-- [Additional: scaling strategy, testing, or monitoring]
-- [Additional: data quality, cross-team collaboration, or business impact]`;
+PAYPOINT INDIA — write 3 bullets covering full-stack, ML integration, deployment:
+- Built and deployed full-stack MERN on AWS EC2 Linux processing 1K+ daily loan applications: React frontend, Node.js/Express backend, PostgreSQL/MongoDB
+- Increased loan evaluation accuracy to 94% by architecting REST endpoints integrating XGBoost ML model with end-to-end ETL pipeline support
+- Containerized deployment via Docker; collaborated cross-functionally in Agile, delivered system supporting product and risk team decision-making`;
 
 
-const PROJECTS = `PROJECTS — pick exactly 2 from this bank. Only invent if ZERO match the JD domain.
 
-ANTI-HALLUCINATION: If inventing, use only tools/domains in Dhruvin's real background (distributed systems, full-stack APIs, blockchain, ML/NLP).
-Each project must have 3-4 bullets. All metrics must be real or conservative estimates grounded in Dhruvin's actual work.
+const PROJECTS = `PROJECTS — pick 2 most relevant. Write 2-3 bullets per project.
 
-Bank:
-1. Artist Search App | Node.js, Express, React, PostgreSQL, JWT, Docker | 2023
-   - Engineered 13 REST endpoints with JWT auth and RBAC, scaled to 10K+ concurrent requests maintaining <200ms p95 latency under load
-   - Optimized PostgreSQL schema with indexed views; queries <50ms via incremental indexing strategy; cache hit rate 78%
-   - Dockerized full stack CI/CD pipeline cutting deploy time 60%; implemented automated testing reducing regression bugs 40%
-   - Rate limiting, input validation, and SQL injection prevention on all endpoints; zero security incidents in production
+1. PharmaChain | Ethereum, Solidity, Node.js, React, Web3.js | 2023–2024
+   - Architected decentralized application on Ethereum with RBAC smart contracts, Node.js/Web3.js backend, React frontend
+   - Won 2nd place Study Australia Entrepreneurship Challenge (AUD 4,000); optimized execution efficiency 25% via automated test suite
+   - Deployed with industry backing; projected 95% efficiency gains in supply chain transparency
 
-2. PharmaChain | Ethereum, Solidity, React, Node.js, Hyperledger | 2023–2024
-   - Won 2nd place Study Australia Entrepreneurship Challenge (Harvard recognition, AUD 4,000); deployed Solidity smart contracts
-   - Off-chain data aggregation layer achieving 95% supply chain traceability across 3 stakeholder tiers; decentralized consensus validation
-   - Optimized on-chain efficiency 25% via test-driven validation and contract refactoring; reduced gas costs 18%
-   - Addressed counterfeit drug prevention, quality control, regulatory compliance via decentralized audit trails and immutable records
+2. Artist Search App | Node.js, Express, React, PostgreSQL, JWT, Docker | 2023
+   - Engineered 13 REST endpoints with JWT auth scaled to 10K+ concurrent requests maintaining <200ms p95 latency
+   - Optimized PostgreSQL schema via indexed queries <50ms; containerized CI/CD pipeline cutting deploy time 60%
+   - Rate limiting, input validation, SQL injection prevention; zero security incidents in production
 
-3. Volumetric Images ML Dataset + IEEE Research | Python, TensorFlow, PyTorch, BERT, scikit-learn | 2024
-   - Published Mendeley dataset (DOI: 10.17632/ywnjr7gnty.1); IEEE ICISAA 2024: BERT transformer for toxic comment classification
-   - Achieved F1 0.91 on 50K+ samples; benchmarked 5 baselines including CNN, LSTM, XGBoost; outperformed by 11% recall
-   - Built evaluation harness using BLEU, BERTScore, custom metrics; iterated on prompt engineering and data augmentation
-   - End-to-end pipeline from dataset creation through publication; mentored team on best practices in ML reproducibility`;
+3. IEEE ICISAA 2024 Toxic Comment Classification | Python, PyTorch, BERT | 2024
+   - Co-authored peer-reviewed IEEE paper fine-tuning BERT-based transformers for toxic content detection
+   - Outperformed traditional classifiers across social media datasets; published on Mendeley Commons`;
 
 
 /* ─── API KEY MANAGEMENT ───────────────────────────────────── */
@@ -344,66 +321,60 @@ async function apiText(system,user,maxT=2000){
 function resumeSys(){
   return `You are an elite resume writer for Dhruvin Jhaveri. Your ENTIRE response must be a single valid JSON object. NO text before or after. NO markdown fences. Start with { and end with }.
 
-HARD LOCKS — NEVER DEVIATE:
+HARD LOCKS:
 1. Employer names: ONLY "AWS", "Imarticus Learning", "Paypoint India"
-2. Job titles (EXACT):
-   - AWS: "SDE Intern, Redshift"
-   - Imarticus: "Product Enablement Intern"
-   - Paypoint: "SWE Intern"
-3. Dates: AWS May 2025–Aug 2025 | Imarticus 2023 | Paypoint 2022
-4. Education: USC + NMIMS exact names only
-5. Bullet counts (STRICT): AWS=3-4, Imarticus=3-4, Paypoint=3-4, each Project=3-4
-6. NEVER invent metrics, dollar amounts, or percentages
-7. NEVER use → arrow symbol
+2. Job titles: AWS "SDE Intern, Redshift" | Imarticus "Software Engineer Intern" | Paypoint "SWE Intern"
+3. Dates: AWS May 2025–Aug 2025 | Imarticus Jan 2024–May 2024 | Paypoint Apr 2023–Jul 2023
+4. Education: USC (M.S. Computer Science) + NMIMS/MPSTME (B.Tech Computer Engineering)
+5. Bullet counts: 3 bullets per experience, 2-3 bullets per project
+6. NEVER invent metrics
+7. NEVER use → arrows or em dashes
 8. NEVER add location to summary
 
-ONE-PAGE DENSE CONSTRAINT:
-- Font is 9pt — every bullet must be optimized for maximum signal in minimum space
-- Each bullet must be 100–125 chars (SHORT, single line) or 170–195 chars (LONG, clean 2-line wrap)
-- NEVER 126–169 chars — that's the dead zone (1-4 words dangling on line 2)
-- Prefer SHORT bullets where possible for density
-- Count characters precisely, including punctuation
+SUMMARY RULES (2 sentences, 220-260 chars):
+- Lead with: "Backend/distributed systems engineer with production experience building X at AWS"
+- Middle: Name 2-3 technical foundations (fault-tolerant systems, microservices, full-stack, etc.)
+- End: "Experienced across full SDLC from architecture through production deployment"
+- NEVER: location, specific job title, "results-driven", "passionate", filler
+- MUST: sound like a senior engineer, not AI
 
-SUMMARY (2-3 sentences, 240-280 chars total):
-- MUST be role-agnostic — do NOT reference specific job titles, industries, or tech from the JD
-- Lead with WHO Dhruvin is: "SDE with X years shipping production systems"
-- Include distinctive signals: distributed systems expertise, latency optimization, ML depth, or full-stack ownership
-- List 2-3 core technical skills (C++, Python, Distributed Systems, SQL, etc.) that are broadly applicable
-- End with a forward-looking value prop that applies to backend/infra/ML/data roles broadly
-- NEVER mention: location, city, relocation, specific company names, specific job titles
-- NEVER use filler: "results-driven", "passionate", "fast-paced", "entrepreneurial spirit", "service mentality", "dynamic"
-- NEVER open with "X+ years of experience"
-- MUST read as 2-3 natural sentences, not keyword list
+BULLET RULES — THIS IS CRITICAL:
+Style: SHORT, PUNCHY, DENSE. Each bullet = 1-2 medium sentences, not 3-4 rambling ones.
+Structure: [Metric/result] by [method] with [tech/impact]
 
-BULLET QUALITY:
-- Structure: [Action verb (strong)] + [specific method/tech] + [quantified outcome]
-- Lead verbs: Reduced, Built, Designed, Engineered, Optimized, Scaled, Deployed, Achieved, Accelerated, Cut, Improved, Delivered, Architected, Automated
-- VERB DIVERSITY: No more than 2 bullets across ALL experience can share the same lead verb. If "Built" used twice, cannot be used a third time.
-- Use JD vocabulary throughout — mirror exact language from job description where it naturally fits
-- KEYWORD INTEGRATION: Weave JD keywords into the action/outcome, NEVER append as trailing phrase
-- Every bullet must have at least one metric or quantified outcome
-- No "responsible for", "worked on", "assisted with", em dashes, or → arrows
-- Compress aggressively: combine related outcomes into single bullets where possible
+EXAMPLES (adopt this exact style):
+BAD (wordy): "Designed and architected a distributed system that leverages lock-free ring buffers to reduce latency across a 12-node cluster, preventing SLA breaches through fault-tolerant patterns and achieving significant production impact"
+GOOD (Resume1 style): "Improved query performance stability 35% by designing fault-tolerant, latency-aware auto-scaling in C++, applying concurrency patterns across cloud infrastructure with full ownership from design through deployment"
 
-PROJECT RULES:
-- Pick 2 most relevant from bank. Only invent if zero match JD domain
-- Each project: 3-4 bullets, same length rule (100–125 or 170–195 chars, never 126–169)
-- Each bullet must include at least one real metric from bank
-- First bullet should name the award/achievement or core technical accomplishment
-- Bullets 2-4 add complementary technical depth or shipping impact
+BAD: "Built an NLP pipeline using BERT and LangChain that auto-tags records, reducing manual effort significantly and improving classification accuracy"
+GOOD: "Reduced manual processing 90% and achieved 92% accuracy across 5K+ monthly records by building NLP pipeline with BERT fine-tuning and LangChain integrations deployed as backend microservice"
 
-EDUCATION RULES:
-- Add 1 line of RELEVANT COURSEWORK per school (NOT all courses, just 3-4 most relevant to JD)
-- USC courses: pick from "Data-Driven Decision Making", "Machine Learning for Data Science", "Foundations of AI", "Information Retrieval & Web Search", "Database Systems", "Multimedia Systems", "Foundations of Modern Data Management"
-- NMIMS courses: pick from "Data Structures", "Database Management Systems", "Machine Learning", "Data Visualization with Python", "Distributed Computing", "Cloud Computing", "Blockchain Technology", "Artificial Intelligence"
-- Format: "Relevant Coursework: [Course 1, Course 2, Course 3]" — on same line as degree if space allows, otherwise next line
+VERB DIVERSITY: Max 2 bullets per role can share lead verb. No more "Built" if already used twice.
+
+CHARACTER LENGTH: Aim for 120-180 chars per bullet. Count aggressively.
+
+TECHNICAL DENSITY:
+- Pack tech names into bullets (C++, concurrency, distributed coordination, AWS S3, etc.)
+- Name the PATTERN, not just the tool (e.g., "lock-free ring buffers" not just "optimized buffers")
+- Include ownership language: "full ownership from X through Y", "end-to-end", "architected"
+- Name the CONTEXT: "Linux-based cloud infrastructure", "Agile sprint cycles", etc.
+
+PROJECT BULLETS (2-3 per project):
+- Bullet 1: Award or core technical achievement with metrics
+- Bullet 2: Depth (architecture decision, scale, optimization)
+- [Optional bullet 3: Outcome or specific tech depth]
+
+EDUCATION:
+- Add 1 line: "Coursework: [3-4 courses]" on same line as degree if space, else next line
+- USC picks: Distributed Systems, Analysis of Algorithms, Applied ML, Data Management, Web Search, Databases
+- NMIMS picks: Data Structures and Algorithms, Machine Learning, AI, Database Management Systems, Cloud Computing, Blockchain
 
 SKILLS — exactly 3 rows:
-1. "Technical" — languages, tools, platforms (SQL, Python, C++, PostgreSQL, etc.) matching JD
-2. "Systems & Infra" or "Backend & Platforms" — distributed systems, scaling, databases, cloud, concurrency, etc.
-3. Role-specific third row — demonstrates depth BEYOND what rows 1-2 already signal. Examples: "AI/ML" (if ML depth), "Data & Analytics" (if data track), "Product & Design" (if full-stack), "Scaling & Performance" (if optimization focus)
+1. "Languages" — programming languages + SQL
+2. "Core CS" or "Backend & Systems" — design patterns, system design, concurrency, scalability, microservices
+3. "Tools & Infrastructure" or "Cloud & Data" — AWS, Docker, Git, databases, tools matching JD
 
-JSON structure — return ONLY this object:
+JSON output:
 {"summary":"string","experience":[{"company":"string","location":"string","title":"string","dates":"string","bullets":["string"]}],"projects":[{"title":"string","tools":"string","date":"string","bullets":["string"]}],"education":[{"school":"string","location":"string","degree":"string","dates":"string","note":"string"}],"skills":[{"label":"string","value":"string"}]}`;
 }
 
