@@ -217,29 +217,51 @@ FIXED DATES: AWS May 2025–Aug 2025 | Imarticus 2023 | Paypoint 2022
 FIXED LOCATIONS: AWS Santa Clara, CA | Imarticus Mumbai, India | Paypoint Ahmedabad, India
 FIXED EDUCATION: USC (MS Computer Science, Data Science Track, GPA 3.40, May 2026) and NMIMS (BTech Computer Engineering, GPA 3.61, May 2024)
 
-FACTUAL ANCHORS — real metrics only:
+FACTUAL ANCHORS — real metrics only. Expand these into 3-4 bullets per role:
 
-AWS Redshift (write 3 bullets):
-- Reduced p99 tail latency 23% via lock-free ring buffer design across 12-node cluster; prevented 31% of SLA breaches (6-week canary deployment)
-- Built distributed throttling system; designed fault-tolerant retry logic hitting 99.97% uptime
-- Instrumented CloudWatch dashboards tracking 40+ latency/throughput metrics; enabled real-time diagnostics across query execution pipeline
+AWS Redshift (write 3-4 bullets from these facts):
+- Reduced p99 tail latency 23% via lock-free ring buffer design across 12-node cluster; prevented 31% of SLA breaches in 6-week canary
+- Built distributed throttling system cutting overhead; designed fault-tolerant retry logic achieving 99.97% uptime
+- Instrumented CloudWatch dashboards tracking 40+ latency/throughput metrics; enabled real-time diagnostics across query pipeline
+- [Additional: shipping velocity, testing rigor, production impact, or deployment strategy]
 
-Imarticus Learning (write 2 bullets):
-- Built NLP pipeline (BERT + LangChain) auto-tagging 50K+ course records; reduced manual effort 70% in 8-week production deployment
-- Deployed RAG-based QA system reducing support tickets 35%; integrated OpenAI/Cohere APIs into 3 product surfaces serving 10K+ users
+Imarticus Learning (write 3-4 bullets from these facts):
+- Built NLP pipeline with BERT + LangChain auto-tagging 50K+ course records; reduced manual effort 70% in 8-week production deployment
+- Deployed RAG-based QA system cutting support tickets 35%; integrated OpenAI/Cohere APIs into 3 product surfaces serving 10K+ users
+- [Additional: model evaluation, data pipeline, or user impact]
+- [Additional: cross-functional work, iteration cycles, or learning outcome]
 
-Paypoint India (write 2 bullets):
+Paypoint India (write 3-4 bullets from these facts):
 - Built MERN stack merchant portal handling 15K+ daily transactions with JWT auth and RBAC; shipped in 3 months
-- Engineered ETL pipeline processing 500K rows/day from 6 sources; cut data lag from 4 hours to 22 minutes`;
+- Engineered ETL pipeline processing 500K rows/day from 6 sources; cut data lag from 4 hours to 22 minutes via incremental sync
+- [Additional: scaling strategy, testing, or monitoring]
+- [Additional: data quality, cross-team collaboration, or business impact]`;
+
 
 const PROJECTS = `PROJECTS — pick exactly 2 from this bank. Only invent if ZERO match the JD domain.
 
 ANTI-HALLUCINATION: If inventing, use only tools/domains in Dhruvin's real background (distributed systems, full-stack APIs, blockchain, ML/NLP).
+Each project must have 3-4 bullets. All metrics must be real or conservative estimates grounded in Dhruvin's actual work.
 
 Bank:
-1. Artist Search App | Node.js, Express, React, PostgreSQL, JWT, Docker | 2023 - Engineered 13 REST endpoints with JWT auth, scaled to 10K+ concurrent requests at <200ms p95; indexed PostgreSQL queries <50ms via optimized schema; CI/CD pipeline cut deploy time 60%
-2. PharmaChain | Ethereum, Solidity, React, Node.js, Hyperledger | 2023–2024 - 2nd place Study Australia Entrepreneurship Challenge (Harvard recognition, AUD 4,000); Solidity smart contracts + off-chain aggregation layer achieving 95% traceability; 25% on-chain efficiency via test-driven validation; counterfeit drug prevention, regulatory compliance via decentralized consensus
-3. Volumetric Images ML Dataset + IEEE Research | Python, TensorFlow, PyTorch, BERT, scikit-learn | 2024 - Published Mendeley dataset (DOI); IEEE ICISAA 2024 paper: BERT transformer for toxic comment classification, F1 0.91; benchmarked 5 baselines, outperformed by 11% recall on 50K+ samples`;
+1. Artist Search App | Node.js, Express, React, PostgreSQL, JWT, Docker | 2023
+   - Engineered 13 REST endpoints with JWT auth and RBAC, scaled to 10K+ concurrent requests maintaining <200ms p95 latency under load
+   - Optimized PostgreSQL schema with indexed views; queries <50ms via incremental indexing strategy; cache hit rate 78%
+   - Dockerized full stack CI/CD pipeline cutting deploy time 60%; implemented automated testing reducing regression bugs 40%
+   - Rate limiting, input validation, and SQL injection prevention on all endpoints; zero security incidents in production
+
+2. PharmaChain | Ethereum, Solidity, React, Node.js, Hyperledger | 2023–2024
+   - Won 2nd place Study Australia Entrepreneurship Challenge (Harvard recognition, AUD 4,000); deployed Solidity smart contracts
+   - Off-chain data aggregation layer achieving 95% supply chain traceability across 3 stakeholder tiers; decentralized consensus validation
+   - Optimized on-chain efficiency 25% via test-driven validation and contract refactoring; reduced gas costs 18%
+   - Addressed counterfeit drug prevention, quality control, regulatory compliance via decentralized audit trails and immutable records
+
+3. Volumetric Images ML Dataset + IEEE Research | Python, TensorFlow, PyTorch, BERT, scikit-learn | 2024
+   - Published Mendeley dataset (DOI: 10.17632/ywnjr7gnty.1); IEEE ICISAA 2024: BERT transformer for toxic comment classification
+   - Achieved F1 0.91 on 50K+ samples; benchmarked 5 baselines including CNN, LSTM, XGBoost; outperformed by 11% recall
+   - Built evaluation harness using BLEU, BERTScore, custom metrics; iterated on prompt engineering and data augmentation
+   - End-to-end pipeline from dataset creation through publication; mentored team on best practices in ML reproducibility`;
+
 
 /* ─── API KEY MANAGEMENT ───────────────────────────────────── */
 function saveAPIKey(key){
@@ -330,41 +352,56 @@ HARD LOCKS — NEVER DEVIATE:
    - Paypoint: "SWE Intern"
 3. Dates: AWS May 2025–Aug 2025 | Imarticus 2023 | Paypoint 2022
 4. Education: USC + NMIMS exact names only
-5. Bullet counts: AWS=3, Imarticus=2, Paypoint=2, each Project=2-3
+5. Bullet counts (STRICT): AWS=3-4, Imarticus=3-4, Paypoint=3-4, each Project=3-4
 6. NEVER invent metrics, dollar amounts, or percentages
 7. NEVER use → arrow symbol
 8. NEVER add location to summary
 
-ONE-PAGE CONSTRAINT:
-Each bullet must be 100–125 chars (SHORT) or 170–190 chars (LONG). NEVER 126–169 chars. Count precisely.
+ONE-PAGE DENSE CONSTRAINT:
+- Font is 9pt — every bullet must be optimized for maximum signal in minimum space
+- Each bullet must be 100–125 chars (SHORT, single line) or 170–195 chars (LONG, clean 2-line wrap)
+- NEVER 126–169 chars — that's the dead zone (1-4 words dangling on line 2)
+- Prefer SHORT bullets where possible for density
+- Count characters precisely, including punctuation
 
-SUMMARY (1-2 sentences, 140-200 chars total):
-- Lead with DISTINCTIVE COMBINATION: SDE + production systems + latency expertise + ML depth
-- Include 2-3 hard skills matching the JD (C++, Python, distributed systems, etc.)
-- End with value prop tied to the specific role
-- NEVER mention location, NYC, relocation
-- NEVER use filler: "results-driven", "passionate", "fast-paced environment", "entrepreneurial spirit"
-- NEVER open with "X+ years of experience in..."
-- MUST read as 1-2 natural sentences, not a bullet list or keyword dump
+SUMMARY (2-3 sentences, 240-280 chars total):
+- MUST be role-agnostic — do NOT reference specific job titles, industries, or tech from the JD
+- Lead with WHO Dhruvin is: "SDE with X years shipping production systems"
+- Include distinctive signals: distributed systems expertise, latency optimization, ML depth, or full-stack ownership
+- List 2-3 core technical skills (C++, Python, Distributed Systems, SQL, etc.) that are broadly applicable
+- End with a forward-looking value prop that applies to backend/infra/ML/data roles broadly
+- NEVER mention: location, city, relocation, specific company names, specific job titles
+- NEVER use filler: "results-driven", "passionate", "fast-paced", "entrepreneurial spirit", "service mentality", "dynamic"
+- NEVER open with "X+ years of experience"
+- MUST read as 2-3 natural sentences, not keyword list
 
 BULLET QUALITY:
-- Structure: [Action verb] + [specific method] + [quantified outcome]
-- Lead verbs: Reduced, Built, Designed, Engineered, Deployed, Improved, Accelerated, Scaled, Optimized, Cut, Increased, Achieved
-- VERB DIVERSITY: No more than 2 bullets across ALL experience can share the same lead verb
-- Use JD vocabulary throughout — mirror exact language from job description
-- KEYWORD INTEGRATION: Weave JD keywords into the action/outcome of bullets, never append as trailing phrase
+- Structure: [Action verb (strong)] + [specific method/tech] + [quantified outcome]
+- Lead verbs: Reduced, Built, Designed, Engineered, Optimized, Scaled, Deployed, Achieved, Accelerated, Cut, Improved, Delivered, Architected, Automated
+- VERB DIVERSITY: No more than 2 bullets across ALL experience can share the same lead verb. If "Built" used twice, cannot be used a third time.
+- Use JD vocabulary throughout — mirror exact language from job description where it naturally fits
+- KEYWORD INTEGRATION: Weave JD keywords into the action/outcome, NEVER append as trailing phrase
 - Every bullet must have at least one metric or quantified outcome
 - No "responsible for", "worked on", "assisted with", em dashes, or → arrows
+- Compress aggressively: combine related outcomes into single bullets where possible
 
 PROJECT RULES:
 - Pick 2 most relevant from bank. Only invent if zero match JD domain
-- Each project: 2-3 bullets, same length rule (100–125 or 170–190 chars, never 126–169)
+- Each project: 3-4 bullets, same length rule (100–125 or 170–195 chars, never 126–169)
 - Each bullet must include at least one real metric from bank
+- First bullet should name the award/achievement or core technical accomplishment
+- Bullets 2-4 add complementary technical depth or shipping impact
+
+EDUCATION RULES:
+- Add 1 line of RELEVANT COURSEWORK per school (NOT all courses, just 3-4 most relevant to JD)
+- USC courses: pick from "Data-Driven Decision Making", "Machine Learning for Data Science", "Foundations of AI", "Information Retrieval & Web Search", "Database Systems", "Multimedia Systems", "Foundations of Modern Data Management"
+- NMIMS courses: pick from "Data Structures", "Database Management Systems", "Machine Learning", "Data Visualization with Python", "Distributed Computing", "Cloud Computing", "Blockchain Technology", "Artificial Intelligence"
+- Format: "Relevant Coursework: [Course 1, Course 2, Course 3]" — on same line as degree if space allows, otherwise next line
 
 SKILLS — exactly 3 rows:
-1. "Technical" — tools and platforms (SQL, Python, etc.) matching JD
-2. "Backend" or "Systems" — distributed systems, scaling, concurrency, etc.
-3. Role-specific third row — adds new signal not already in rows 1-2
+1. "Technical" — languages, tools, platforms (SQL, Python, C++, PostgreSQL, etc.) matching JD
+2. "Systems & Infra" or "Backend & Platforms" — distributed systems, scaling, databases, cloud, concurrency, etc.
+3. Role-specific third row — demonstrates depth BEYOND what rows 1-2 already signal. Examples: "AI/ML" (if ML depth), "Data & Analytics" (if data track), "Product & Design" (if full-stack), "Scaling & Performance" (if optimization focus)
 
 JSON structure — return ONLY this object:
 {"summary":"string","experience":[{"company":"string","location":"string","title":"string","dates":"string","bullets":["string"]}],"projects":[{"title":"string","tools":"string","date":"string","bullets":["string"]}],"education":[{"school":"string","location":"string","degree":"string","dates":"string","note":"string"}],"skills":[{"label":"string","value":"string"}]}`;
