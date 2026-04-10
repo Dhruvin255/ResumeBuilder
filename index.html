@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge Pro — Domain-Aware</title>
+<title>ResumeForge — Pick Your Type</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -12,238 +12,298 @@
 :root{--bg:#F7F5F0;--surface:#fff;--border:#DDD9D0;--text:#1A1916;--text2:#6B6760;--accent:#1a4f8a;--green:#2C5F2E;--red:#C0392B}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .header{background:var(--text);color:#fff;padding:14px 40px}
-.logo{font-family:'DM Serif Display',serif;font-size:22px}
+.logo{font-family:'DM Serif Display',serif;font-size:20px}
 .logo span{color:#92B4E3}
-.tagline{font-size:10px;color:#aaa;margin-top:4px}
-.app{display:grid;grid-template-columns:420px 1fr;min-height:calc(100vh - 56px)}
-.left{padding:28px 30px;border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 56px);display:flex;flex-direction:column}
-.right{background:#FAFAF8;overflow-y:auto;max-height:calc(100vh - 56px);padding:24px 28px}
-input,textarea{width:100%;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--surface);margin-bottom:12px}
+.app{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 56px)}
+.left{padding:24px 28px;border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 56px);display:flex;flex-direction:column}
+.right{background:#FAFAF8;overflow-y:auto;max-height:calc(100vh - 56px);padding:20px 24px;font-family:Calibri,sans-serif;font-size:10.5px}
+.type-selector{display:grid;gap:12px;margin-bottom:20px}
+.type-card{padding:14px;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--surface)}
+.type-card:hover{border-color:var(--accent);background:#F0F4FF}
+.type-card.selected{border-color:var(--accent);background:#EEF4FF;font-weight:600}
+.type-title{font-weight:700;font-size:12px;margin-bottom:4px;color:var(--text)}
+.type-desc{font-size:10px;color:var(--text2);line-height:1.4}
+input,textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--surface);margin-bottom:10px}
 input:focus,textarea:focus{outline:none;border-color:var(--accent)}
-.btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-weight:500;cursor:pointer;margin-top:12px}
+.btn{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-top:10px;font-size:13px}
 .btn:hover:not(:disabled){background:#133d6e}
-.btn:disabled{background:var(--border);cursor:not-allowed}
-.status{padding:12px;border-radius:7px;margin-bottom:12px;font-size:12px;display:none;font-weight:500}
+.btn:disabled{background:var(--border);cursor:not-allowed;color:var(--text2)}
+.status{padding:10px;border-radius:6px;margin-bottom:10px;font-size:11px;display:none;font-weight:600}
 .status.success{background:#EDF4EE;color:var(--green);border:1px solid #9DC89F}
 .status.error{background:#FDF0EE;color:var(--red);border:1px solid #F5C6C2}
 .status.loading{background:#FDF8EC;color:#8B6914;border:1px solid #F0D98A}
-.preview{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;font-family:Calibri,sans-serif;font-size:11px;line-height:1.5;white-space:pre-wrap}
-.domain-badge{display:inline-block;background:var(--accent);color:#fff;padding:4px 10px;border-radius:4px;font-size:9px;font-weight:700;margin-bottom:12px;text-transform:uppercase}
+.portfolio-preview{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:10px;font-size:9px;color:var(--text2);line-height:1.4}
+.portfolio-preview strong{color:var(--text);display:block;margin-bottom:4px}
+.preview{line-height:1.4;white-space:pre-wrap;font-size:10px}
+.hidden{display:none}
+.section-label{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-top:12px;margin-bottom:6px}
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="logo">Resume<span>Forge</span> Pro</div>
-  <div class="tagline">Domain-Aware • ML | Backend | Analytics | Data Science</div>
+  <div class="logo">Resume<span>Forge</span></div>
+  <div style="font-size:10px;color:#999;margin-top:2px">Pick your type • Auto-fill portfolio • Generate</div>
 </div>
 
 <div class="app">
   <div class="left">
-    <div style="font-size:10px;color:var(--text2);margin-bottom:16px;padding:12px;background:#EEF4FF;border-radius:7px;border:1px solid #92B4E3">
-      🔒 Education locked to: USC (3.40) + MPSTME (3.61)
+    <div class="section-label">Resume Type</div>
+    <div class="type-selector" id="type-selector"></div>
+
+    <div class="section-label">Portfolio Links (Auto-Filled)</div>
+    <div class="portfolio-preview" id="portfolio-preview">
+      <strong>Select a type above</strong>
+      <div>Portfolio links will appear here</div>
     </div>
 
-    <div style="margin-bottom:12px">
-      <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:4px">Job Description *</label>
-      <textarea id="jd" placeholder="Paste full JD..." style="min-height:140px" oninput="updateCount()"></textarea>
-      <div style="font-size:10px;color:var(--text2)" id="jd-count">0 chars</div>
-    </div>
+    <div class="section-label">Job Description</div>
+    <textarea id="jd" placeholder="Paste full JD..." style="min-height:120px" oninput="updateCount()"></textarea>
+    <div style="font-size:9px;color:var(--text2)" id="jd-count">0 chars</div>
 
-    <div style="margin-bottom:12px">
-      <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:4px">Company (optional)</label>
-      <input type="text" id="company" placeholder="Google, Stripe...">
-    </div>
-
-    <div style="margin-bottom:12px">
-      <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:4px">API Key</label>
-      <input type="password" id="api-key" placeholder="sk-ant-..." oninput="saveKey(this.value)">
-    </div>
-
-    <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+    <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
       <div id="status" class="status"></div>
-      <button class="btn" id="gen-btn" onclick="generate()">🚀 Generate Resume</button>
-      <div style="font-size:10px;color:var(--text2);margin-top:8px;line-height:1.6">Auto-detects domain • Uses your actual resume patterns • DOCX export</div>
+      <button class="btn" id="gen-btn" onclick="generate()" disabled>🚀 Generate Resume</button>
+      <div style="font-size:9px;color:var(--text2);margin-top:6px;line-height:1.5">✓ 1-page tight ✓ Correct portfolio ✓ DOCX ready</div>
     </div>
   </div>
 
   <div class="right">
-    <div id="empty" style="text-align:center;padding:80px 20px;color:var(--text2)">
-      <div style="font-size:48px;opacity:.2;margin-bottom:12px">⊙</div>
-      <h3>Resume appears here</h3>
-      <p>Paste JD, click Generate</p>
+    <div id="preview" class="preview" style="text-align:center;padding:60px 20px;color:var(--text2)">
+      Select resume type + paste JD<br>
+      <span style="font-size:48px;opacity:.1;margin-top:12px;display:block">⊙</span>
     </div>
-    <div id="preview-area" style="display:none">
-      <div id="preview" class="preview"></div>
-      <button style="width:100%;padding:10px;background:var(--green);color:#fff;border:none;border-radius:7px;font-weight:500;cursor:pointer;margin-top:12px" onclick="downloadDOCX()">⬇ Download DOCX</button>
-    </div>
+    <button style="width:100%;padding:8px;background:var(--green);color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-top:12px;font-size:11px;display:none" id="dl-btn" onclick="downloadDOCX()">⬇ Download DOCX</button>
   </div>
 </div>
 
 <script>
+const RESUME_TYPES = {
+  SDE: {
+    title: "Backend/SDE Engineer",
+    description: "Distributed systems, APIs, microservices, C++, fault tolerance, production deployment",
+    portfolios: ["https://dhruvin255.github.io/PortfolioHost/sde.html"],
+    domain: "BACKEND"
+  },
+  ML: {
+    title: "ML Engineer / Data Scientist",
+    description: "PyTorch, TensorFlow, BERT, XGBoost, feature engineering, model training, statistical analysis",
+    portfolios: ["https://dhruvin255.github.io/PortfolioHost/ml.html"],
+    domain: "ML"
+  },
+  DATA: {
+    title: "Data Analyst / Analytics",
+    description: "SQL, Python, A/B testing, hypothesis testing, dashboards, business intelligence, metrics",
+    portfolios: ["https://dhruvin255.github.io/PortfolioHost/data.html"],
+    domain: "DATA"
+  },
+  FULL: {
+    title: "Full-Stack (All 3 Portfolios)",
+    description: "Show all sides: backend, ML, and data analytics expertise across roles",
+    portfolios: [
+      "https://dhruvin255.github.io/PortfolioHost/sde.html",
+      "https://dhruvin255.github.io/PortfolioHost/ml.html",
+      "https://dhruvin255.github.io/PortfolioHost/data.html"
+    ],
+    domain: "FULL"
+  }
+};
+
 const DHRUVIN = {
-  name: "Dhruvin Jhaveri",
-  contact: "New York, NY | djhaveri99@gmail.com | linkedin.com/in/dhruvinjhaveri | github.com/Dhruvin255",
+  name: "DHRUVIN JHAVERI",
+  location: "New York, NY",
+  phone: "(602) 793-6561",
+  email: "dhruvinj@usc.edu",
   education: [
     {
       school: "University of Southern California",
-      location: "Los Angeles CA",
-      degree: "M.S. Computer Science",
-      track: "Data Science Track",
-      gpa: "3.40",
-      dates: "May 2026",
-      coursework: "Applied ML, Distributed Systems, Analysis of Algorithms, Database Systems, Applied NLP, Foundations of Data Management"
+      location: "Los Angeles, USA",
+      degree: "Master of Science in Computer Science (Data Science)",
+      gpa: null,
+      dates: "Graduating May 2026",
+      coursework: "Analysis of Algorithms, Database Systems, Applied ML, Web Technologies, Distributed Systems, Machine Learning for Data Science"
     },
     {
-      school: "SVKM MPSTME",
-      location: "Mumbai India",
-      degree: "B.Tech Computer Engineering",
-      gpa: "3.61",
+      school: "SVKM Mukesh Patel School of Technology Management and Engineering",
+      location: "Mumbai, India",
+      degree: "Bachelor of Technology in Computer Engineering (Honors: ML and Data Analytics)",
+      gpa: "3.61/4.0",
       dates: "May 2024",
-      coursework: "Machine Learning, AI, Probability and Statistics, Big Data, Database Management Systems"
+      coursework: "NLP, ML, AI, Big Data, Database Management Systems, Cloud Computing, Blockchain Technology"
     }
   ]
 };
 
-const SYSTEM_PROMPTS = {
-  ML: `You are writing a 1-page resume for Dhruvin optimized for ML/Data Science roles. 
-Use this exact summary template:
-"Machine learning engineer with [X] years building and deploying production ML systems, statistical models, and data pipelines. Expertise in SQL, Python (Pandas, NumPy, Scikit-Learn, PyTorch), and statistical analysis. Built [specific model] with [metric] accuracy, [specific model] achieving [metric], and [specific architecture]."
-
-BULLET RULES:
-- Lead with specific model name (XGBoost, BERT, etc), not generic "ML model"
-- [Specific model] achieving [metric] across [scale] by [method]; [deployment detail]
-- Examples: "Built end-to-end XGBoost ML pipeline for credit risk achieving 94% accuracy across 1K+ daily applications"
-- "Reduced manual processing 90% and achieved 92% accuracy by fine-tuning BERT-based transformers"
-- Never use: "worked on", "responsible for", "used machine learning"
-
-EXPERIENCE ORDER: AWS (ML metrics first) > Imarticus (BERT/NLP) > Paypoint (XGBoost/models)
-
-SKILLS (3-4 categories):
-Languages: Python, SQL, C++, Java, JavaScript, R
-ML & Deep Learning: PyTorch, TensorFlow, Scikit-Learn, XGBoost, BERT, LangChain, RAG, Feature Engineering, Hyperparameter Tuning
-Data Pipelines: ETL, Pandas, NumPy, Matplotlib
-Cloud & Infrastructure: AWS (S3, EC2, Redshift, SageMaker), Docker, Git
-
-Return ONLY valid JSON with NO text before/after:
-{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":["",""]}],"projects":[{"title":"","tools":"","bullets":["",""]}],"skills":[{"label":"","value":""}]}`,
-
-  BACKEND: `You are writing a 1-page resume for Dhruvin optimized for Backend/Systems roles.
-Use this summary template:
-"Backend and distributed systems software engineer with production experience building fault-tolerant C++ systems at Amazon AWS, high-throughput microservices APIs serving [SCALE], and cloud-deployed applications end to end. Strong foundations in object-oriented design, system design, data structures, and algorithms."
-
-BULLET RULES:
-- Lead with architecture pattern: "fault-tolerant", "distributed", "latency-aware", "high-throughput"
-- [Metric improvement] across [scale] by [architecture]; [full ownership language]; [SDLC detail]
-- Examples: "Improved p99 latency 35% by designing fault-tolerant auto-scaling in C++; full ownership from system design through production deployment"
-- "Designed high-throughput REST API serving 50K+ daily requests at <100ms latency in Node.js/Express; fully owned from architecture through deployment"
-- MANDATORY: "with full ownership from [X] through [Y]" or include "unit/integration tests", "design reviews", "staged deployment"
-
-EXPERIENCE ORDER: AWS (C++/distributed) > Imarticus (Node.js/APIs) > Paypoint (MERN/full-stack)
-
-SKILLS (3-4 categories):
-Languages: Java, Python, C++, JavaScript, TypeScript, SQL, R
-Core CS: Object-Oriented Design, System Design, Data Structures and Algorithms, Distributed Systems, Concurrency, Scalability
-Backend: Node.js, Express.js, NestJS, Spring Boot, REST APIs, Microservices Architecture
-Infrastructure: Linux, Unix, Docker, CI/CD, Git, Agile
-Cloud: AWS (S3, EC2, Redshift), GCP, Azure
-Databases: PostgreSQL, MySQL, MongoDB, Redis
-
-Return ONLY valid JSON:
-{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":["",""]}],"projects":[{"title":"","tools":"","bullets":["",""]}],"skills":[{"label":"","value":""}]}`,
-
-  ANALYTICS: `You are writing a 1-page resume for Dhruvin optimized for Analytics/Operations roles.
-Use this summary template:
-"Operations analytics professional with expertise in synthesizing complex organizational data for executive decision-making. Proven ability in business intelligence, data transformation, and stakeholder management. Skilled in Tableau, Alteryx, Power BI and advanced data tools with demonstrated ability to quickly learn new technologies and translate insights into actionable business strategies."
-
-BULLET RULES:
-- Executive-facing language: "executive decision-making", "stakeholder", "C-suite", "organizational leaders"
-- [Dashboard/automation] tracking [KPIs] improved [metric] by [%] by [collaboration detail]
-- Examples: "Built Tableau dashboards tracking KPIs across teams, improving executive responsiveness by 40%"
-- "Developed Power BI dashboards synthesizing employee engagement and business metrics for C-suite communication"
-- Stakeholder management is CORE: mention cross-functional partners, senior leaders, organizational levels
-
-EXPERIENCE ORDER: AWS (analytics/dashboards) > Imarticus (dashboards/KPIs) > Paypoint (reporting)
-
-SKILLS (3-4 categories):
-BI & Analytics: Tableau, Power BI, Alteryx, SQL, Excel (Advanced)
-Languages: Python, SQL, C++, JavaScript
-Data Platforms: AWS Redshift, LLM Solutions
-Soft Skills: Executive Communication, Cross-Functional Collaboration, Stakeholder Management, Meeting Facilitation
-
-Return ONLY valid JSON:
-{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":["",""]}],"projects":[{"title":"","tools":"","bullets":["",""]}],"skills":[{"label":"","value":""}]}`,
-
-  DATA_SCI: `You are writing a 1-page resume for Dhruvin optimized for Data Scientist/Analyst roles.
-Use this summary template:
-"Data scientist with production experience in SQL, Python, R, ETL pipelines, A/B testing, regression modeling, and statistical analysis across [DOMAIN] environments. Skilled at taking ambiguous problems, structuring them as hypotheses, and using data to drive decisions for business and product leaders. Experienced building full-cycle analytics experiments, executive-facing dashboards, and cohort analyses that identify levers and move essential metrics."
-
-BULLET RULES:
-- Problem-first: "Worked backwards from ambiguous [problem] to structured data solution"
-- Full-cycle: "Built full-cycle analytics [experiment/pipeline] using [TOOLS] on [INFRASTRUCTURE]"
-- Statistical rigor: always mention "hypothesis testing", "regression modeling", "A/B testing", "cohort analyses"
-- [Full-cycle detail] analyzing [scale] using [tools], applying [statistical methods], [identifying/validating] [insight], [business impact]
-- Examples: "Built full-cycle analytics pipeline analyzing 5K+ records using Python, regression models, cohort analyses to surface engagement trends"
-- "Worked backwards from ambiguous performance problem to structured SQL/Python solution, running hypothesis testing and A/B tests to validate findings"
-
-EXPERIENCE ORDER: AWS (analytics experiments) > Imarticus (behavioral analysis) > Paypoint (statistical modeling)
-
-SKILLS (3-4 categories):
-Analytics & Statistics: SQL, Python, R, Pandas, NumPy, Scikit-Learn, SciPy, Statsmodels, A/B Testing, Hypothesis Testing, Regression, Time-Series, Cohort Analysis
-ETL & Data Infrastructure: ETL pipelines, data modeling, data validation, AWS (S3, EC2, Redshift), PostgreSQL, MongoDB, Airflow, Git
-Visualization & BI: Tableau, Looker, Power BI, Matplotlib, Seaborn, Excel
-Machine Learning: XGBoost, PyTorch, TensorFlow, BERT, LangChain, user segmentation, funnel optimization
-
-Return ONLY valid JSON:
-{"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":["",""]}],"projects":[{"title":"","tools":"","bullets":["",""]}],"skills":[{"label":"","value":""}]}`
-};
-
+let selectedType = null;
 let currentResume = null;
 
-function updateCount(){
+function initTypeSelector() {
+  const selector = document.getElementById('type-selector');
+  selector.innerHTML = Object.entries(RESUME_TYPES).map(([key, type]) => `
+    <div class="type-card" onclick="selectType('${key}')">
+      <div class="type-title">📌 ${type.title}</div>
+      <div class="type-desc">${type.description}</div>
+    </div>
+  `).join('');
+}
+
+function selectType(typeKey) {
+  selectedType = typeKey;
+  const type = RESUME_TYPES[typeKey];
+  
+  // Update UI
+  document.querySelectorAll('.type-card').forEach(el => el.classList.remove('selected'));
+  event.target.closest('.type-card').classList.add('selected');
+  
+  // Show portfolio preview
+  const previewEl = document.getElementById('portfolio-preview');
+  previewEl.innerHTML = `<strong>✓ Portfolio Links (${type.portfolios.length}):</strong>` + 
+    type.portfolios.map((p, i) => `<div>${i+1}. ${p}</div>`).join('');
+  
+  // Enable generate button
+  document.getElementById('gen-btn').disabled = document.getElementById('jd').value.trim().length === 0;
+}
+
+function updateCount() {
+  const hasJD = document.getElementById('jd').value.trim().length > 0;
+  document.getElementById('gen-btn').disabled = !selectedType || !hasJD;
   document.getElementById('jd-count').textContent = document.getElementById('jd').value.length.toLocaleString() + ' chars';
 }
 
-function saveKey(k){
-  if(k) localStorage.setItem('dhruvin_api_key', k);
-  window.API_KEY = k;
+function setStatus(type, msg) {
+  const s = document.getElementById('status');
+  s.className = 'status ' + type;
+  s.textContent = msg;
+  s.style.display = 'block';
 }
 
-function detectDomain(jd){
-  const lower = jd.toLowerCase();
-  const domains = {
-    ML: ['pytorch', 'tensorflow', 'bert', 'xgboost', 'nlp', 'deep learning', 'neural network', 'machine learning', 'feature engineering', 'model training'],
-    BACKEND: ['distributed systems', 'apis', 'microservices', 'concurrency', 'c++', 'scalability', 'throughput', 'latency', 'fault tolerance'],
-    ANALYTICS: ['tableau', 'alteryx', 'power bi', 'executive', 'stakeholder', 'business intelligence', 'dashboard', 'reporting'],
-    DATA_SCI: ['sql', 'python', 'a/b testing', 'hypothesis testing', 'statistical analysis', 'regression', 'cohort analysis', 'etl']
-  };
+const SYSTEM_PROMPTS = {
+  BACKEND: `You are writing a 1-PAGE resume for Dhruvin optimized for Backend/SDE roles.
 
-  let scores = { ML: 0, BACKEND: 0, ANALYTICS: 0, DATA_SCI: 0 };
-  for(let [domain, keywords] of Object.entries(domains)){
-    keywords.forEach(kw => {
-      if(lower.includes(kw)) scores[domain]++;
-    });
+STRUCTURE (strict):
+1. HEADER: DHRUVIN JHAVERI | Location, Phone, Email | Portfolio: https://dhruvin255.github.io/PortfolioHost/sde.html
+2. EDUCATION (no summary) - School, Degree, GPA, Dates, Coursework inline
+3. PROFESSIONAL EXPERIENCE - Company @ Title | TECH STACK (inline) | Dates
+   - 3-4 bullets per role, SHORT and PUNCHY
+4. PROJECTS (2 max) - Title | Tech | Dates, 2-3 bullets
+5. RESEARCH (1 line only, optional)
+6. TECHNICAL SKILLS - Grouped by category at bottom
+
+RULES:
+- Tech stack inline in header: "C++, AWS, Docker, Git"
+- Bullets SHORT (1-2 lines max)
+- Lead with architecture pattern: "fault-tolerant", "high-throughput", "latency-aware"
+- Metric first: "Improved p99 latency 35% by designing..."
+- Full ownership language: "with full ownership from X through Y"
+- SDLC detail: mention tests, design reviews, or deployment
+- NO wordy language, NO "worked on", NO "responsible for"
+
+EDUCATION LOCKED:
+University of Southern California, Los Angeles, USA | M.S. Computer Science (Data Science) | Graduating May 2026
+SVKM MPSTME, Mumbai, India | B.Tech Computer Engineering (Honors) | GPA 3.61/4.0 | May 2024
+
+Return ONLY JSON (no markdown):
+{"roles":[{"company":"","title":"","tech":"","dates":"","bullets":[""]}],"projects":[{"title":"","tech":"","dates":"","bullets":[""]}],"research":"","skills":[{"category":"","items":""}]}`,
+
+  ML: `You are writing a 1-PAGE resume for Dhruvin optimized for ML/Data Science roles.
+
+STRUCTURE (strict):
+1. HEADER: DHRUVIN JHAVERI | Location, Phone, Email | Portfolio: https://dhruvin255.github.io/PortfolioHost/ml.html
+2. EDUCATION (no summary) - School, Degree, GPA, Dates, Coursework inline
+3. PROFESSIONAL EXPERIENCE - Company @ Title | TECH STACK (inline) | Dates
+   - 3-4 bullets per role, SHORT
+4. PROJECTS (2 max) - Title | Tech | Dates, 2-3 bullets
+5. RESEARCH (1 line, optional)
+6. TECHNICAL SKILLS - Grouped by category
+
+RULES:
+- Tech inline: "PyTorch, TensorFlow, XGBoost, BERT, Python"
+- Lead with model/system: "Built XGBoost fraud model with 94% accuracy"
+- Metric first: "Achieved 92% classification accuracy on 5K+ records by fine-tuning BERT"
+- Include deployment detail: "deployed as backend service", "in production"
+- Feature engineering, hyperparameter tuning, evaluation mentioned
+- NO generic "machine learning", say the TOOL (XGBoost, BERT, etc)
+
+EDUCATION LOCKED:
+University of Southern California, Los Angeles, USA | M.S. Computer Science (Data Science) | Graduating May 2026
+SVKM MPSTME, Mumbai, India | B.Tech Computer Engineering (Honors) | GPA 3.61/4.0 | May 2024
+
+Return ONLY JSON:
+{"roles":[{"company":"","title":"","tech":"","dates":"","bullets":[""]}],"projects":[{"title":"","tech":"","dates":"","bullets":[""]}],"research":"","skills":[{"category":"","items":""}]}`,
+
+  DATA: `You are writing a 1-PAGE resume for Dhruvin optimized for Analytics/Data roles.
+
+STRUCTURE (strict):
+1. HEADER: DHRUVIN JHAVERI | Location, Phone, Email | Portfolio: https://dhruvin255.github.io/PortfolioHost/data.html
+2. EDUCATION (no summary) - School, Degree, GPA, Dates, Coursework inline
+3. PROFESSIONAL EXPERIENCE - Company @ Title | TECH STACK (inline) | Dates
+   - 3-4 bullets per role
+4. PROJECTS (2 max) - Title | Tech | Dates, 2-3 bullets
+5. RESEARCH (1 line, optional)
+6. TECHNICAL SKILLS - Grouped by category
+
+RULES:
+- Tech inline: "SQL, Python, Tableau, A/B Testing, Hypothesis Testing"
+- Lead with problem-first or metric-first: "Built full-cycle analytics pipeline analyzing 5K+ records"
+- Statistical rigor: mention "A/B testing", "hypothesis testing", "regression", "cohort analysis"
+- Executive translation: "dashboards for stakeholders", "data-driven decisions"
+- Full-cycle language: "from data collection through validation"
+- Metric impact: "Improved KPI by X%", "reduced manual time 80%"
+
+EDUCATION LOCKED:
+University of Southern California, Los Angeles, USA | M.S. Computer Science (Data Science) | Graduating May 2026
+SVKM MPSTME, Mumbai, India | B.Tech Computer Engineering (Honors) | GPA 3.61/4.0 | May 2024
+
+Return ONLY JSON:
+{"roles":[{"company":"","title":"","tech":"","dates":"","bullets":[""]}],"projects":[{"title":"","tech":"","dates":"","bullets":[""]}],"research":"","skills":[{"category":"","items":""}]}`,
+
+  FULL: `You are writing a 1-PAGE resume for Dhruvin showing FULL STACK skills (Backend, ML, Data).
+
+STRUCTURE (strict 1-page):
+1. HEADER: DHRUVIN JHAVERI | Location, Phone, Email | Portfolios: SDE | ML | Data Analytics
+   (show all 3 portfolio links)
+2. EDUCATION (no summary) - School, Degree, GPA, Dates, Coursework inline
+3. PROFESSIONAL EXPERIENCE - Pick 3-4 roles that span Backend, ML, and Data
+   - Each role: Company @ Title | TECH STACK | Dates, 2-3 bullets (super tight to fit)
+4. PROJECTS (1-2 max, pick diverse: one backend, one ML, one data if space)
+5. RESEARCH (1 line if space)
+6. TECHNICAL SKILLS - Grouped (Languages, Backend, ML, Data, Tools)
+
+RULES:
+- TIGHT: 2-3 bullets per role max (not 3-4) to show breadth in 1 page
+- Tech inline and diverse: "C++, Node.js, Docker" | "PyTorch, BERT, XGBoost" | "SQL, Tableau, A/B Testing"
+- Lead each bullet with the SPECIFIC contribution + metric + tech
+- NO fluff, every word counts
+- Show full-stack capability: backend building blocks, ML models, data insights
+
+EDUCATION LOCKED:
+University of Southern California, Los Angeles, USA | M.S. Computer Science (Data Science) | Graduating May 2026
+SVKM MPSTME, Mumbai, India | B.Tech Computer Engineering (Honors) | GPA 3.61/4.0 | May 2024
+
+Return ONLY JSON:
+{"roles":[{"company":"","title":"","tech":"","dates":"","bullets":[""]}],"projects":[{"title":"","tech":"","dates":"","bullets":[""]}],"research":"","skills":[{"category":"","items":""}]}`
+};
+
+async function generate() {
+  const jd = document.getElementById('jd').value.trim();
+  const apiKey = localStorage.getItem('dhruvin_api_key') || prompt('Enter API key:');
+  
+  if(!apiKey) {
+    setStatus('error', '❌ API key required');
+    return;
+  }
+  
+  localStorage.setItem('dhruvin_api_key', apiKey);
+  
+  if(!selectedType || !jd) {
+    setStatus('error', '❌ Select type and paste JD');
+    return;
   }
 
-  const best = Object.keys(scores).reduce((a,b) => scores[a] > scores[b] ? a : b);
-  return scores[best] > 0 ? best : 'BACKEND';
-}
-
-async function generate(){
-  const jd = document.getElementById('jd').value.trim();
-  const apiKey = document.getElementById('api-key').value.trim();
-  const company = document.getElementById('company').value.trim() || 'the company';
-
-  if(!apiKey){ setStatus('error', '❌ API key required'); return; }
-  if(!jd){ setStatus('error', '❌ Paste job description'); return; }
-
   document.getElementById('gen-btn').disabled = true;
-  
-  const domain = detectDomain(jd);
-  const prompt = SYSTEM_PROMPTS[domain] || SYSTEM_PROMPTS.BACKEND;
-  
-  setStatus('loading', `⧖ Generating ${domain} resume...`);
+  const type = RESUME_TYPES[selectedType];
+  setStatus('loading', `⧖ Generating ${type.title}...`);
 
-  try{
+  try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -255,8 +315,8 @@ async function generate(){
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 3500,
-        system: prompt,
-        messages: [{role: 'user', content: `JD:\n${jd}\n\nCOMPANY: ${company}\n\nGenerate 1-page resume. Return ONLY JSON.`}]
+        system: SYSTEM_PROMPTS[type.domain],
+        messages: [{role: 'user', content: `JD:\n${jd}\n\nGenerate 1-page resume. Return ONLY JSON.`}]
       })
     });
 
@@ -268,120 +328,121 @@ async function generate(){
     const json = text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1);
     const resume = JSON.parse(json);
 
-    resume.name = DHRUVIN.name;
-    resume.contact = DHRUVIN.contact;
-    resume.education = DHRUVIN.education;
-    resume.domain = domain;
+    currentResume = { ...resume, type: selectedType, portfolios: type.portfolios };
+    renderResume(resume, type.portfolios);
+    setStatus('success', `✓ Generated! Download your ${type.title} resume.`);
 
-    currentResume = resume;
-    renderResume(resume, domain);
-    setStatus('success', `✓ Generated (${domain})`);
-
-  }catch(err){
+  } catch(err) {
     setStatus('error', '❌ ' + err.message);
-  }finally{
+  } finally {
     document.getElementById('gen-btn').disabled = false;
   }
 }
 
-function setStatus(type, msg){
-  const s = document.getElementById('status');
-  s.className = 'status ' + type;
-  s.textContent = msg;
-  s.style.display = 'block';
-}
-
-function renderResume(r, domain){
-  document.getElementById('empty').style.display = 'none';
-  const p = document.getElementById('preview-area');
-  p.style.display = 'block';
-
-  let text = `${r.name}
-${r.contact}
-
-DOMAIN: ${domain}
-
-SUMMARY
-${r.summary}
-
-EXPERIENCE
-${(r.experience || []).map(e => `${e.company} • ${e.location}
-${e.title} | ${e.dates}
-${(e.bullets || []).map(b => `• ${b}`).join('\n')}`).join('\n\n')}
-
-PROJECTS
-${(r.projects || []).map(p => `${p.title} • ${p.tools}
-${(p.bullets || []).map(b => `• ${b}`).join('\n')}`).join('\n\n')}
-
-SKILLS
-${(r.skills || []).map(s => `${s.label}: ${s.value}`).join('\n')}
+function renderResume(r, portfolios) {
+  const portfolioStr = portfolios.map((p, i) => i === 0 ? p : ` | ${p}`).join('');
+  
+  let text = `${DHRUVIN.name}
+${DHRUVIN.location} | ${DHRUVIN.phone} | ${DHRUVIN.email} | LinkedIn | GitHub | Website | ${portfolioStr}
 
 EDUCATION
-${DHRUVIN.education.map(e => `${e.school}, ${e.location}
-${e.degree} • GPA ${e.gpa} • ${e.dates}
-Coursework: ${e.coursework}`).join('\n\n')}`;
+
+${DHRUVIN.education[0].school} ${DHRUVIN.education[0].location}
+${DHRUVIN.education[0].degree} | ${DHRUVIN.education[0].dates}
+Relevant Coursework – ${DHRUVIN.education[0].coursework}
+
+${DHRUVIN.education[1].school} ${DHRUVIN.education[1].location}
+${DHRUVIN.education[1].degree} | GPA ${DHRUVIN.education[1].gpa} | ${DHRUVIN.education[1].dates}
+Relevant Coursework – ${DHRUVIN.education[1].coursework}
+
+PROFESSIONAL EXPERIENCE
+
+${(r.roles || []).map(role => `${role.company} @ ${role.title} | ${role.tech} | ${role.dates}
+${(role.bullets || []).map(b => `• ${b}`).join('\n')}`).join('\n\n')}
+
+${r.projects && r.projects.length ? `PROJECTS
+
+${r.projects.map(p => `${p.title} | ${p.tech} | ${p.dates}
+${(p.bullets || []).map(b => `• ${b}`).join('\n')}`).join('\n\n')}
+
+` : ''}${r.research ? `RESEARCH WORK
+
+${r.research}
+
+` : ''}TECHNICAL SKILLS & ACHIEVEMENTS
+
+${(r.skills || []).map(s => `${s.category}: ${s.items}`).join('\n')}`;
 
   document.getElementById('preview').textContent = text;
+  document.getElementById('dl-btn').style.display = 'block';
 }
 
-function downloadDOCX(){
+function downloadDOCX() {
   if(!currentResume) return;
-  const r = currentResume;
+  
+  const type = RESUME_TYPES[currentResume.type];
+  const portfolioStr = currentResume.portfolios.map((p, i) => i === 0 ? p : ` | ${p}`).join('');
   
   const doc = new window.docx.Document({
     sections: [{
       margins: { top: 432, bottom: 432, left: 720, right: 720 },
       children: [
-        new window.docx.Paragraph({ text: r.name, bold: true, size: 24, alignment: window.docx.AlignmentType.CENTER }),
-        new window.docx.Paragraph({ text: r.contact, size: 18, alignment: window.docx.AlignmentType.CENTER, spacing: { after: 200 }, border: { bottom: { color: "1a4f8a", space: 1, style: "single", size: 12 } } }),
-        
-        ...(r.summary ? [
-          new window.docx.Paragraph({ text: "SUMMARY", bold: true, size: 18, color: "1a4f8a", spacing: { before: 100, after: 100 } }),
-          new window.docx.Paragraph({ text: r.summary, size: 18, spacing: { after: 200 } })
-        ] : []),
+        new window.docx.Paragraph({
+          text: DHRUVIN.name,
+          bold: true,
+          size: 22,
+          alignment: window.docx.AlignmentType.CENTER,
+          spacing: { after: 0 }
+        }),
+        new window.docx.Paragraph({
+          text: `${DHRUVIN.location} | ${DHRUVIN.phone} | ${DHRUVIN.email} | LinkedIn | GitHub | Website | ${portfolioStr}`,
+          size: 18,
+          alignment: window.docx.AlignmentType.CENTER,
+          spacing: { after: 100 }
+        }),
 
-        ...(r.experience ? [
-          new window.docx.Paragraph({ text: "EXPERIENCE", bold: true, size: 18, color: "1a4f8a", spacing: { before: 100, after: 100 } }),
-          ...r.experience.flatMap(e => [
-            new window.docx.Paragraph({ text: `${e.company} • ${e.location}`, bold: true, size: 18 }),
-            new window.docx.Paragraph({ text: `${e.title} | ${e.dates}`, size: 18, italics: true, color: "6B6760", spacing: { after: 100 } }),
-            ...(e.bullets || []).map(b => new window.docx.Paragraph({ text: b, size: 18, spacing: { after: 80 }, indent: { left: 720, hanging: 360 }, bullet: { level: 0 } }))
-          ])
-        ] : []),
-
-        ...(r.projects ? [
-          new window.docx.Paragraph({ text: "PROJECTS", bold: true, size: 18, color: "1a4f8a", spacing: { before: 100, after: 100 } }),
-          ...r.projects.flatMap(p => [
-            new window.docx.Paragraph({ text: p.title, bold: true, size: 18 }),
-            new window.docx.Paragraph({ text: p.tools, size: 18, color: "6B6760", spacing: { after: 100 } }),
-            ...(p.bullets || []).map(b => new window.docx.Paragraph({ text: b, size: 18, spacing: { after: 80 }, indent: { left: 720, hanging: 360 }, bullet: { level: 0 } }))
-          ])
-        ] : []),
-
-        ...(r.skills ? [
-          new window.docx.Paragraph({ text: "SKILLS", bold: true, size: 18, color: "1a4f8a", spacing: { before: 100, after: 100 } }),
-          ...r.skills.map(s => new window.docx.Paragraph({ text: `${s.label}: ${s.value}`, size: 18, spacing: { after: 80 } }))
-        ] : []),
-
-        new window.docx.Paragraph({ text: "EDUCATION", bold: true, size: 18, color: "1a4f8a", spacing: { before: 100, after: 100 } }),
+        new window.docx.Paragraph({ text: "EDUCATION", bold: true, size: 18, spacing: { before: 50, after: 100 } }),
         ...DHRUVIN.education.flatMap(e => [
-          new window.docx.Paragraph({ text: `${e.school}, ${e.location}`, bold: true, size: 18 }),
-          new window.docx.Paragraph({ text: `${e.degree} • GPA ${e.gpa} • ${e.dates}`, size: 18, color: "6B6760", spacing: { after: 100 } }),
-          new window.docx.Paragraph({ text: `Coursework: ${e.coursework}`, size: 18, color: "9B978F", spacing: { after: 100 } })
-        ])
+          new window.docx.Paragraph({ text: `${e.school} ${e.location}`, bold: true, size: 18, spacing: { after: 0 } }),
+          new window.docx.Paragraph({ text: `${e.degree} | ${e.dates}${e.gpa ? ` | GPA ${e.gpa}` : ''}`, size: 18, spacing: { after: 40 } }),
+          new window.docx.Paragraph({ text: `Relevant Coursework – ${e.coursework}`, size: 18, spacing: { after: 100 }, italics: true })
+        ]),
+
+        new window.docx.Paragraph({ text: "PROFESSIONAL EXPERIENCE", bold: true, size: 18, spacing: { before: 50, after: 100 } }),
+        ...(currentResume.roles || []).flatMap(role => [
+          new window.docx.Paragraph({ text: `${role.company} @ ${role.title} | ${role.tech} | ${role.dates}`, bold: true, size: 18, spacing: { after: 60 } }),
+          ...(role.bullets || []).map(b => new window.docx.Paragraph({ text: b, size: 18, spacing: { after: 40 }, indent: { left: 360, hanging: 360 }, bullet: { level: 0 } })),
+          new window.docx.Paragraph({ text: "", spacing: { after: 60 } })
+        ]),
+
+        ...(currentResume.projects ? [
+          new window.docx.Paragraph({ text: "PROJECTS", bold: true, size: 18, spacing: { before: 50, after: 100 } }),
+          ...(currentResume.projects || []).flatMap(p => [
+            new window.docx.Paragraph({ text: `${p.title} | ${p.tech} | ${p.dates}`, bold: true, size: 18, spacing: { after: 60 } }),
+            ...(p.bullets || []).map(b => new window.docx.Paragraph({ text: b, size: 18, spacing: { after: 40 }, indent: { left: 360, hanging: 360 }, bullet: { level: 0 } }))
+          ])
+        ] : []),
+
+        ...(currentResume.research ? [
+          new window.docx.Paragraph({ text: "RESEARCH WORK", bold: true, size: 18, spacing: { before: 50, after: 100 } }),
+          new window.docx.Paragraph({ text: currentResume.research, size: 18, spacing: { after: 100 } })
+        ] : []),
+
+        new window.docx.Paragraph({ text: "TECHNICAL SKILLS & ACHIEVEMENTS", bold: true, size: 18, spacing: { before: 50, after: 100 } }),
+        ...(currentResume.skills || []).map(s => new window.docx.Paragraph({ text: `${s.category}: ${s.items}`, size: 18, spacing: { after: 60 } }))
       ]
     }]
   });
 
   window.docx.Packer.toBlob(doc).then(blob => {
-    saveAs(blob, `Dhruvin_Jhaveri_${r.domain}_Resume.docx`);
+    const typeLabel = type.title.replace(/\//g, '_').replace(/ /g, '_');
+    saveAs(blob, `Dhruvin_Jhaveri_${typeLabel}.docx`);
     setStatus('success', '✓ Downloaded!');
   });
 }
 
 window.addEventListener('load', () => {
-  const saved = localStorage.getItem('dhruvin_api_key');
-  if(saved) { document.getElementById('api-key').value = saved; window.API_KEY = saved; }
+  initTypeSelector();
 });
 </script>
 </body>
