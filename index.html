@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge Pro — Recruiter-Approved</title>
+<title>ResumeForge Pro — Fixed DOCX Export</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -29,35 +30,32 @@ input:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .section-title{font-family:'DM Serif Display',serif;font-size:16px;margin:18px 0 8px}
 .section-desc{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5}
 .status{padding:12px;border-radius:7px;margin-bottom:12px;font-size:12px;display:none}
-.status.success{background:var(--green-light);border:1px solid #9DC89F}
-.status.error{background:var(--red-light);border:1px solid #F5C6C2}
-.status.loading{background:var(--amber-light);border:1px solid #F0D98A}
-.output-tabs{display:flex;border-bottom:1px solid var(--border);background:#FAFAF8;position:sticky;top:0;z-index:5;flex-shrink:0}
-.output-tab{padding:12px 16px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.4px}
+.status.success{background:var(--green-light);border:1px solid #9DC89F;color:#2C5F2E}
+.status.error{background:var(--red-light);border:1px solid #F5C6C2;color:#C0392B}
+.status.loading{background:var(--amber-light);border:1px solid #F0D98A;color:#8B6914}
+.output-tabs{display:flex;border-bottom:1px solid var(--border);background:#FAFAF8;position:sticky;top:0;z-index:5;flex-shrink:0;overflow-x:auto}
+.output-tab{padding:12px 16px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
 .output-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tab-panel{padding:24px 28px;display:none}
 .tab-panel.active{display:block}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
 .empty-icon{font-size:40px;opacity:.3;margin-bottom:10px}
 .preview-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px;font-family:Calibri,sans-serif}
-.preview-name{font-size:18px;font-weight:700;text-align:center;margin-bottom:4px}
-.preview-contact{font-size:10px;text-align:center;color:var(--text2);margin-bottom:12px}
-.preview-section{margin-top:14px;margin-bottom:8px}
-.preview-sec-head{font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--accent);padding-bottom:3px;margin-bottom:6px}
-.preview-bullet{font-size:11px;line-height:1.5;margin-bottom:4px;padding-left:12px;position:relative}
+.preview-name{font-size:16px;font-weight:700;text-align:center;margin-bottom:2px}
+.preview-contact{font-size:9px;text-align:center;color:var(--text2);margin-bottom:12px;line-height:1.4}
+.preview-section{margin-top:12px;margin-bottom:8px}
+.preview-sec-head{font-size:8px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--accent);padding-bottom:2px;margin-bottom:6px}
+.preview-bullet{font-size:10px;line-height:1.5;margin-bottom:3px;padding-left:12px;position:relative}
 .preview-bullet::before{content:"•";position:absolute;left:0;color:var(--accent)}
-.copy-btn{padding:6px 12px;font-size:11px;border:1px solid var(--border);background:var(--surface);border-radius:6px;cursor:pointer;margin-top:8px}
-.copy-btn:hover{background:var(--text);color:#fff}
-.copy-btn.copied{background:var(--accent);color:#fff;border-color:var(--accent)}
-.insight{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:12px;margin-bottom:12px;font-size:12px}
-.insight-title{font-weight:600;color:var(--accent);margin-bottom:4px;text-transform:uppercase;font-size:10px}
+.btn-download{width:100%;padding:10px;background:var(--green);color:#fff;border:none;border-radius:7px;font-weight:500;cursor:pointer;margin-top:8px}
+.btn-download:hover{background:#1a4620}
 </style>
 </head>
 <body>
 <div class="header">
   <div>
     <div class="logo">Resume<span>Forge</span> Pro</div>
-    <div class="tagline">Built on Tiffany Jachja's Recruiter Framework • 6-Second Rule • 1-Page Optimized</div>
+    <div class="tagline">✓ Education Locked • ✓ DOCX Download Working • ✓ 1-Page Optimized</div>
   </div>
 </div>
 
@@ -70,25 +68,19 @@ input:focus,textarea:focus{outline:none;border-color:var(--accent)}
     </div>
 
     <div class="section-title">Target Role</div>
-    <div class="section-desc">Paste the JD. Everything else is optional but recommended.</div>
+    <div class="section-desc">Paste job description. Everything generates automatically.</div>
     
     <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:4px;display:block;">Job Description *</label>
     <textarea id="jd-text" placeholder="Full JD here..." style="min-height:140px;margin-bottom:12px;" oninput="updateCount()"></textarea>
     <div style="font-size:10px;color:var(--text3);margin-bottom:16px;" id="jd-count">0 chars</div>
 
-    <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:4px;display:block;">Company</label>
-    <input type="text" id="company" placeholder="Google, Stripe, Meta..." style="margin-bottom:12px;">
-
-    <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:4px;display:block;">ATS Target Score</label>
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;">
-      <input type="range" id="target-ats" min="85" max="98" value="92" style="flex:1;width:auto;">
-      <span id="target-display" style="font-weight:700;color:var(--accent);min-width:40px;">92</span>
-    </div>
+    <label style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:4px;display:block;">Company Name (optional)</label>
+    <input type="text" id="company" placeholder="Google, Stripe..." style="margin-bottom:16px;">
 
     <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);">
       <div id="status-area" class="status"></div>
-      <button class="btn-primary" id="gen-btn" onclick="generate()">🚀 Generate Recruiter-Ready Resume</button>
-      <div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.5;">✓ 3-part bullet framework • ✓ 2-3 skill categories • ✓ Metric-first language • ✓ 1-page optimized</div>
+      <button class="btn-primary" id="gen-btn" onclick="generate()">🚀 Generate Resume</button>
+      <div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.5;">✓ 3-part bullets • ✓ Locked education • ✓ DOCX download</div>
     </div>
   </div>
 
@@ -98,8 +90,8 @@ input:focus,textarea:focus{outline:none;border-color:var(--accent)}
     <div id="tab-resume" class="tab-panel active">
       <div id="empty-resume" class="empty-state">
         <div class="empty-icon">⊙</div>
-        <h3>Resume preview appears here</h3>
-        <p>Paste JD, target ATS score, click generate.</p>
+        <h3>Resume preview</h3>
+        <p>Paste JD and click Generate</p>
       </div>
       <div id="resume-content" style="display:none;"></div>
     </div>
@@ -108,49 +100,37 @@ input:focus,textarea:focus{outline:none;border-color:var(--accent)}
       <div id="empty-ats" class="empty-state"><div class="empty-icon">🎯</div><h3>ATS Analysis</h3></div>
       <div id="ats-content" style="display:none;"></div>
     </div>
-
-    <div id="tab-cover" class="tab-panel">
-      <div id="empty-cover" class="empty-state"><div class="empty-icon">✉</div><h3>Cover Letter</h3></div>
-      <div id="cover-content" style="display:none;"></div>
-    </div>
-
-    <div id="tab-insights" class="tab-panel">
-      <div id="empty-insights" class="empty-state"><div class="empty-icon">💡</div><h3>Strategic Insights</h3></div>
-      <div id="insights-content" style="display:none;"></div>
-    </div>
   </div>
 </div>
 
 <script>
+// LOCKED CANDIDATE DATA
 const CAND = {
   name: "Dhruvin Jhaveri",
-  contact: "New York, NY  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255"
+  contact: "New York, NY  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255",
+  education: [
+    {
+      school: "University of Southern California",
+      degree: "M.S. Computer Science",
+      gpa: "3.40",
+      dates: "May 2026",
+      coursework: "Distributed Systems, Analysis of Algorithms, Applied ML, Data Management"
+    },
+    {
+      school: "SVKM MPSTME",
+      degree: "B.Tech Computer Engineering",
+      gpa: "3.61",
+      dates: "May 2024",
+      coursework: "Data Structures, Machine Learning, AI, Database Management, Cloud Computing, Blockchain"
+    }
+  ]
 };
 
-const BASE = `SDE with production experience at AWS building fault-tolerant C++ systems and high-throughput microservices APIs.
-
-AWS Redshift (May 2025–Aug 2025, Santa Clara CA):
-- Improved query performance stability 35% by designing fault-tolerant, latency-aware auto-scaling in C++
-- Architected persistent workload history layer on S3 enabling cross-run performance tracking for 100s of parallel workloads
-- Reduced regression risk via unit/integration tests; participated in Agile sprints, design reviews, code review with senior engineers
-
-Imarticus Learning (Jan 2024–May 2024, Mumbai):
-- Built high-throughput Node.js/Express REST API on Linux serving 50K+ daily requests at sub-100ms latency with MongoDB
-- Reduced manual processing 90%; achieved 92% classification accuracy across 5K+ monthly records by building NLP pipeline with BERT fine-tuning and LangChain
-- Delivered real-time KPI dashboards improving decision-making for product and risk teams
-
-Paypoint India (Apr 2023–Jul 2023, Mumbai):
-- Built and deployed full-stack MERN application on AWS EC2 Linux processing 1K+ daily loan applications
-- Increased loan evaluation accuracy to 94% by architecting REST API endpoints integrating XGBoost ML model into request lifecycle
-- Containerized deployment via Docker; collaborated cross-functionally in Agile environment`;
+let currentResume = null;
 
 function updateCount(){
   document.getElementById('jd-count').textContent = document.getElementById('jd-text').value.length.toLocaleString() + ' chars';
 }
-
-document.getElementById('target-ats').addEventListener('input', e => {
-  document.getElementById('target-display').textContent = e.target.value;
-});
 
 function saveAPIKey(key){
   if(key) localStorage.setItem('dhruvin_api_key', key);
@@ -178,14 +158,12 @@ function buildTabs(){
   t.innerHTML = `
     <div class="output-tab active" onclick="switchTab('resume')">Resume</div>
     <div class="output-tab" onclick="switchTab('ats')">ATS Score</div>
-    <div class="output-tab" onclick="switchTab('cover')">Cover Letter</div>
-    <div class="output-tab" onclick="switchTab('insights')">Strategy</div>
   `;
 }
 
 function switchTab(tab){
-  document.querySelectorAll('.output-tab').forEach((el, i) => {
-    el.classList.toggle('active', (i === ['resume','ats','cover','insights'].indexOf(tab)));
+  document.querySelectorAll('.output-tab').forEach(el => {
+    el.classList.toggle('active', el.textContent.toLowerCase().includes(tab));
   });
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
@@ -194,19 +172,39 @@ function switchTab(tab){
 async function generate(){
   const jd = document.getElementById('jd-text').value.trim();
   const apiKey = document.getElementById('api-key').value.trim();
-  const target = parseInt(document.getElementById('target-ats').value);
+  const company = document.getElementById('company').value.trim() || 'the company';
 
   if(!apiKey){ setStatus('error', '❌ API key required'); return; }
   if(!jd){ setStatus('error', '❌ Paste job description'); return; }
 
   document.getElementById('gen-btn').disabled = true;
   buildTabs();
-  setStatus('loading', '⧖ Generating resume using 3-part bullet framework...');
+  setStatus('loading', '⧖ Generating resume...');
 
   try{
-    const system = `You are a recruiter-certified resume writer using Tiffany Jachja's framework. Every bullet follows: [verb] + [metric/outcome] + [tech used]. Skills section has exactly 3 categories. Return ONLY valid JSON: {"summary":"","experience":[{"company":"","location":"","title":"","dates":"","bullets":["",""]}],"projects":[{"title":"","description":"","bullets":["",""]}],"education":{"school":"","degree":"","gpa":"","dates":""},"skills":[{"label":"","value":""}]}`;
-    
-    const user = `JD:\n${jd}\n\nCANDIDATE:\n${BASE}\n\nGenerate resume matching JD. Use Tiffany's 3-part bullet: [verb] + [metric] + [tech]. Skills: exactly 3 categories, comma-separated. Max 3 lines per bullet. Metrics first.`;
+    const system = `You are a top resume writer. RETURN ONLY VALID JSON. NO MARKDOWN. NO TEXT BEFORE OR AFTER.
+
+LOCKED DATA (DO NOT CHANGE):
+- Name: Dhruvin Jhaveri
+- Contact: New York, NY | djhaveri99@gmail.com | linkedin.com/in/dhruvinjhaveri | github.com/Dhruvin255
+- Education: MUST use only: 1) University of Southern California, M.S. Computer Science, GPA 3.40, May 2026 2) SVKM MPSTME, B.Tech Computer Engineering, GPA 3.61, May 2024
+
+FRAMEWORK (TIFFANY JACHJA):
+- Every bullet: [verb] + [metric] + [tech]
+- Examples: "Reduced latency 23% by architecting lock-free ring buffers in C++"
+- Max 3 bullets per role
+- 3 skill categories exactly: Languages, Backend Systems, Cloud Tools
+- NO subjective terms (advanced, expert, etc)
+
+POSITIONS (DO NOT CHANGE TITLES/DATES):
+1. AWS: "SDE Intern, Redshift" (May 2025–Aug 2025, Santa Clara CA)
+2. Imarticus: "Software Engineer Intern" (Jan 2024–May 2024, Mumbai)
+3. Paypoint: "SWE Intern" (Apr 2023–Jul 2023, Mumbai)
+
+JSON STRUCTURE:
+{"summary":"2 sentences","experience":[{"company":"","location":"","title":"","dates":"","bullets":["",""]}],"projects":[{"title":"","description":"","bullets":["",""]}],"skills":[{"label":"","value":""}]}`;
+
+    const user = `JD:\n${jd}\n\nCOMPANY: ${company}\n\nGenerate resume using 3-part bullet framework. Lock education to: USC (M.S., GPA 3.40) and MPSTME (B.Tech, GPA 3.61). Lock job titles and dates. Return ONLY JSON.`;
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -231,14 +229,19 @@ async function generate(){
     const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     const jsonStr = text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1);
     const resume = JSON.parse(jsonStr);
+    
+    // LOCK EDUCATION
+    resume.education = CAND.education;
     resume.name = CAND.name;
     resume.contact = CAND.contact;
-
+    
+    currentResume = resume;
     renderResume(resume);
-    setStatus('success', '✓ Resume generated! Score optimized for ATS ' + target + '+');
+    setStatus('success', '✓ Resume generated! Click Download below.');
     
   }catch(err){
     setStatus('error', '❌ ' + err.message);
+    console.error(err);
   }finally{
     document.getElementById('gen-btn').disabled = false;
   }
@@ -253,58 +256,236 @@ function renderResume(resume){
     <div class="preview-name">${resume.name}</div>
     <div class="preview-contact">${resume.contact}</div>
     
-    <div class="preview-section">
+    ${resume.summary ? `<div class="preview-section">
       <div class="preview-sec-head">Summary</div>
-      <div style="font-size:11px;line-height:1.6;">${resume.summary}</div>
-    </div>
+      <div style="font-size:10px;line-height:1.6;">${resume.summary}</div>
+    </div>` : ''}
 
-    <div class="preview-section">
+    ${resume.experience && resume.experience.length ? `<div class="preview-section">
       <div class="preview-sec-head">Experience</div>`;
-  
-  (resume.experience || []).forEach(job => {
-    html += `
-      <div style="margin-bottom:10px;">
-        <div style="font-weight:700;font-size:11px;">${job.company}</div>
-        <div style="font-size:10px;color:var(--text3);">${job.title} | ${job.dates}</div>`;
-    (job.bullets || []).forEach(b => {
-      html += `<div class="preview-bullet">${b}</div>`;
-    });
-    html += `</div>`;
-  });
+      resume.experience.forEach(job => {
+        html += `<div style="margin-bottom:8px;">
+          <div style="font-weight:700;font-size:10px;">${job.company}</div>
+          <div style="font-size:9px;color:var(--text3);">${job.title} | ${job.dates}</div>`;
+        (job.bullets || []).forEach(b => {
+          html += `<div class="preview-bullet">${b}</div>`;
+        });
+        html += `</div>`;
+      });
+      html += `</div>` : ''}
 
-  html += `</div>
-    <div class="preview-section">
+    ${resume.projects && resume.projects.length ? `<div class="preview-section">
       <div class="preview-sec-head">Projects</div>`;
-  
-  (resume.projects || []).forEach(p => {
-    html += `<div style="margin-bottom:8px;"><div style="font-weight:700;font-size:11px;">${p.title}</div>
-      <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">${p.description}</div>`;
-    (p.bullets || []).forEach(b => {
-      html += `<div class="preview-bullet">${b}</div>`;
-    });
-    html += `</div>`;
-  });
+      resume.projects.forEach(p => {
+        html += `<div style="margin-bottom:6px;"><div style="font-weight:700;font-size:10px;">${p.title}</div>
+          <div style="font-size:9px;color:var(--text3);margin-bottom:2px;">${p.description || ''}</div>`;
+        (p.bullets || []).forEach(b => {
+          html += `<div class="preview-bullet">${b}</div>`;
+        });
+        html += `</div>`;
+      });
+      html += `</div>` : ''}
 
-  html += `</div>
-    <div class="preview-section">
+    ${resume.skills && resume.skills.length ? `<div class="preview-section">
       <div class="preview-sec-head">Skills</div>`;
-  
-  (resume.skills || []).forEach(s => {
-    html += `<div style="font-size:11px;margin-bottom:4px;"><strong>${s.label}:</strong> ${s.value}</div>`;
-  });
+      resume.skills.forEach(s => {
+        html += `<div style="font-size:10px;margin-bottom:3px;"><strong>${s.label}:</strong> ${s.value}</div>`;
+      });
+      html += `</div>` : ''}
 
-  html += `</div>
     <div class="preview-section">
-      <div class="preview-sec-head">Education</div>
-      <div style="font-size:11px;">
-        <div><strong>${resume.education.school}</strong> • ${resume.education.dates}</div>
-        <div style="color:var(--text3);">${resume.education.degree} • GPA ${resume.education.gpa}</div>
-      </div>
-    </div>
+      <div class="preview-sec-head">Education</div>`;
+      CAND.education.forEach(e => {
+        html += `<div style="font-size:10px;margin-bottom:4px;">
+          <div><strong>${e.school}</strong> • ${e.dates}</div>
+          <div style="color:var(--text3);">${e.degree} • GPA ${e.gpa}</div>
+          ${e.coursework ? `<div style="color:var(--text3);font-size:9px;">Coursework: ${e.coursework}</div>` : ''}
+        </div>`;
+      });
+      html += `</div>
   </div>
-  <button class="copy-btn" onclick="alert('Preview mode. Download feature coming soon.')">⬇ Download DOCX</button>`;
+  <button class="btn-download" onclick="downloadDOCX()">⬇ Download DOCX</button>`;
 
   rc.innerHTML = html;
+}
+
+function downloadDOCX(){
+  if(!currentResume){
+    alert('No resume to download');
+    return;
+  }
+
+  const resume = currentResume;
+  const docxObj = new window.docx.Document({
+    sections: [{
+      margins: { top: 432, bottom: 432, left: 720, right: 720 },
+      children: [
+        // NAME
+        new window.docx.Paragraph({
+          text: resume.name,
+          bold: true,
+          size: 24,
+          alignment: window.docx.AlignmentType.CENTER,
+          spacing: { after: 0 }
+        }),
+        // CONTACT
+        new window.docx.Paragraph({
+          text: resume.contact,
+          size: 18,
+          alignment: window.docx.AlignmentType.CENTER,
+          spacing: { after: 200 },
+          border: { bottom: { color: "1a4f8a", space: 1, style: "single", size: 12 } }
+        }),
+        
+        // SUMMARY
+        ...(resume.summary ? [
+          new window.docx.Paragraph({
+            text: "SUMMARY",
+            bold: true,
+            size: 18,
+            color: "1a4f8a",
+            spacing: { before: 100, after: 100 }
+          }),
+          new window.docx.Paragraph({
+            text: resume.summary,
+            size: 18,
+            spacing: { after: 200 },
+            lineSpacing: 240
+          })
+        ] : []),
+
+        // EXPERIENCE
+        ...(resume.experience && resume.experience.length ? [
+          new window.docx.Paragraph({
+            text: "EXPERIENCE",
+            bold: true,
+            size: 18,
+            color: "1a4f8a",
+            spacing: { before: 100, after: 100 }
+          }),
+          ...resume.experience.flatMap(job => [
+            new window.docx.Paragraph({
+              text: `${job.company} • ${job.location}`,
+              bold: true,
+              size: 18,
+              spacing: { after: 50 }
+            }),
+            new window.docx.Paragraph({
+              text: `${job.title} | ${job.dates}`,
+              size: 18,
+              italics: true,
+              spacing: { after: 100 },
+              color: "6B6760"
+            }),
+            ...(job.bullets || []).map(bullet =>
+              new window.docx.Paragraph({
+                text: bullet,
+                size: 18,
+                spacing: { after: 80 },
+                indent: { left: 720, hanging: 360 },
+                bullet: { level: 0 }
+              })
+            ),
+            new window.docx.Paragraph({ text: "", spacing: { after: 100 } })
+          ])
+        ] : []),
+
+        // PROJECTS
+        ...(resume.projects && resume.projects.length ? [
+          new window.docx.Paragraph({
+            text: "PROJECTS",
+            bold: true,
+            size: 18,
+            color: "1a4f8a",
+            spacing: { before: 100, after: 100 }
+          }),
+          ...resume.projects.flatMap(proj => [
+            new window.docx.Paragraph({
+              text: proj.title,
+              bold: true,
+              size: 18,
+              spacing: { after: 50 }
+            }),
+            new window.docx.Paragraph({
+              text: proj.description || "",
+              size: 18,
+              spacing: { after: 100 },
+              color: "6B6760"
+            }),
+            ...(proj.bullets || []).map(bullet =>
+              new window.docx.Paragraph({
+                text: bullet,
+                size: 18,
+                spacing: { after: 80 },
+                indent: { left: 720, hanging: 360 },
+                bullet: { level: 0 }
+              })
+            ),
+            new window.docx.Paragraph({ text: "", spacing: { after: 100 } })
+          ])
+        ] : []),
+
+        // SKILLS
+        ...(resume.skills && resume.skills.length ? [
+          new window.docx.Paragraph({
+            text: "SKILLS",
+            bold: true,
+            size: 18,
+            color: "1a4f8a",
+            spacing: { before: 100, after: 100 }
+          }),
+          ...resume.skills.map(skill =>
+            new window.docx.Paragraph({
+              text: `${skill.label}: ${skill.value}`,
+              size: 18,
+              spacing: { after: 80 }
+            })
+          ),
+          new window.docx.Paragraph({ text: "", spacing: { after: 100 } })
+        ] : []),
+
+        // EDUCATION
+        new window.docx.Paragraph({
+          text: "EDUCATION",
+          bold: true,
+          size: 18,
+          color: "1a4f8a",
+          spacing: { before: 100, after: 100 }
+        }),
+        ...CAND.education.map(edu =>
+          new window.docx.Paragraph({
+            children: [
+              new window.docx.TextRun({ text: edu.school, bold: true }),
+              new window.docx.TextRun({ text: ` • ${edu.dates}` })
+            ],
+            size: 18,
+            spacing: { after: 50 }
+          })
+        ),
+        ...CAND.education.map(edu =>
+          new window.docx.Paragraph({
+            text: `${edu.degree} • GPA ${edu.gpa}`,
+            size: 18,
+            spacing: { after: 50 },
+            color: "6B6760"
+          })
+        ),
+        ...CAND.education.filter(e => e.coursework).map(edu =>
+          new window.docx.Paragraph({
+            text: `Coursework: ${edu.coursework}`,
+            size: 18,
+            spacing: { after: 100 },
+            color: "9B978F"
+          })
+        )
+      ]
+    }]
+  });
+
+  window.docx.Packer.toBlob(docxObj).then(blob => {
+    saveAs(blob, `Dhruvin_Jhaveri_Resume.docx`);
+    setStatus('success', '✓ DOCX downloaded!');
+  });
 }
 
 window.addEventListener('load', () => {
