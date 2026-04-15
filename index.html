@@ -514,8 +514,7 @@ P1) Full Stack Artist Search Application | Node.js, MongoDB, Express, JWT, MapRe
 
 P2) PharmaChain — Blockchain Supply Chain Platform | Ethereum, Solidity, Node.js, Web3.js
    - Built Ethereum smart contract system with off-chain aggregation layer, improving traceability by 95% across 4 suppliers
-   - Won 2nd place at Study Australia Entrepreneurship Challenge; recognized by Harvard; awarded 4,000 AUD industry funding
-   - Achieved 25% on-chain efficiency improvement via test-driven smart contract validation
+   - Achieved 25% on-chain efficiency improvement; 2nd place Study Australia Entrepreneurship Challenge, 4,000 AUD funding
 
 P3) IEEE Publication — BERT Toxic Comment Classifier | Python, PyTorch, Scikit-learn
    - Trained multi-label BERT model on 160k comments; achieved F1 score of 0.91, published at IEEE ICISAA 2024
@@ -528,6 +527,28 @@ Skills to pick from by track:
 - Cloud/DevOps: AWS (S3, EC2, Redshift, Lambda), Docker, Git, CI/CD, REST APIs
 - Tools: Tableau, Jupyter, Web3.js, JWT, Hadoop
 
+=== STRICT ONE-PAGE BUDGET ===
+HARD LIMIT: The entire resume MUST fit on ONE page. To guarantee this, follow these exact counts:
+
+SECTION BUDGETS (non-negotiable):
+- Header: 2 lines
+- Education: 5 lines total (USC 3 lines including coursework, NMIMS 2 lines)
+- Skills: 3 lines (one per subcategory, comma-separated, keep each line under 90 chars)
+- Experience: EXACTLY 3 roles × EXACTLY 3 bullets each = 9 bullets total
+- Projects: EXACTLY 2 projects × EXACTLY 2 bullets each = 4 bullets total
+- Section headers: 5 (EDUCATION, TECHNICAL SKILLS, EXPERIENCE, PROJECTS)
+
+BULLET RULES — READ CAREFULLY:
+- Every bullet: MAX 15 words. Count them. Cut ruthlessly.
+- NO filler endings like "to inform go-to-market decisions", "for enterprise SaaS customers", "driving technical improvement initiatives"
+- One crisp fact + one metric per bullet. That's it.
+- BAD: "Implemented CI/CD pipelines and automated regression tests across 12 distributed nodes, achieving 99.8% uptime for enterprise SaaS customers"
+- GOOD: "Built CI/CD pipelines with automated regression tests across 12 nodes, achieving 99.8% uptime"
+- BAD: "Collaborated with senior engineers on architecture reviews for distributed query optimizer serving 10k+ enterprise clients, driving technical improvement initiatives"  
+- GOOD: "Optimized distributed query optimizer architecture serving 10k+ enterprise clients"
+
+TOTAL WORD COUNT: 430-470 words maximum (excluding name/contact header).
+
 === FORMATTING RULES ===
 Output ONLY the resume as plain text. Follow this EXACT structure:
 
@@ -537,7 +558,7 @@ DHRUVIN JHAVERI
 EDUCATION
 [University], [City, State]
 [Degree], GPA: X.XX                                                          [Month Year]
-  Relevant Coursework: [3-4 courses relevant to the JD]
+  Relevant Coursework: [3-4 courses, comma-separated, one line]
 
 [University 2], [City, Country]
 [Degree]                                                                     [Month Year]
@@ -550,33 +571,30 @@ Databases & Cloud: [list]
 EXPERIENCE
 [Job Title]
 [Company], [City, State]                                                     [Date Range]
-• [bullet — strong action verb, metric, impact]
-• [bullet]
-• [bullet]
+• [bullet — max 15 words]
+• [bullet — max 15 words]
+• [bullet — max 15 words]
 
 [repeat for 3 experiences]
 
 PROJECTS
 [Project Name] | [Tech Stack]
-• [bullet with metrics]
-• [bullet]
+• [bullet — max 15 words]
+• [bullet — max 15 words]
 
 [repeat for 2 projects]
 
-RULES:
-- Exactly 1 page, ~520-560 words
-- Exactly 3 experiences (pick best 3 for the track: always include AWS; use Imarticus for ML/backend/SDE; use Paypoint for analytics/quant/business)
-- Exactly 2 projects (pick best 2 for the track)
-- 3 skills subcategories (Languages, Frameworks, Databases/Cloud)
-- No soft skills like "team player" or "fast learner"
-- No personal pronouns
-- Past tense verbs for all completed roles
-- Strong action verbs: Engineered, Architected, Optimized, Implemented, Developed, Built, Designed, Automated, Achieved, Reduced, Improved
-- Embed JD keywords naturally in bullets and skills
-- No tables, no columns, no fancy formatting — pure linear text
+FINAL RULES:
+- Exactly 3 experiences (always AWS; Imarticus for ML/backend/SDE; Paypoint for analytics/quant/business)
+- Exactly 2 projects best suited to the track
+- 3 skills subcategories only
+- No soft skills, no personal pronouns
+- Past tense for all roles
+- Embed JD keywords in bullets and skills
+- No tables, no columns — pure linear text
 - Both degrees shown
-- No OPT, visa, or work authorization language anywhere
-- No double hyphens (use em dash or comma instead)`;
+- No OPT/visa language
+- No double hyphens`;
 }
 
 function getCoverPrompt(company, title, loc, jd) {
