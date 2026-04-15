@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v4</title>
+<title>ResumeForge v6</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -66,7 +66,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v5 — Corrected Margins</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v6 — 7 Sections Always</div></div>
   </div>
 
   <div class="field-group">
@@ -273,7 +273,23 @@ var CANDIDATE = {
     title: "Toxic Comment Classification using BERT-based Transformer Models",
     venue: "IEEE ICISAA 2024, Mumbai, India",
     desc:  "Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4."
-  }
+  },
+
+  // ALWAYS included — never omit — fills the page and signals depth
+  leadership: [
+    {
+      title: "Study Australia Entrepreneurship Challenge",
+      desc:  "Runner-up; AUD 10,000 prize awarded for PharmaChain blockchain supply chain innovation. Harvard-recognized program."
+    },
+    {
+      title: "ACM SemiCode",
+      desc:  "National finalist, inter-college competitive programming competition; top placement among 500+ participants."
+    },
+    {
+      title: "Head of Communication",
+      desc:  "Chancellor\u2019s Challenge NMIMS; led cross-team communications for university\u2019s flagship innovation competition across 11 months."
+    }
+  ]
 };
 
 // Project order by track
@@ -523,6 +539,11 @@ function buildPreviewText(d){
   lines.push('PUBLICATION');
   lines.push(CANDIDATE.pub.title+' — '+CANDIDATE.pub.venue);
   lines.push(CANDIDATE.pub.desc);
+  lines.push('');
+  lines.push('LEADERSHIP & RECOGNITION');
+  CANDIDATE.leadership.forEach(function(l){
+    lines.push(l.title+' — '+l.desc);
+  });
   return lines.join('\n');
 }
 
@@ -600,7 +621,19 @@ function buildDocXML(d){
   p.push(pMx(CANDIDATE.pub.title, '  \u2014  '+CANDIDATE.pub.venue));
   p.push(pPl(CANDIDATE.pub.desc));
 
-  // Page setup
+  // Leadership & Recognition — ALWAYS LAST, ALWAYS PRESENT (R1 rule)
+  p.push(pS('LEADERSHIP \u0026 RECOGNITION'));
+  CANDIDATE.leadership.forEach(function(l){
+    p.push(pMx(l.title, '  \u2014  '+l.desc));
+  });
+
+  // ── QUALITY GATE ── paragraph count must be 47 ±2
+  var paraCount = (p.join('').match(/<w:p[ >]/g)||[]).length;
+  if(paraCount < 45 || paraCount > 52){
+    console.warn('QC FAIL: paragraph count='+paraCount+' (expected 47±2). Check all 7 sections.');
+  }
+
+  // Page setup — R6: margins 720, R7: tab 10800
   p.push('<w:sectPr>'
     +'<w:pgSz w:w="12240" w:h="15840"/>'
     +'<w:pgMar w:top="432" w:right="720" w:bottom="432" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>'
