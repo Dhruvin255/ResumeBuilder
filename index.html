@@ -6,510 +6,327 @@
     <title>ResumeForge</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #667eea;
             padding: 20px;
         }
-
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
+            border-radius: 8px;
+            padding: 30px;
         }
-
-        h1 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-
-        label {
-            display: block;
-            margin: 20px 0 8px 0;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1em;
-        }
-
-        input[type="password"],
-        input[type="text"],
-        textarea,
-        select {
+        h1 { color: #667eea; margin-bottom: 20px; }
+        label { display: block; margin: 15px 0 5px 0; font-weight: bold; }
+        input, textarea, select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 1em;
-            font-family: inherit;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
         }
-
-        textarea {
-            min-height: 200px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .location-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .location-row input {
-            flex: 1;
-        }
-
-        .location-row select {
-            flex: 0 0 150px;
-        }
-
-        .track-grid {
+        textarea { min-height: 150px; font-family: monospace; }
+        .tracks {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .track {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            background: white;
+        }
+        .track:hover { border-color: #667eea; }
+        .track.active { background: #667eea; color: white; border-color: #667eea; }
+        .buttons {
+            display: flex;
+            gap: 10px;
             margin: 20px 0;
         }
-
-        .track-btn {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-size: 0.95em;
-        }
-
-        .track-btn:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-        }
-
-        .track-btn.selected {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
-            font-weight: 600;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0 20px 0;
-        }
-
         button {
             flex: 1;
-            padding: 18px;
-            font-size: 1.1em;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            background: #218838;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .status {
             padding: 15px;
-            border-radius: 6px;
-            margin: 20px 0;
-            font-weight: 500;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+        }
+        button:hover:not(:disabled) { background: #5568d3; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .download { background: #28a745; }
+        .download:hover:not(:disabled) { background: #218838; }
+        #status {
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
             display: none;
         }
-
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-            display: block;
-        }
-
-        .preview {
-            background: #f8f9fa;
+        #status.show { display: block; }
+        #status.error { background: #f8d7da; color: #721c24; }
+        #status.success { background: #d4edda; color: #155724; }
+        #status.info { background: #d1ecf1; color: #0c5460; }
+        #preview {
+            background: #f5f5f5;
             padding: 20px;
-            border-radius: 6px;
+            border-radius: 4px;
             margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: Calibri, sans-serif;
             max-height: 500px;
             overflow-y: auto;
-            white-space: pre-wrap;
-            font-family: 'Calibri', sans-serif;
-            line-height: 1.6;
             display: none;
-        }
-
-        small {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 768px) {
-            .track-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .btn-row {
-                flex-direction: column;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 ResumeForge</h1>
-        <p class="subtitle">Generate ATS-optimized resumes in seconds</p>
+        <h1>ResumeForge</h1>
 
-        <label>Anthropic API Key</label>
+        <label>API Key</label>
         <input type="password" id="apiKey" placeholder="sk-ant-...">
-        <small>Get your key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></small>
 
-        <label>Company Name</label>
-        <input type="text" id="company" placeholder="e.g., Google, Hudson River Trading">
+        <label>Company</label>
+        <input type="text" id="company" placeholder="Google">
 
         <label>Job Title</label>
-        <input type="text" id="jobTitle" placeholder="e.g., Software Engineer, Data Scientist">
+        <input type="text" id="jobTitle" placeholder="Software Engineer">
 
         <label>Location</label>
-        <div class="location-row">
-            <input type="text" id="city" placeholder="City" value="New York">
-            <select id="state">
-                <option value="NY">NY</option>
-                <option value="CA">CA</option>
-                <option value="WA">WA</option>
-                <option value="IL">IL</option>
-                <option value="TX">TX</option>
-                <option value="MA">MA</option>
-                <option value="NC">NC</option>
-                <option value="Remote">Remote</option>
-            </select>
+        <input type="text" id="location" placeholder="New York, NY" value="New York, NY">
+
+        <label>Job Description</label>
+        <textarea id="jd" placeholder="Paste full job description..."></textarea>
+
+        <label>Track</label>
+        <div class="tracks">
+            <div class="track" data-track="sde">SDE</div>
+            <div class="track" data-track="backend">Backend</div>
+            <div class="track" data-track="ds_ml">ML/DS</div>
+            <div class="track" data-track="analytics">Analytics</div>
+            <div class="track" data-track="business_analyst">Business</div>
+            <div class="track" data-track="quant">Quant</div>
         </div>
 
-        <label>Job Description (paste full JD)</label>
-        <textarea id="jd" placeholder="Paste the entire job posting here..."></textarea>
-
-        <label>Select Track</label>
-        <div class="track-grid">
-            <div class="track-btn" onclick="selectTrack('sde')">💻 SDE</div>
-            <div class="track-btn" onclick="selectTrack('backend')">⚙️ Backend</div>
-            <div class="track-btn" onclick="selectTrack('ds_ml')">🤖 ML/DS</div>
-            <div class="track-btn" onclick="selectTrack('analytics')">📊 Analytics</div>
-            <div class="track-btn" onclick="selectTrack('business_analyst')">📋 Business</div>
-            <div class="track-btn" onclick="selectTrack('quant')">📈 Quant</div>
+        <div class="buttons">
+            <button onclick="gen('resume')">Generate Resume</button>
+            <button onclick="gen('cover')">Generate Cover Letter</button>
+            <button class="download" onclick="download()" id="dlBtn" disabled>Download DOCX</button>
         </div>
 
-        <div class="btn-row">
-            <button class="btn-primary" onclick="generate('resume')" id="resumeBtn">📝 Generate Resume</button>
-            <button class="btn-primary" onclick="generate('cover')" id="coverBtn">✉️ Generate Cover Letter</button>
-            <button class="btn-success" onclick="downloadAll()" id="downloadBtn" disabled>💾 Download DOCX</button>
-        </div>
-
-        <div id="status" class="status"></div>
-        <div id="preview" class="preview"></div>
+        <div id="status"></div>
+        <div id="preview"></div>
     </div>
 
     <script>
-        let selectedTrack = null;
-        let resumeText = null;
-        let coverText = null;
+        let track = null;
+        let resume = null;
+        let cover = null;
 
-        function selectTrack(track) {
-            selectedTrack = track;
-            document.querySelectorAll('.track-btn').forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
+        document.querySelectorAll('.track').forEach(t => {
+            t.onclick = () => {
+                document.querySelectorAll('.track').forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
+                track = t.dataset.track;
+            };
+        });
+
+        function status(msg, type) {
+            const s = document.getElementById('status');
+            s.textContent = msg;
+            s.className = 'show ' + type;
         }
 
-        function showStatus(msg, type) {
-            const status = document.getElementById('status');
-            status.className = 'status ' + type;
-            status.textContent = msg;
-        }
-
-        async function generate(type) {
-            const apiKey = document.getElementById('apiKey').value.trim();
+        async function gen(type) {
+            const key = document.getElementById('apiKey').value.trim();
             const company = document.getElementById('company').value.trim();
-            const jobTitle = document.getElementById('jobTitle').value.trim();
-            const city = document.getElementById('city').value.trim();
-            const state = document.getElementById('state').value;
+            const title = document.getElementById('jobTitle').value.trim();
+            const loc = document.getElementById('location').value.trim();
             const jd = document.getElementById('jd').value.trim();
 
-            if (!apiKey) return showStatus('Enter API key', 'error');
-            if (!jd) return showStatus('Paste job description', 'error');
-            if (!selectedTrack) return showStatus('Select a track', 'error');
+            if (!key) return status('Need API key', 'error');
+            if (!jd) return status('Need job description', 'error');
+            if (!track) return status('Select track', 'error');
 
-            const location = state === 'Remote' ? 'Remote' : `${city}, ${state}`;
-            
-            document.getElementById(type + 'Btn').disabled = true;
-            showStatus(`Generating ${type}...`, 'info');
+            status(`Generating ${type}...`, 'info');
 
-            const prompts = {
-                resume: getResumePrompt(selectedTrack, company, jobTitle, location, jd),
-                cover: getCoverPrompt(selectedTrack, company, jobTitle, location, jd)
-            };
+            const prompt = type === 'resume' ? 
+`Generate ATS resume for Dhruvin Jhaveri.
+
+Track: ${track}
+Company: ${company}
+Title: ${title}
+Location: ${loc}
+
+JD:
+${jd}
+
+Info:
+- Dhruvin Jhaveri
+- djhaveri99@gmail.com
+- (602) 793-6561
+- linkedin.com/in/dhruvinjhaveri
+- github.com/Dhruvin255
+- USC MS CS (Data Science), GPA 3.40, May 2026
+
+Experience:
+1. AWS - SDE Intern Redshift - Santa Clara, CA - Summer 2025
+   - Built C++ scaling framework, 35% latency reduction
+   - CI/CD pipelines, testing, monitoring
+   - Petabyte-scale distributed systems
+
+2. Paypoint India - Data Scientist - Mumbai - Summer 2022
+   - Credit risk model, 94% accuracy, XGBoost
+   - Tableau dashboards, KPIs
+   - ETL pipelines, PostgreSQL
+
+3. Imarticus Learning - ML Engineer - Mumbai - Jan-May 2023
+   - NLP pipeline, 92% accuracy, BERT
+   - 50k+ daily events processing
+   - 90% automation increase
+
+Skills: Python, C++, SQL, AWS, Docker, PostgreSQL, MongoDB, XGBoost, PyTorch, TensorFlow, Node.js, REST APIs
+
+Projects:
+- Artist Search (Node.js, MongoDB, 13 endpoints, 172ms latency)
+- IEEE paper (BERT, F1 0.91)
+
+Instructions:
+- 1 page, ~550 words
+- Linear format, no columns
+- Extract keywords from JD
+- Embed in skills/bullets
+- ATS optimized
+
+Return plain text.` :
+
+`Generate cover letter for Dhruvin Jhaveri.
+
+Company: ${company}
+Title: ${title}
+Location: ${loc}
+
+JD:
+${jd}
+
+Background:
+- USC MS CS grad May 2026
+- AWS SDE intern, C++, distributed systems, 35% improvement
+- Paypoint credit risk, 94% accuracy
+- Imarticus NLP, 92% accuracy
+- IEEE publication
+- Founded coding club 10→200 members
+- Available mid-June 2026
+
+250-300 words, 4 paragraphs:
+1. Excitement about role
+2. Best experience + metrics
+3. Unique angle (leadership/research)
+4. Enthusiasm + call to action
+
+Professional, energetic tone.`;
 
             try {
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                const res = await fetch('https://api.anthropic.com/v1/messages', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
+                        'x-api-key': key,
                         'anthropic-version': '2023-06-01'
                     },
                     body: JSON.stringify({
                         model: 'claude-sonnet-4-20250514',
                         max_tokens: 4000,
-                        messages: [{ role: 'user', content: prompts[type] }]
+                        messages: [{ role: 'user', content: prompt }]
                     })
                 });
 
-                const data = await response.json();
-                const result = data.content[0].text;
-
-                if (type === 'resume') {
-                    resumeText = result;
-                } else {
-                    coverText = result;
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error?.message || 'API error');
                 }
 
-                document.getElementById('preview').textContent = result;
+                const data = await res.json();
+                const text = data.content[0].text;
+
+                if (type === 'resume') resume = text;
+                else cover = text;
+
+                document.getElementById('preview').textContent = text;
                 document.getElementById('preview').style.display = 'block';
-                showStatus(`✅ ${type === 'resume' ? 'Resume' : 'Cover letter'} generated!`, 'success');
+                status(`✅ ${type} done!`, 'success');
+                
+                if (resume || cover) document.getElementById('dlBtn').disabled = false;
 
-                if (resumeText || coverText) {
-                    document.getElementById('downloadBtn').disabled = false;
-                }
-
-            } catch (error) {
-                showStatus('Error: ' + error.message, 'error');
-            } finally {
-                document.getElementById(type + 'Btn').disabled = false;
+            } catch (e) {
+                status('Error: ' + e.message, 'error');
+                console.error(e);
             }
         }
 
-        function getResumePrompt(track, company, jobTitle, location, jd) {
-            return `Generate an ATS-optimized resume for Dhruvin Jhaveri.
-
-TRACK: ${track}
-COMPANY: ${company}
-JOB TITLE: ${jobTitle}
-LOCATION: ${location}
-
-JOB DESCRIPTION:
-${jd}
-
-PROFILE:
-- Name: Dhruvin Jhaveri
-- Email: djhaveri99@gmail.com
-- Phone: (602) 793-6561
-- LinkedIn: linkedin.com/in/dhruvinjhaveri
-- GitHub: github.com/Dhruvin255
-
-EDUCATION:
-- USC MS Computer Science (Data Science Track), GPA 3.40, Expected May 2026
-
-EXPERIENCE:
-1. Amazon Web Services - Software Development Engineer Intern, AWS Redshift - Santa Clara, CA - Summer 2025
-   - Architected C++ workload scaling framework for Redshift Serverless, reducing latency 35%
-   - Implemented CI/CD pipelines with testing and observability
-   - Collaborated on microservices architecture for petabyte-scale workloads
-
-2. Paypoint India - Data Scientist Intern - Mumbai, India - Summer 2022
-   - Built credit risk model with 94% accuracy using XGBoost
-   - Designed executive dashboards in Tableau tracking KPIs
-   - Developed ETL pipelines with PostgreSQL
-
-3. Imarticus Learning - Machine Learning Engineer Intern - Mumbai, India - Jan-May 2023
-   - Developed NLP pipeline achieving 92% accuracy using BERT
-   - Built automated data pipeline processing 50,000+ daily events
-   - Reduced manual reporting time by 90%
-
-SKILLS (pick 4 categories based on track):
-- Languages: Python, C++, JavaScript, SQL, R
-- ML/DS: Feature Engineering, Statistical Validation, XGBoost, PyTorch, TensorFlow, BERT
-- Tools: AWS, Docker, PostgreSQL, MongoDB, Git, Tableau
-- Frameworks: Node.js, Express.js, REST APIs, Microservices
-
-PROJECTS:
-- Artist Search Application (Node.js, MongoDB, REST API, 13 endpoints, 172ms p95 latency)
-- IEEE ICISAA 2024 Publication (BERT toxic comment classification, F1 0.91)
-
-INSTRUCTIONS:
-1. Extract 10-15 keywords from JD
-2. Embed naturally in skills, bullets, projects
-3. Format for ATS: linear, no columns/tables, 1 page max (~550 words)
-4. Use track: ${track} for job title selection and bullet focus
-5. Bold company names, locations in bullets
-6. Target 95% ATS optimization
-
-Return plain text resume ready for DOCX.`;
-        }
-
-        function getCoverPrompt(track, company, jobTitle, location, jd) {
-            return `Generate a professional cover letter for Dhruvin Jhaveri.
-
-COMPANY: ${company}
-JOB TITLE: ${jobTitle}
-LOCATION: ${location}
-
-JOB DESCRIPTION:
-${jd}
-
-BACKGROUND:
-- Graduating USC MS CS (Data Science) May 2026
-- AWS Redshift SDE Intern (Summer 2025) - C++, distributed systems, 35% latency reduction
-- Paypoint India - Credit risk modeling, 94% accuracy, XGBoost
-- Imarticus Learning - NLP systems, 92% accuracy, BERT
-- IEEE ICISAA 2024 publication
-- Founded USC coding club (10→200+ members)
-- Available mid-June 2026, relocating to ${location}
-
-STRUCTURE (250-300 words):
-1. Hook: Express excitement about role/company
-2. Fit: Lead with strongest experience + metrics
-3. Differentiator: GDSC leadership OR publication OR startup experience
-4. Close: Reaffirm enthusiasm + call to action
-
-TONE: Professional yet energetic, genuine passion
-
-Return business letter format.`;
-        }
-
-        async function downloadAll() {
+        async function download() {
             const company = document.getElementById('company').value.trim() || 'Company';
-            
-            showStatus('Creating DOCX files...', 'info');
+            status('Creating DOCX...', 'info');
 
             try {
-                if (resumeText) {
-                    await createDOCX(resumeText, `Dhruvin_Jhaveri_Resume_${company}.docx`);
-                }
-                if (coverText) {
-                    await createDOCX(coverText, `Dhruvin_Jhaveri_CoverLetter_${company}.docx`);
-                }
-                showStatus('✅ Downloaded!', 'success');
-            } catch (error) {
-                showStatus('Error: ' + error.message, 'error');
+                if (resume) await makeDOCX(resume, `Dhruvin_Jhaveri_Resume_${company}.docx`);
+                if (cover) await makeDOCX(cover, `Dhruvin_Jhaveri_CoverLetter_${company}.docx`);
+                status('✅ Downloaded!', 'success');
+            } catch (e) {
+                status('Error: ' + e.message, 'error');
             }
         }
 
-        async function createDOCX(content, filename) {
+        async function makeDOCX(text, name) {
             const zip = new JSZip();
 
-            const rels = `<?xml version="1.0" encoding="UTF-8"?>
+            zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-</Relationships>`;
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`);
 
-            const contentTypes = `<?xml version="1.0" encoding="UTF-8"?>
+            zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-    <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-    <Default Extension="xml" ContentType="application/xml"/>
-    <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-</Types>`;
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`);
 
-            const wordRels = `<?xml version="1.0" encoding="UTF-8"?>
+            zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-</Relationships>`;
+</Relationships>`);
 
-            const paragraphs = content.split('\n').map(line => {
-                const trimmed = line.trim();
-                if (!trimmed) return '<w:p/>';
-                
-                if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
-                    const text = trimmed.substring(1).trim();
-                    return `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr><w:r><w:t xml:space="preserve">• ${escapeXml(text)}</w:t></w:r></w:p>`;
+            const paras = text.split('\n').map(line => {
+                const t = line.trim();
+                if (!t) return '<w:p/>';
+                const clean = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if (t.startsWith('-') || t.startsWith('•')) {
+                    return `<w:p><w:r><w:t>• ${clean.substring(1).trim()}</w:t></w:r></w:p>`;
                 }
-                
-                return `<w:p><w:pPr><w:spacing w:before="120" w:after="120"/></w:pPr><w:r><w:t xml:space="preserve">${escapeXml(trimmed)}</w:t></w:r></w:p>`;
+                return `<w:p><w:r><w:t>${clean}</w:t></w:r></w:p>`;
             }).join('');
 
-            const document = `<?xml version="1.0" encoding="UTF-8"?>
+            zip.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-    <w:body>${paragraphs}</w:body>
-</w:document>`;
-
-            zip.file('_rels/.rels', rels);
-            zip.file('[Content_Types].xml', contentTypes);
-            zip.file('word/_rels/document.xml.rels', wordRels);
-            zip.file('word/document.xml', document);
+<w:body>${paras}</w:body>
+</w:document>`);
 
             const blob = await zip.generateAsync({ type: 'blob' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
+            a.download = name;
             a.click();
-            document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        }
-
-        function escapeXml(text) {
-            return text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&apos;');
         }
     </script>
 </body>
