@@ -1,334 +1,941 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResumeForge</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: Arial, sans-serif;
-            background: #667eea;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-        }
-        h1 { color: #667eea; margin-bottom: 20px; }
-        label { display: block; margin: 15px 0 5px 0; font-weight: bold; }
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        textarea { min-height: 150px; font-family: monospace; }
-        .tracks {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .track {
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            background: white;
-        }
-        .track:hover { border-color: #667eea; }
-        .track.active { background: #667eea; color: white; border-color: #667eea; }
-        .buttons {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            background: #667eea;
-            color: white;
-        }
-        button:hover:not(:disabled) { background: #5568d3; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .download { background: #28a745; }
-        .download:hover:not(:disabled) { background: #218838; }
-        #status {
-            padding: 15px;
-            border-radius: 4px;
-            margin: 10px 0;
-            display: none;
-        }
-        #status.show { display: block; }
-        #status.error { background: #f8d7da; color: #721c24; }
-        #status.success { background: #d4edda; color: #155724; }
-        #status.info { background: #d1ecf1; color: #0c5460; }
-        #preview {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 4px;
-            margin-top: 20px;
-            white-space: pre-wrap;
-            font-family: Calibri, sans-serif;
-            max-height: 500px;
-            overflow-y: auto;
-            display: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeForge</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0e0e11;
+    --surface: #17171c;
+    --surface2: #1e1e26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --accent: #7c6af7;
+    --accent2: #5febc4;
+    --text: #f0eff8;
+    --muted: #8884a4;
+    --danger: #f06b6b;
+    --success: #5febc4;
+    --warn: #f7c46a;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .logo-version { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
+
+  input[type="text"], input[type="password"], textarea, select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    width: 100%;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  input[type="password"] { font-family: 'DM Mono', monospace; font-size: 13px; }
+
+  textarea { min-height: 110px; resize: vertical; font-size: 13px; line-height: 1.5; }
+
+  .track-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .track-btn {
+    padding: 9px 6px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .track-btn:hover { border-color: var(--border2); color: var(--text); }
+  .track-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* ── MAIN AREA ── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .toolbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 28px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover:not(:disabled) { background: #6a59e0; }
+
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+  .btn-secondary:hover:not(:disabled) { background: #26263a; }
+
+  .btn-success { background: #1a3a32; color: var(--success); border: 1px solid #2a5a4a; }
+  .btn-success:hover:not(:disabled) { background: #1f4a3e; }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-icon { font-size: 16px; }
+
+  .status-bar {
+    padding: 10px 28px;
+    font-size: 13px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-bar.show { display: flex; }
+  .status-bar.error { color: var(--danger); background: rgba(240,107,107,0.08); }
+  .status-bar.success { color: var(--success); background: rgba(95,235,196,0.08); }
+  .status-bar.info { color: var(--accent2); background: rgba(95,235,196,0.05); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--success); color: #000;
+    font-size: 10px; margin-left: 6px;
+  }
+
+  /* ── CONTENT AREA ── */
+  .content {
+    flex: 1;
+    padding: 24px 28px;
+    overflow-y: auto;
+  }
+
+  .preview-pane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #c8c4e8;
+    white-space: pre-wrap;
+    max-height: 65vh;
+    overflow-y: auto;
+    min-height: 200px;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    gap: 12px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 40px; opacity: 0.4; }
+  .empty-title { font-size: 16px; font-weight: 500; color: var(--text); opacity: 0.5; }
+  .empty-sub { font-size: 13px; text-align: center; max-width: 300px; line-height: 1.5; }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .ats-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+    height: 4px;
+  }
+
+  .ats-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent2);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>ResumeForge</h1>
+<div class="app">
 
-        <label>API Key</label>
-        <input type="password" id="apiKey" placeholder="sk-ant-...">
-
-        <label>Company</label>
-        <input type="text" id="company" placeholder="Google">
-
-        <label>Job Title</label>
-        <input type="text" id="jobTitle" placeholder="Software Engineer">
-
-        <label>Location</label>
-        <input type="text" id="location" placeholder="New York, NY" value="New York, NY">
-
-        <label>Job Description</label>
-        <textarea id="jd" placeholder="Paste full job description..."></textarea>
-
-        <label>Track</label>
-        <div class="tracks">
-            <div class="track" data-track="sde">SDE</div>
-            <div class="track" data-track="backend">Backend</div>
-            <div class="track" data-track="ds_ml">ML/DS</div>
-            <div class="track" data-track="analytics">Analytics</div>
-            <div class="track" data-track="business_analyst">Business</div>
-            <div class="track" data-track="quant">Quant</div>
-        </div>
-
-        <div class="buttons">
-            <button onclick="gen('resume')">Generate Resume</button>
-            <button onclick="gen('cover')">Generate Cover Letter</button>
-            <button class="download" onclick="download()" id="dlBtn" disabled>Download DOCX</button>
-        </div>
-
-        <div id="status"></div>
-        <div id="preview"></div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      <div>
+        <div class="logo-text">ResumeForge</div>
+        <div class="logo-version">v2.0 — ATS Engine</div>
+      </div>
     </div>
 
-    <script>
-        let track = null;
-        let resume = null;
-        let cover = null;
+    <div class="field-group">
+      <div class="field-label">Anthropic API Key</div>
+      <input type="password" id="apiKey" placeholder="sk-ant-...">
+    </div>
 
-        document.querySelectorAll('.track').forEach(t => {
-            t.onclick = () => {
-                document.querySelectorAll('.track').forEach(x => x.classList.remove('active'));
-                t.classList.add('active');
-                track = t.dataset.track;
-            };
-        });
+    <div class="divider"></div>
 
-        function status(msg, type) {
-            const s = document.getElementById('status');
-            s.textContent = msg;
-            s.className = 'show ' + type;
-        }
+    <div class="field-group">
+      <div class="field-label">Company</div>
+      <input type="text" id="company" placeholder="Google">
+    </div>
 
-        async function gen(type) {
-            const key = document.getElementById('apiKey').value.trim();
-            const company = document.getElementById('company').value.trim();
-            const title = document.getElementById('jobTitle').value.trim();
-            const loc = document.getElementById('location').value.trim();
-            const jd = document.getElementById('jd').value.trim();
+    <div class="field-group">
+      <div class="field-label">Job Title</div>
+      <input type="text" id="jobTitle" placeholder="Software Engineer">
+    </div>
 
-            if (!key) return status('Need API key', 'error');
-            if (!jd) return status('Need job description', 'error');
-            if (!track) return status('Select track', 'error');
+    <div class="field-group">
+      <div class="field-label">Contact Location</div>
+      <input type="text" id="location" placeholder="New York, NY" value="New York, NY">
+    </div>
 
-            status(`Generating ${type}...`, 'info');
+    <div class="field-group">
+      <div class="field-label">Job Description</div>
+      <textarea id="jd" placeholder="Paste full job description here..."></textarea>
+    </div>
 
-            const prompt = type === 'resume' ? 
-`Generate ATS resume for Dhruvin Jhaveri.
+    <div class="field-group">
+      <div class="field-label">Track</div>
+      <div class="track-grid">
+        <button class="track-btn" data-track="sde">SDE</button>
+        <button class="track-btn" data-track="backend">Backend</button>
+        <button class="track-btn" data-track="ds_ml">ML / DS</button>
+        <button class="track-btn" data-track="analytics">Analytics</button>
+        <button class="track-btn" data-track="business_analyst">Business</button>
+        <button class="track-btn" data-track="quant">Quant</button>
+      </div>
+    </div>
 
-Track: ${track}
+    <div class="field-group">
+      <div class="field-label">ATS Target Score</div>
+      <div class="ats-row">
+        <input type="range" id="atsSlider" min="70" max="100" value="90" step="5">
+        <div class="ats-value" id="atsVal">90%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="generate('resume')">
+        <span class="btn-icon">◎</span> Generate Resume
+      </button>
+      <button class="btn btn-secondary" onclick="generate('cover')">
+        <span class="btn-icon">✉</span> Cover Letter
+      </button>
+      <div style="flex:1"></div>
+      <button class="btn btn-success" id="dlResume" onclick="downloadResume()" disabled>
+        <span class="btn-icon">↓</span> Resume DOCX
+      </button>
+      <button class="btn btn-success" id="dlCover" onclick="downloadCover()" disabled>
+        <span class="btn-icon">↓</span> Cover DOCX
+      </button>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot"></div>
+      <span id="statusMsg"></span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="resume" onclick="switchTab('resume')">
+        Resume <span class="badge" id="resumeBadge" style="display:none">✓</span>
+      </div>
+      <div class="tab" data-tab="cover" onclick="switchTab('cover')">
+        Cover Letter <span class="badge" id="coverBadge" style="display:none">✓</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="resumeTab">
+        <div class="empty-state" id="resumeEmpty">
+          <div class="empty-icon">◎</div>
+          <div class="empty-title">No resume generated yet</div>
+          <div class="empty-sub">Fill in the fields and click Generate Resume</div>
+        </div>
+        <div id="resumePreview" class="preview-pane" style="display:none"></div>
+      </div>
+      <div id="coverTab" style="display:none">
+        <div class="empty-state" id="coverEmpty">
+          <div class="empty-icon">✉</div>
+          <div class="empty-title">No cover letter yet</div>
+          <div class="empty-sub">Click Cover Letter to generate one</div>
+        </div>
+        <div id="coverPreview" class="preview-pane" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let selectedTrack = null;
+let resumeText = null;
+let coverText = null;
+
+// ── TRACK SELECTION ──
+document.querySelectorAll('.track-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedTrack = btn.dataset.track;
+  };
+});
+
+// ── ATS SLIDER ──
+const slider = document.getElementById('atsSlider');
+const atsVal = document.getElementById('atsVal');
+slider.oninput = () => { atsVal.textContent = slider.value + '%'; };
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.getElementById('resumeTab').style.display = name === 'resume' ? 'block' : 'none';
+  document.getElementById('coverTab').style.display = name === 'cover' ? 'block' : 'none';
+}
+
+// ── STATUS ──
+function setStatus(msg, type) {
+  const bar = document.getElementById('statusBar');
+  const msgEl = document.getElementById('statusMsg');
+  bar.className = 'status-bar show ' + type;
+  msgEl.innerHTML = msg;
+}
+
+function clearStatus() {
+  document.getElementById('statusBar').className = 'status-bar';
+}
+
+// ── PROMPTS ──
+function getResumePrompt(company, title, loc, jd, track, atsScore) {
+  const trackGuide = {
+    sde: `SDE track: emphasize distributed systems, scalability, C++/Python/Java, system design, APIs, algorithms`,
+    backend: `Backend track: emphasize Java/SQL/APIs, database optimization, microservices, server-side architecture`,
+    ds_ml: `ML/DS track: emphasize PyTorch/TensorFlow, NLP, model training, F1/accuracy metrics, data pipelines, research`,
+    analytics: `Analytics track: emphasize SQL, Tableau, Redshift, KPIs, ETL, business insights, data visualization`,
+    business_analyst: `Business Analyst track: emphasize stakeholder communication, process improvement, SQL, dashboards, requirements`,
+    quant: `Quant track: emphasize statistical modeling, Python/C++, risk models, XGBoost, time-series, accuracy metrics`
+  };
+
+  return `You are an expert ATS resume writer. Generate a polished, ATS-optimized resume for Dhruvin Jhaveri.
+
+TARGET: ${atsScore}% ATS keyword match with this JD.
+Track: ${trackGuide[track] || track}
 Company: ${company}
-Title: ${title}
-Location: ${loc}
+Job Title: ${title}
+Location for header: ${loc}
 
-JD:
+=== JOB DESCRIPTION ===
 ${jd}
 
-Info:
-- Dhruvin Jhaveri
-- djhaveri99@gmail.com
-- (602) 793-6561
-- linkedin.com/in/dhruvinjhaveri
-- github.com/Dhruvin255
-- USC MS CS (Data Science), GPA 3.40, May 2026
-
-Experience:
-1. AWS - SDE Intern Redshift - Santa Clara, CA - Summer 2025
-   - Built C++ scaling framework, 35% latency reduction
-   - CI/CD pipelines, testing, monitoring
-   - Petabyte-scale distributed systems
-
-2. Paypoint India - Data Scientist - Mumbai - Summer 2022
-   - Credit risk model, 94% accuracy, XGBoost
-   - Tableau dashboards, KPIs
-   - ETL pipelines, PostgreSQL
-
-3. Imarticus Learning - ML Engineer - Mumbai - Jan-May 2023
-   - NLP pipeline, 92% accuracy, BERT
-   - 50k+ daily events processing
-   - 90% automation increase
-
-Skills: Python, C++, SQL, AWS, Docker, PostgreSQL, MongoDB, XGBoost, PyTorch, TensorFlow, Node.js, REST APIs
-
-Projects:
-- Artist Search (Node.js, MongoDB, 13 endpoints, 172ms latency)
-- IEEE paper (BERT, F1 0.91)
-
-Instructions:
-- 1 page, ~550 words
-- Linear format, no columns
-- Extract keywords from JD
-- Embed in skills/bullets
-- ATS optimized
-
-Return plain text.` :
-
-`Generate cover letter for Dhruvin Jhaveri.
-
-Company: ${company}
-Title: ${title}
+=== CANDIDATE PROFILE ===
+Name: Dhruvin Jhaveri
+Phone: (602) 793-6561
+Email: djhaveri99@gmail.com
+LinkedIn: linkedin.com/in/dhruvinjhaveri
+GitHub: github.com/Dhruvin255
 Location: ${loc}
 
-JD:
+Education (list both, USC first):
+- University of Southern California, Los Angeles, CA — M.S. Computer Science (Data Science), GPA: 3.40, May 2026
+- NMIMS University, Mumbai, India — B.Tech. Computer Engineering, GPA: 3.61, May 2023
+
+Experience (use exactly 3 based on track):
+A) AWS (Amazon Web Services) — SDE Intern, Redshift Team | Santa Clara, CA | May–Aug 2025
+   - Engineered C++ memory-efficient scaling framework for petabyte-scale Redshift clusters, reducing P99 query latency by 35%
+   - Implemented CI/CD pipelines and automated regression tests across 12 distributed nodes, achieving 99.8% uptime
+   - Collaborated with senior engineers on architecture reviews for distributed query optimizer serving 10k+ enterprise clients
+
+B) Imarticus Learning — ML Engineer Intern | Mumbai, India | Jan–May 2023
+   - Built production NLP pipeline using BERT and LangChain, achieving 92% classification accuracy on 50k+ daily user events
+   - Automated 90% of manual content tagging workflows, reducing processing time by 4 hours daily using Node.js microservices
+   - Integrated REST API endpoints with PostgreSQL backend, enabling real-time analytics for 5 product managers
+
+C) Paypoint India — Data Scientist Intern | Ahmedabad, India | May–Aug 2022
+   - Developed XGBoost credit risk model achieving 94% accuracy, deployed to production serving 200k+ transactions/month
+   - Built Tableau dashboards tracking 12 KPIs for executive team; identified patterns reducing default rate by 18%
+   - Designed ETL pipelines using PostgreSQL and Python, processing 500k+ financial records daily
+
+Projects:
+P1) Full Stack Artist Search Application | Node.js, MongoDB, Express, JWT, MapReduce | Co-developed with Dhiren Oswal
+   - Engineered 13 REST API endpoints with JWT authentication, achieving 172ms P95 latency across 10k concurrent users
+   - Implemented MapReduce caching strategy, reducing duplicate API requests by 50% and improving throughput by 3x
+
+P2) PharmaChain — Blockchain Supply Chain Platform | Ethereum, Solidity, Node.js, Web3.js
+   - Built Ethereum smart contract system with off-chain aggregation layer, improving traceability by 95% across 4 suppliers
+   - Won 2nd place at Study Australia Entrepreneurship Challenge; recognized by Harvard; awarded 4,000 AUD industry funding
+   - Achieved 25% on-chain efficiency improvement via test-driven smart contract validation
+
+P3) IEEE Publication — BERT Toxic Comment Classifier | Python, PyTorch, Scikit-learn
+   - Trained multi-label BERT model on 160k comments; achieved F1 score of 0.91, published at IEEE ICISAA 2024
+
+Skills to pick from by track:
+- Languages: Python, C++, Java, SQL, JavaScript, TypeScript, Solidity
+- Frameworks: Node.js, Express, Django, Flask, React, LangChain, PyTorch, TensorFlow, Scikit-learn
+- Data/ML: XGBoost, BERT, NLP, MapReduce, Pandas, NumPy, Matplotlib
+- Databases: PostgreSQL, MongoDB, MySQL, Redshift, DynamoDB
+- Cloud/DevOps: AWS (S3, EC2, Redshift, Lambda), Docker, Git, CI/CD, REST APIs
+- Tools: Tableau, Jupyter, Web3.js, JWT, Hadoop
+
+=== FORMATTING RULES ===
+Output ONLY the resume as plain text. Follow this EXACT structure:
+
+DHRUVIN JHAVERI
+[phone] | [email] | [linkedin] | [github] | [location]
+
+EDUCATION
+[University], [City, State]
+[Degree], GPA: X.XX                                                          [Month Year]
+  Relevant Coursework: [3-4 courses relevant to the JD]
+
+[University 2], [City, Country]
+[Degree]                                                                     [Month Year]
+
+TECHNICAL SKILLS
+Languages: [list]
+Frameworks & Libraries: [list]
+Databases & Cloud: [list]
+
+EXPERIENCE
+[Job Title]
+[Company], [City, State]                                                     [Date Range]
+• [bullet — strong action verb, metric, impact]
+• [bullet]
+• [bullet]
+
+[repeat for 3 experiences]
+
+PROJECTS
+[Project Name] | [Tech Stack]
+• [bullet with metrics]
+• [bullet]
+
+[repeat for 2 projects]
+
+RULES:
+- Exactly 1 page, ~520-560 words
+- Exactly 3 experiences (pick best 3 for the track: always include AWS; use Imarticus for ML/backend/SDE; use Paypoint for analytics/quant/business)
+- Exactly 2 projects (pick best 2 for the track)
+- 3 skills subcategories (Languages, Frameworks, Databases/Cloud)
+- No soft skills like "team player" or "fast learner"
+- No personal pronouns
+- Past tense verbs for all completed roles
+- Strong action verbs: Engineered, Architected, Optimized, Implemented, Developed, Built, Designed, Automated, Achieved, Reduced, Improved
+- Embed JD keywords naturally in bullets and skills
+- No tables, no columns, no fancy formatting — pure linear text
+- Both degrees shown
+- No OPT, visa, or work authorization language anywhere
+- No double hyphens (use em dash or comma instead)`;
+}
+
+function getCoverPrompt(company, title, loc, jd) {
+  return `Write a cover letter for Dhruvin Jhaveri applying to ${title} at ${company}.
+
+Job Description:
 ${jd}
 
 Background:
-- USC MS CS grad May 2026
-- AWS SDE intern, C++, distributed systems, 35% improvement
-- Paypoint credit risk, 94% accuracy
-- Imarticus NLP, 92% accuracy
-- IEEE publication
-- Founded coding club 10→200 members
+- USC MS CS (Data Science), graduating May 2026, GPA 3.40
+- AWS SDE Intern: C++, petabyte-scale Redshift, 35% latency reduction
+- ML Engineer: BERT NLP pipeline, 92% accuracy, LangChain
+- Data Scientist: XGBoost credit risk model, 94% accuracy
+- IEEE publication: BERT toxic comment classifier, F1 0.91
+- Founded GDSC Coding Club, grew from 10 to 200+ members
+- PharmaChain: 2nd place Study Australia Entrepreneurship, Harvard recognition
 - Available mid-June 2026
+- Relocating to NYC (dream city, fresh start)
 
-250-300 words, 4 paragraphs:
-1. Excitement about role
-2. Best experience + metrics
-3. Unique angle (leadership/research)
-4. Enthusiasm + call to action
+RULES:
+- 200-250 words total
+- Bullet-style body (not paragraph essay)
+- 4 short sections: Opening excitement, Best 2-3 experiences with metrics, Unique angle (leadership/research/entrepreneurship), Closing with NYC hook + availability
+- Professional but energetic voice
+- First person is fine
+- No double hyphens anywhere (use comma or em dash instead)
+- No OPT/visa language
+- Do NOT repeat exact resume bullets verbatim; expand them
+- Start with "Dear Hiring Manager,"
+- End with contact info: djhaveri99@gmail.com | (602) 793-6561
 
-Professional, energetic tone.`;
+Output ONLY the cover letter text, nothing else.`;
+}
 
-            try {
-                const res = await fetch('https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': key,
-                        'anthropic-version': '2023-06-01',
-                        'anthropic-dangerous-direct-browser-access': 'true'
-                    },
-                    body: JSON.stringify({
-                        model: 'claude-sonnet-4-20250514',
-                        max_tokens: 4000,
-                        messages: [{ role: 'user', content: prompt }]
-                    })
-                });
+// ── GENERATE ──
+async function generate(type) {
+  const key = document.getElementById('apiKey').value.trim();
+  const company = document.getElementById('company').value.trim();
+  const title = document.getElementById('jobTitle').value.trim();
+  const loc = document.getElementById('location').value.trim() || 'New York, NY';
+  const jd = document.getElementById('jd').value.trim();
+  const ats = document.getElementById('atsSlider').value;
 
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error?.message || 'API error');
-                }
+  if (!key) return setStatus('API key required', 'error');
+  if (!jd) return setStatus('Job description required', 'error');
+  if (!selectedTrack) return setStatus('Select a track', 'error');
 
-                const data = await res.json();
-                const text = data.content[0].text;
+  const spinner = '<span class="spinner"></span>';
+  setStatus(`${spinner} &nbsp;Generating ${type === 'resume' ? 'resume' : 'cover letter'}...`, 'info');
 
-                if (type === 'resume') resume = text;
-                else cover = text;
+  // Disable buttons
+  document.querySelectorAll('.btn').forEach(b => b.disabled = true);
 
-                document.getElementById('preview').textContent = text;
-                document.getElementById('preview').style.display = 'block';
-                status(`✅ ${type} done!`, 'success');
-                
-                if (resume || cover) document.getElementById('dlBtn').disabled = false;
+  const prompt = type === 'resume'
+    ? getResumePrompt(company, title, loc, jd, selectedTrack, ats)
+    : getCoverPrompt(company, title, loc, jd);
 
-            } catch (e) {
-                status('Error: ' + e.message, 'error');
-                console.error(e);
-            }
-        }
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
 
-        async function download() {
-            const company = document.getElementById('company').value.trim() || 'Company';
-            status('Creating DOCX...', 'info');
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
 
-            try {
-                if (resume) await makeDOCX(resume, `Dhruvin_Jhaveri_Resume_${company}.docx`);
-                if (cover) await makeDOCX(cover, `Dhruvin_Jhaveri_CoverLetter_${company}.docx`);
-                status('✅ Downloaded!', 'success');
-            } catch (e) {
-                status('Error: ' + e.message, 'error');
-            }
-        }
+    const data = await res.json();
+    const text = data.content[0].text.trim();
 
-        async function makeDOCX(text, name) {
-            const zip = new JSZip();
+    if (type === 'resume') {
+      resumeText = text;
+      document.getElementById('resumePreview').textContent = text;
+      document.getElementById('resumePreview').style.display = 'block';
+      document.getElementById('resumeEmpty').style.display = 'none';
+      document.getElementById('resumeBadge').style.display = 'inline-flex';
+      document.getElementById('dlResume').disabled = false;
+      switchTab('resume');
+    } else {
+      coverText = text;
+      document.getElementById('coverPreview').textContent = text;
+      document.getElementById('coverPreview').style.display = 'block';
+      document.getElementById('coverEmpty').style.display = 'none';
+      document.getElementById('coverBadge').style.display = 'inline-flex';
+      document.getElementById('dlCover').disabled = false;
+      switchTab('cover');
+    }
 
-            zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8"?>
+    setStatus('✓ Generated successfully', 'success');
+
+  } catch (e) {
+    setStatus('Error: ' + e.message, 'error');
+    console.error(e);
+  }
+
+  // Re-enable buttons
+  document.querySelectorAll('.btn').forEach(b => {
+    if (b.id === 'dlResume' && !resumeText) return;
+    if (b.id === 'dlCover' && !coverText) return;
+    b.disabled = false;
+  });
+}
+
+// ── DOCX GENERATION ──
+// Parses the plain-text resume and builds a properly formatted DOCX
+// matching the Mack Crolanguage / Teresa Technical template style:
+// bold name, contact line, underlined section headers, left-right aligned dates
+
+function buildResumeXML(text) {
+  const lines = text.split('\n');
+  const paras = [];
+
+  // XML escape
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Tab-stop for right-aligned date (8640 = ~6 inches from left, twips)
+  const rightTabStop = `<w:tabs><w:tab w:val="right" w:pos="9216"/></w:tabs>`;
+
+  let i = 0;
+
+  // Line 1: Name (large bold centered)
+  if (lines[0]) {
+    const name = esc(lines[0].trim());
+    paras.push(`<w:p>
+      <w:pPr><w:jc w:val="center"/><w:spacing w:after="40"/></w:pPr>
+      <w:r><w:rPr><w:b/><w:sz w:val="28"/><w:szCs w:val="28"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+        <w:t>${name}</w:t></w:r>
+    </w:p>`);
+    i = 1;
+  }
+
+  // Line 2: contact info (centered, smaller)
+  if (lines[1] && lines[1].trim()) {
+    const contact = esc(lines[1].trim());
+    paras.push(`<w:p>
+      <w:pPr><w:jc w:val="center"/><w:spacing w:after="160"/></w:pPr>
+      <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+        <w:t>${contact}</w:t></w:r>
+    </w:p>`);
+    i = 2;
+  }
+
+  // Process remaining lines
+  while (i < lines.length) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
+
+    if (!trimmed) {
+      // Empty line = small spacer
+      paras.push(`<w:p><w:pPr><w:spacing w:after="0" w:before="0"/></w:pPr></w:p>`);
+      i++;
+      continue;
+    }
+
+    // SECTION HEADERS: all caps, typically like "EDUCATION", "EXPERIENCE", etc.
+    if (/^[A-Z][A-Z\s\/&]+$/.test(trimmed) && trimmed.length > 2 && !trimmed.includes('|')) {
+      const txt = esc(trimmed);
+      paras.push(`<w:p>
+        <w:pPr>
+          <w:spacing w:before="160" w:after="40"/>
+          <w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>
+        </w:pPr>
+        <w:r><w:rPr><w:b/><w:sz w:val="22"/><w:szCs w:val="22"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+          <w:u w:val="single"/></w:rPr>
+          <w:t>${txt}</w:t></w:r>
+      </w:p>`);
+      i++;
+      continue;
+    }
+
+    // BULLETS: lines starting with • or -
+    if (trimmed.startsWith('•') || trimmed.startsWith('-')) {
+      const bullet = esc(trimmed.replace(/^[•\-]\s*/, ''));
+      paras.push(`<w:p>
+        <w:pPr>
+          <w:ind w:left="360" w:hanging="180"/>
+          <w:spacing w:after="40"/>
+        </w:pPr>
+        <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+          <w:t xml:space="preserve">• ${bullet}</w:t></w:r>
+      </w:p>`);
+      i++;
+      continue;
+    }
+
+    // Lines with a right-aligned date: contains a tab OR has date pattern at end
+    // Pattern: "Some Text                    Month Year–Month Year" or uses | separator
+    const datePattern = /^(.+?)\s{2,}((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\S*\s*[–\-]\s*\S+|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\s+\d{4}|\d{4}\s*[–\-]\s*\d{4}|May\s+\d{4}|August\s+\d{4}|Present)$/i;
+    const dateMatch = trimmed.match(datePattern);
+
+    if (dateMatch) {
+      const leftPart = esc(dateMatch[1].trim());
+      const datePart = esc(dateMatch[2].trim());
+      // Check if bold (company/job line)
+      const isBold = !leftPart.startsWith(',') && i > 2;
+      const rPrBold = isBold ? '<w:b/>' : '';
+      paras.push(`<w:p>
+        <w:pPr>
+          ${rightTabStop}
+          <w:spacing w:after="40"/>
+        </w:pPr>
+        <w:r><w:rPr>${rPrBold}<w:sz w:val="20"/><w:szCs w:val="20"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+          <w:t xml:space="preserve">${leftPart}</w:t></w:r>
+        <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+          <w:tab/><w:t>${datePart}</w:t></w:r>
+      </w:p>`);
+      i++;
+      continue;
+    }
+
+    // Job title lines (usually bold, short, no date)
+    // Detect: short line after a section header or company line, italicize
+    const isJobTitle = trimmed.length < 60 && !trimmed.includes('•') && !trimmed.includes('|') 
+                       && /^[A-Z]/.test(trimmed) && !trimmed.includes(',');
+
+    if (isJobTitle) {
+      const txt = esc(trimmed);
+      paras.push(`<w:p>
+        <w:pPr><w:spacing w:after="40"/></w:pPr>
+        <w:r><w:rPr><w:b/><w:sz w:val="20"/><w:szCs w:val="20"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+          <w:t>${txt}</w:t></w:r>
+      </w:p>`);
+      i++;
+      continue;
+    }
+
+    // Default: regular line
+    const txt = esc(trimmed);
+    paras.push(`<w:p>
+      <w:pPr><w:spacing w:after="40"/></w:pPr>
+      <w:r><w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+        <w:t>${txt}</w:t></w:r>
+    </w:p>`);
+    i++;
+  }
+
+  return paras.join('\n');
+}
+
+function buildCoverXML(text) {
+  const lines = text.split('\n');
+  const paras = [];
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      paras.push(`<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>`);
+      continue;
+    }
+    if (trimmed.startsWith('•') || trimmed.startsWith('-')) {
+      const bullet = esc(trimmed.replace(/^[•\-]\s*/, ''));
+      paras.push(`<w:p>
+        <w:pPr><w:ind w:left="360" w:hanging="180"/><w:spacing w:after="60"/></w:pPr>
+        <w:r><w:rPr><w:sz w:val="22"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+          <w:t xml:space="preserve">• ${bullet}</w:t></w:r>
+      </w:p>`);
+    } else {
+      const txt = esc(trimmed);
+      paras.push(`<w:p>
+        <w:pPr><w:spacing w:after="120"/></w:pPr>
+        <w:r><w:rPr><w:sz w:val="22"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+          <w:t>${txt}</w:t></w:r>
+      </w:p>`);
+    }
+  }
+  return paras.join('\n');
+}
+
+async function makeDOCX(bodyXML, filename) {
+  const zip = new JSZip();
+
+  zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>`);
 
-            zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8"?>
+  zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-<Default Extension="xml" ContentType="application/xml"/>
-<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
 </Types>`);
 
-            zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8"?>
+  zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
 </Relationships>`);
 
-            const paras = text.split('\n').map(line => {
-                const t = line.trim();
-                if (!t) return '<w:p/>';
-                const clean = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                if (t.startsWith('-') || t.startsWith('•')) {
-                    return `<w:p><w:r><w:t>• ${clean.substring(1).trim()}</w:t></w:r></w:p>`;
-                }
-                return `<w:p><w:r><w:t>${clean}</w:t></w:r></w:p>`;
-            }).join('');
+  zip.file('word/settings.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:defaultTabStop w:val="720"/>
+</w:settings>`);
 
-            zip.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8"?>
-<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-<w:body>${paras}</w:body>
+  zip.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <w:body>
+    ${bodyXML}
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="864" w:right="864" w:bottom="864" w:left="864" w:header="720" w:footer="720" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
 </w:document>`);
 
-            const blob = await zip.generateAsync({ type: 'blob' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = name;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-    </script>
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function downloadResume() {
+  if (!resumeText) return;
+  const company = document.getElementById('company').value.trim() || 'Company';
+  setStatus('<span class="spinner"></span>&nbsp; Building DOCX...', 'info');
+  try {
+    const xml = buildResumeXML(resumeText);
+    await makeDOCX(xml, `Dhruvin_Jhaveri_Resume_${company.replace(/\s+/g,'_')}.docx`);
+    setStatus('✓ Resume DOCX downloaded', 'success');
+  } catch(e) {
+    setStatus('DOCX error: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+async function downloadCover() {
+  if (!coverText) return;
+  const company = document.getElementById('company').value.trim() || 'Company';
+  setStatus('<span class="spinner"></span>&nbsp; Building DOCX...', 'info');
+  try {
+    const xml = buildCoverXML(coverText);
+    await makeDOCX(xml, `Dhruvin_Jhaveri_CoverLetter_${company.replace(/\s+/g,'_')}.docx`);
+    setStatus('✓ Cover Letter DOCX downloaded', 'success');
+  } catch(e) {
+    setStatus('DOCX error: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+</script>
 </body>
 </html>
