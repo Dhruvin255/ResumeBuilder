@@ -66,7 +66,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v4 — Always Full Page</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v5 — Corrected Margins</div></div>
   </div>
 
   <div class="field-group">
@@ -271,7 +271,7 @@ var CANDIDATE = {
 
   pub: {
     title: "Toxic Comment Classification using BERT-based Transformer Models",
-    venue: "IEEE ICISAA 2024, Pune, India",
+    venue: "IEEE ICISAA 2024, Mumbai, India",
     desc:  "Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4."
   }
 };
@@ -538,7 +538,7 @@ function mkR(t,o){
   return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>';
 }
 function sp(b,a,l){l=l||252;return '<w:spacing w:after="'+a+'" w:before="'+b+'" w:line="'+l+'" w:lineRule="auto"/>';}
-var RT='<w:tabs><w:tab w:val="right" w:pos="9504"/></w:tabs>';
+var RT='<w:tabs><w:tab w:val="right" w:pos="10800"/></w:tabs>';
 
 function pN(t){return '<w:p><w:pPr>'+sp(0,28)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{b:true,sz:26})+'</w:p>';}
 function pC(t){return '<w:p><w:pPr>'+sp(0,110)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{sz:18})+'</w:p>';}
@@ -603,7 +603,7 @@ function buildDocXML(d){
   // Page setup
   p.push('<w:sectPr>'
     +'<w:pgSz w:w="12240" w:h="15840"/>'
-    +'<w:pgMar w:top="432" w:right="648" w:bottom="432" w:left="648" w:header="360" w:footer="360" w:gutter="0"/>'
+    +'<w:pgMar w:top="432" w:right="720" w:bottom="432" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>'
     +'</w:sectPr>');
   p.push('</w:body></w:document>');
   return p.join('');
