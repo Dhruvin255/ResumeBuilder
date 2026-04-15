@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ResumeForge</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
@@ -20,7 +19,6 @@
     --muted: #8884a4;
     --danger: #f06b6b;
     --success: #5febc4;
-    --warn: #f7c46a;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -30,7 +28,6 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding: 0;
   }
 
   .app {
@@ -39,7 +36,6 @@
     min-height: 100vh;
   }
 
-  /* ── SIDEBAR ── */
   .sidebar {
     background: var(--surface);
     border-right: 1px solid var(--border);
@@ -100,7 +96,6 @@
   }
 
   input[type="password"] { font-family: 'DM Mono', monospace; font-size: 13px; }
-
   textarea { min-height: 110px; resize: vertical; font-size: 13px; line-height: 1.5; }
 
   .track-grid {
@@ -126,7 +121,6 @@
   .track-btn:hover { border-color: var(--border2); color: var(--text); }
   .track-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
 
-  /* ── MAIN AREA ── */
   .main {
     display: flex;
     flex-direction: column;
@@ -157,15 +151,11 @@
 
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover:not(:disabled) { background: #6a59e0; }
-
   .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
   .btn-secondary:hover:not(:disabled) { background: #26263a; }
-
   .btn-success { background: #1a3a32; color: var(--success); border: 1px solid #2a5a4a; }
   .btn-success:hover:not(:disabled) { background: #1f4a3e; }
-
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
   .btn-icon { font-size: 16px; }
 
   .status-bar {
@@ -181,12 +171,10 @@
   .status-bar.info { color: var(--accent2); background: rgba(95,235,196,0.05); }
   .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-  /* ── TABS ── */
   .tabs {
     display: flex;
     border-bottom: 1px solid var(--border);
     padding: 0 28px;
-    gap: 0;
   }
 
   .tab {
@@ -209,7 +197,6 @@
     font-size: 10px; margin-left: 6px;
   }
 
-  /* ── CONTENT AREA ── */
   .content {
     flex: 1;
     padding: 24px 28px;
@@ -255,48 +242,20 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .section-title {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-
-  .ats-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  input[type="range"] {
-    flex: 1;
-    accent-color: var(--accent);
-    height: 4px;
-  }
-
+  .ats-row { display: flex; align-items: center; gap: 12px; }
+  input[type="range"] { flex: 1; accent-color: var(--accent); height: 4px; }
   .ats-value {
     font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--accent2);
-    min-width: 36px;
-    text-align: right;
+    font-size: 14px; font-weight: 500;
+    color: var(--accent2); min-width: 36px; text-align: right;
   }
 
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 4px 0;
-  }
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
 
-  /* Scrollbar styling */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-  /* Responsive */
   @media (max-width: 900px) {
     .app { grid-template-columns: 1fr; }
     .sidebar { position: static; height: auto; }
@@ -312,7 +271,7 @@
       <div class="logo-icon">✦</div>
       <div>
         <div class="logo-text">ResumeForge</div>
-        <div class="logo-version">v2.0 — ATS Engine</div>
+        <div class="logo-version">v3.0 — Tight Layout Engine</div>
       </div>
     </div>
 
@@ -366,7 +325,6 @@
 
   <!-- MAIN -->
   <div class="main">
-
     <div class="toolbar">
       <button class="btn btn-primary" onclick="generate('resume')">
         <span class="btn-icon">◎</span> Generate Resume
@@ -418,6 +376,9 @@
   </div>
 </div>
 
+<!-- docx browser bundle -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
+
 <script>
 // ── STATE ──
 let selectedTrack = null;
@@ -448,24 +409,23 @@ function switchTab(name) {
 // ── STATUS ──
 function setStatus(msg, type) {
   const bar = document.getElementById('statusBar');
-  const msgEl = document.getElementById('statusMsg');
   bar.className = 'status-bar show ' + type;
-  msgEl.innerHTML = msg;
+  document.getElementById('statusMsg').innerHTML = msg;
 }
+function clearStatus() { document.getElementById('statusBar').className = 'status-bar'; }
 
-function clearStatus() {
-  document.getElementById('statusBar').className = 'status-bar';
-}
-
+// ══════════════════════════════════════════════════════
 // ── PROMPTS ──
+// ══════════════════════════════════════════════════════
+
 function getResumePrompt(company, title, loc, jd, track, atsScore) {
   const trackGuide = {
-    sde: `SDE track: emphasize distributed systems, scalability, C++/Python/Java, system design, APIs, algorithms`,
-    backend: `Backend track: emphasize Java/SQL/APIs, database optimization, microservices, server-side architecture`,
-    ds_ml: `ML/DS track: emphasize PyTorch/TensorFlow, NLP, model training, F1/accuracy metrics, data pipelines, research`,
-    analytics: `Analytics track: emphasize SQL, Tableau, Redshift, KPIs, ETL, business insights, data visualization`,
+    sde:              `SDE track: emphasize distributed systems, C++/Python/Java, system design, scalability, algorithms, APIs`,
+    backend:          `Backend track: emphasize Java/Node.js/SQL, microservices, REST APIs, database optimization, server architecture`,
+    ds_ml:            `ML/DS track: emphasize PyTorch/TensorFlow/BERT, NLP, model training, F1/accuracy metrics, data pipelines`,
+    analytics:        `Analytics track: emphasize SQL, Tableau, Redshift, KPIs, ETL, business insights, data visualization`,
     business_analyst: `Business Analyst track: emphasize stakeholder communication, process improvement, SQL, dashboards, requirements`,
-    quant: `Quant track: emphasize statistical modeling, Python/C++, risk models, XGBoost, time-series, accuracy metrics`
+    quant:            `Quant track: emphasize statistical modeling, Python/C++, risk models, XGBoost, time-series, accuracy metrics`
   };
 
   return `You are an expert ATS resume writer. Generate a polished, ATS-optimized resume for Dhruvin Jhaveri.
@@ -487,109 +447,125 @@ LinkedIn: linkedin.com/in/dhruvinjhaveri
 GitHub: github.com/Dhruvin255
 Location: ${loc}
 
-Education (list both, USC first):
-- University of Southern California, Los Angeles, CA — M.S. Computer Science (Data Science), GPA: 3.40, May 2026
-- NMIMS University, Mumbai, India — B.Tech. Computer Engineering, GPA: 3.61, May 2023
+Education:
+1. University of Southern California, Los Angeles, CA — M.S. Computer Science (Data Science), GPA: 3.40, May 2026
+2. NMIMS University, Mumbai, India — B.Tech. Computer Engineering, GPA: 3.61, May 2023
 
-Experience (use exactly 3 based on track):
+Experience (pick 3 most relevant for the track — always include AWS):
 A) Software Development Engineer Intern | AWS (Amazon Web Services), Santa Clara, CA | May – Aug 2025
-   Tech: C++, SQL, AWS Redshift, AWS S3, CI/CD, distributed systems
-   - Engineered latency-aware C++ scaling framework for Redshift Serverless, improving query stability 35% across production
-   - Designed auto-resizing mechanism with GUC config logic; built S3-based workload history for SQL scaling analytics
-   - Built CI/CD pipelines with automated regression tests across 12 nodes, achieving 99.8% uptime
+   Tech: C++, SQL, AWS Redshift, AWS S3, CI/CD, Distributed Systems
+   - Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production
+   - Designed auto-resizing mechanism with GUC config logic; built S3 workload history for persistent SQL scaling analytics
+   - Built CI/CD regression pipelines across 12 distributed nodes; achieved 99.8% uptime with zero-downtime deploys
 
 B) Product Enablement Intern | Imarticus Learning, Mumbai, India | Jan – May 2023
    Tech: Python, BERT, LangChain, Node.js, PostgreSQL, MongoDB, REST APIs
-   - Designed NLP-driven evaluation system using BERT transformers, analyzing 50k+ daily events with 92% accuracy
-   - Automated 90% of manual tagging workflows via Node.js microservices, saving 4 hours daily
-   - Integrated REST API endpoints with PostgreSQL backend, enabling real-time analytics for 5 product managers
+   - Built NLP evaluation pipeline with BERT and LangChain; classified 50k+ daily learner events at 92% accuracy
+   - Automated 90% of content-tagging via Node.js microservices and REST APIs, saving 4 engineering hours daily
+   - Integrated PostgreSQL analytics endpoints; enabled real-time performance dashboards for 5 product managers
 
 C) Data Analyst Intern | Paypoint India, Ahmedabad, India | Apr – Jul 2023
    Tech: Python, XGBoost, SQL, PostgreSQL, Tableau, Qlik Sense, Docker, AWS EC2
-   - Built XGBoost credit risk model with RFE feature selection, achieving 94% accuracy on 1,000+ daily loan applications
-   - Designed Tableau and Qlik Sense dashboards tracking 12 KPIs; identified patterns reducing default rate 18%
-   - Implemented ETL pipelines using PostgreSQL and Python, processing 500k+ financial records daily
+   - Trained XGBoost credit risk model with RFE feature selection; achieved 94% accuracy on 1,000+ daily loan applications
+   - Built Tableau and Qlik Sense dashboards tracking 12 KPIs; identified patterns cutting loan default rate 18%
+   - Implemented ETL pipelines in PostgreSQL and Python, processing 500k+ financial records daily with auto-reconciliation
 
-Projects:
-P1) Full Stack Artist Search Application | Node.js, MongoDB, Express, JWT, MapReduce | Co-developed with Dhiren Oswal
-   - Engineered 13 REST API endpoints with JWT authentication, achieving 172ms P95 latency across 10k concurrent users
-   - Implemented MapReduce caching strategy, reducing duplicate API requests by 50% and improving throughput by 3x
+D) Co-Founder, Competitive Coding Dept. | Google Developer Student Clubs (GDSC), Mumbai | Jul 2022 – Jul 2023
+   Tech: Java, DSA, Competitive Programming, LeetCode, Codeforces, Hackerrank
+   - Founded GDSC coding department from scratch; scaled to 200+ active members and 40+ competitions in one year
+   - Mentored 45+ students across LeetCode, Codeforces, and Hackerrank; multiple placements in ACM SemiCode
+   - Organized inter-college hackathons and DSA bootcamps; grew department engagement 5x in under 12 months
+
+Projects (pick 2 most relevant):
+P1) Full Stack Artist Search Application | Node.js, MongoDB, Express, JWT, MapReduce
+   - Engineered 13 REST API endpoints with JWT auth and role-based access; achieved 172ms P95 latency under 10k concurrent users
+   - Implemented MapReduce caching layer, cutting duplicate upstream API requests 50% and tripling read throughput
+   - Designed schema-optimized MongoDB collections and query indexes; reduced average DB response time by 40%
 
 P2) PharmaChain — Blockchain Supply Chain Platform | Ethereum, Solidity, Node.js, Web3.js
-   - Built Ethereum smart contract system with off-chain aggregation layer, improving traceability by 95% across 4 suppliers
-   - Achieved 25% on-chain efficiency improvement; 2nd place Study Australia Entrepreneurship Challenge, 4,000 AUD funding
+   - Architected Ethereum smart contracts with off-chain aggregation layer; improved traceability 95% across 4 supplier tiers
+   - Cut on-chain gas costs 25% via test-driven contract optimization; 2nd place Study Australia Challenge, AUD 4,000 funding
+   - Integrated MetaMask wallet auth and Web3.js event listeners; deployed via Truffle with automated smart contract tests
 
 P3) IEEE Publication — BERT Toxic Comment Classifier | Python, PyTorch, Scikit-learn
    - Trained multi-label BERT model on 160k comments; achieved F1 score of 0.91, published at IEEE ICISAA 2024
 
-Skills to pick from by track:
+Skills to select by track:
 - Languages: Python, C++, Java, SQL, JavaScript, TypeScript, Solidity
 - Frameworks: Node.js, Express, Django, Flask, React, LangChain, PyTorch, TensorFlow, Scikit-learn
-- Data/ML: XGBoost, BERT, NLP, MapReduce, Pandas, NumPy, Matplotlib
+- Data/ML: XGBoost, BERT, NLP, MapReduce, Pandas, NumPy
 - Databases: PostgreSQL, MongoDB, MySQL, Redshift, DynamoDB
 - Cloud/DevOps: AWS (S3, EC2, Redshift, Lambda), Docker, Git, CI/CD, REST APIs
-- Tools: Tableau, Jupyter, Web3.js, JWT, Hadoop
-
-=== STRICT ONE-PAGE BUDGET ===
-HARD LIMIT: The entire resume MUST fit on ONE page. Follow exact counts below.
-
-SECTION BUDGETS:
-- Header: 2 lines
-- Education: USC = 2 lines (degree+coursework on ONE line). NMIMS = 1 line. Total: 3 lines.
-- Skills: 3 lines, one per subcategory
-- Experience: EXACTLY 3 roles × EXACTLY 3 bullets = 9 bullets
-- Projects: EXACTLY 2 projects × EXACTLY 2 bullets = 4 bullets
-
-BULLET RULES:
-- MAX 18 words per bullet. Count them. No padding.
-- Pattern: [Strong verb] [what] [how/tool], [metric/result]
-- BAD: "Collaborated with senior engineers on architecture reviews for query optimizer serving 10k+ clients, driving improvements"
-- GOOD: "Optimized distributed query optimizer architecture; reduced P99 latency 35% across 10k+ enterprise clients"
-
-TOTAL WORDS (excluding name/contact): 440-480 max.
+- Tools: Tableau, Qlik Sense, Jupyter, Web3.js, JWT
 
 === OUTPUT FORMAT ===
-Output ONLY plain text. Use this EXACT structure — every separator and line break matters:
+Output ONLY this exact plain-text structure. Every field is required.
 
-DHRUVIN JHAVERI
-[phone] | [email] | [linkedin] | [github] | [location]
+RESUME_START
+NAME: Dhruvin Jhaveri
+CONTACT: (602) 793-6561  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255  |  ${loc}
 
-EDUCATION
-[University Name], [City, State] | [Degree], GPA: X.XX | [Month Year]
-Relevant Coursework: [3-4 courses]
-[University 2 Name], [City, Country] | [Degree], GPA: X.XX | [Month Year]
+EDU1_LEFT: University of Southern California, Los Angeles, CA  |  M.S. Computer Science (Data Science), GPA: 3.40
+EDU1_DATE: May 2026
+EDU1_COURSE: [3-4 relevant courses separated by commas]
+EDU2_LEFT: NMIMS University, Mumbai, India  |  B.Tech. Computer Engineering, GPA: 3.61
+EDU2_DATE: May 2023
 
-TECHNICAL SKILLS
-Languages: [list]
-Frameworks & Libraries: [list]
-Databases & Cloud: [list]
+SKILL1_LABEL: Languages
+SKILL1_VALUE: [language list]
+SKILL2_LABEL: Frameworks & Libraries
+SKILL2_VALUE: [framework list]
+SKILL3_LABEL: Databases & Cloud
+SKILL3_VALUE: [database/cloud list]
 
-EXPERIENCE
-[Job Title] | [Company], [City, State] | [Date Range]
-[Tech: comma-separated tech stack used in this role]
-• [bullet]
-• [bullet]
-• [bullet]
+EXP1_TITLE: [Job Title]
+EXP1_COMPANY: [Company, City, State]
+EXP1_DATE: [Date Range]
+EXP1_TECH: [tech stack]
+EXP1_B1: [bullet 1 — max 18 words, metric-driven]
+EXP1_B2: [bullet 2]
+EXP1_B3: [bullet 3]
 
-[repeat for 3 experiences]
+EXP2_TITLE: [Job Title]
+EXP2_COMPANY: [Company, City, State]
+EXP2_DATE: [Date Range]
+EXP2_TECH: [tech stack]
+EXP2_B1: [bullet 1]
+EXP2_B2: [bullet 2]
+EXP2_B3: [bullet 3]
 
-PROJECTS
-[Project Name] | [Tech Stack]
-• [bullet]
-• [bullet]
+EXP3_TITLE: [Job Title]
+EXP3_COMPANY: [Company, City, State]
+EXP3_DATE: [Date Range]
+EXP3_TECH: [tech stack]
+EXP3_B1: [bullet 1]
+EXP3_B2: [bullet 2]
+EXP3_B3: [bullet 3]
 
-[repeat for 2 projects]
+PROJ1_NAME: [Project Name]
+PROJ1_STACK: [Tech Stack]
+PROJ1_B1: [bullet 1]
+PROJ1_B2: [bullet 2]
+PROJ1_B3: [bullet 3]
 
-CRITICAL FORMATTING NOTES:
-- Education lines use pipe | separators — everything on ONE line per degree
-- Experience header is ONE line: "Job Title | Company, City | Dates"
-- Second line under each experience is "Tech: ..." — the stack used, comma-separated
-- Exactly 3 experiences (always AWS; Imarticus for ML/backend/SDE; Paypoint for analytics/quant/business)
-- Exactly 2 projects suited to track
-- 3 skills subcategories only
-- No soft skills, no personal pronouns, past tense
-- Both degrees shown
-- No OPT/visa language, no double hyphens`;
+PROJ2_NAME: [Project Name]
+PROJ2_STACK: [Tech Stack]
+PROJ2_B1: [bullet 1]
+PROJ2_B2: [bullet 2]
+PROJ2_B3: [bullet 3]
+
+PUB_TITLE: Toxic Comment Classification using BERT-based Transformer Models
+PUB_VENUE: IEEE ICISAA 2024, Pune, India
+PUB_DESC: Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4.
+RESUME_END
+
+RULES:
+- Each bullet MAX 18 words. Strong verb + what + metric. No soft skills, no pronouns.
+- Always include AWS as EXP1.
+- SDE/Backend: use Imarticus as EXP2; Analytics/Quant: use Paypoint as EXP2.
+- GDSC as EXP3 for SDE/Backend/ML; Paypoint as EXP3 for SDE/ML if relevant.
+- Projects: Artist Search first for SDE/Backend; PharmaChain first for Quant/BizOps; either order for ML/Analytics.
+- Output ONLY the block between RESUME_START and RESUME_END — no preamble, no explanation.`;
 }
 
 function getCoverPrompt(company, title, loc, jd) {
@@ -604,43 +580,42 @@ Background:
 - ML Engineer: BERT NLP pipeline, 92% accuracy, LangChain
 - Data Scientist: XGBoost credit risk model, 94% accuracy
 - IEEE publication: BERT toxic comment classifier, F1 0.91
-- Founded GDSC Coding Club, grew from 10 to 200+ members
-- PharmaChain: 2nd place Study Australia Entrepreneurship, Harvard recognition
-- Available mid-June 2026
-- Relocating to NYC (dream city, fresh start)
+- Co-founded GDSC Coding Dept, grew to 200+ members
+- PharmaChain: 2nd place Study Australia Entrepreneurship, AUD 4,000
+- Relocating to NYC mid-June 2026
+- F-1 OPT, STEM extension eligible
 
 RULES:
 - 200-250 words total
-- Bullet-style body (not paragraph essay)
-- 4 short sections: Opening excitement, Best 2-3 experiences with metrics, Unique angle (leadership/research/entrepreneurship), Closing with NYC hook + availability
-- Professional but energetic voice
-- First person is fine
-- No double hyphens anywhere (use comma or em dash instead)
-- No OPT/visa language
-- Do NOT repeat exact resume bullets verbatim; expand them
 - Start with "Dear Hiring Manager,"
-- End with contact info: djhaveri99@gmail.com | (602) 793-6561
+- Opening: 1-2 sentences of genuine excitement for this specific role/company
+- Body: 3-4 bullet points with metrics (strongest experience first)
+- Closing: 1 sentence with NYC hook + availability
+- End with: djhaveri99@gmail.com  |  (602) 793-6561
+- Professional but human voice — not AI-sounding
+- No double hyphens (use em dash or comma)
+- No OPT/visa language in the letter body
 
 Output ONLY the cover letter text, nothing else.`;
 }
 
-// ── GENERATE ──
+// ══════════════════════════════════════════════════════
+// ── GENERATE (API CALL) ──
+// ══════════════════════════════════════════════════════
+
 async function generate(type) {
-  const key = document.getElementById('apiKey').value.trim();
+  const key     = document.getElementById('apiKey').value.trim();
   const company = document.getElementById('company').value.trim();
-  const title = document.getElementById('jobTitle').value.trim();
-  const loc = document.getElementById('location').value.trim() || 'New York, NY';
-  const jd = document.getElementById('jd').value.trim();
-  const ats = document.getElementById('atsSlider').value;
+  const title   = document.getElementById('jobTitle').value.trim();
+  const loc     = document.getElementById('location').value.trim() || 'New York, NY';
+  const jd      = document.getElementById('jd').value.trim();
+  const ats     = document.getElementById('atsSlider').value;
 
-  if (!key) return setStatus('API key required', 'error');
-  if (!jd) return setStatus('Job description required', 'error');
-  if (!selectedTrack) return setStatus('Select a track', 'error');
+  if (!key)            return setStatus('API key required', 'error');
+  if (!jd)             return setStatus('Job description required', 'error');
+  if (!selectedTrack)  return setStatus('Select a track', 'error');
 
-  const spinner = '<span class="spinner"></span>';
-  setStatus(`${spinner} &nbsp;Generating ${type === 'resume' ? 'resume' : 'cover letter'}...`, 'info');
-
-  // Disable buttons
+  setStatus('<span class="spinner"></span>&nbsp; Generating ' + (type === 'resume' ? 'resume' : 'cover letter') + '...', 'info');
   document.querySelectorAll('.btn').forEach(b => b.disabled = true);
 
   const prompt = type === 'resume'
@@ -690,13 +665,10 @@ async function generate(type) {
     }
 
     setStatus('✓ Generated successfully', 'success');
-
-  } catch (e) {
+  } catch(e) {
     setStatus('Error: ' + e.message, 'error');
-    console.error(e);
   }
 
-  // Re-enable buttons
   document.querySelectorAll('.btn').forEach(b => {
     if (b.id === 'dlResume' && !resumeText) return;
     if (b.id === 'dlCover' && !coverText) return;
@@ -704,258 +676,284 @@ async function generate(type) {
   });
 }
 
-// ── DOCX GENERATION ──
-// Compact format matching reference PDF:
-// - Name large + bold centered
-// - Contact line centered
-// - Section headers: ALL CAPS bold with full-width bottom border, tight spacing
-// - Education: pipe-separated single line per degree
-// - Experience header: "Job Title | Company, City | Dates" on ONE line (bold, right-tab date)
-//   followed by italic tech stack line
-// - Bullets: indented, tight spacing
-// - Projects: "Name | Stack" bold header, 2 bullets
-// Font: Calibri throughout (clean, professional, compact)
+// ══════════════════════════════════════════════════════
+// ── DOCX BUILDER — exact spacing from validated Node build ──
+// ══════════════════════════════════════════════════════
 
-function buildResumeXML(text) {
-  const lines = text.split('\n');
-  const paras = [];
+function parseResumeFields(text) {
+  // Extract RESUME_START...RESUME_END block
+  const match = text.match(/RESUME_START([\s\S]*?)RESUME_END/);
+  const block = match ? match[1] : text;
 
-  function esc(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  const get = (key) => {
+    const m = block.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
+    return m ? m[1].trim() : '';
+  };
 
-  // Font shorthand — Calibri 10pt
-  const F = `<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/>`;
-  const SZ = `<w:sz w:val="20"/><w:szCs w:val="20"/>`;      // 10pt
-  const SZN = `<w:sz w:val="19"/><w:szCs w:val="19"/>`;     // 9.5pt for tech line
-  const SZH = `<w:sz w:val="26"/><w:szCs w:val="26"/>`;     // 13pt for name
-  const SZS = `<w:sz w:val="22"/><w:szCs w:val="22"/>`;     // 11pt for section headers
-  const rightTab = `<w:tabs><w:tab w:val="right" w:pos="9360"/></w:tabs>`;
-
-  // Spacing helpers
-  function sp(before, after) {
-    return `<w:spacing w:before="${before}" w:after="${after}" w:line="240" w:lineRule="auto"/>`;
-  }
-
-  let i = 0;
-
-  // ── LINE 0: Name ──
-  if (lines[0]) {
-    paras.push(`<w:p><w:pPr><w:jc w:val="center"/>${sp(0,40)}</w:pPr>
-      <w:r><w:rPr><w:b/>${SZH}${F}</w:rPr><w:t>${esc(lines[0].trim())}</w:t></w:r></w:p>`);
-    i = 1;
-  }
-
-  // ── LINE 1: Contact ──
-  if (lines[1] && lines[1].trim()) {
-    paras.push(`<w:p><w:pPr><w:jc w:val="center"/>${sp(0,120)}</w:pPr>
-      <w:r><w:rPr>${SZ}${F}</w:rPr><w:t>${esc(lines[1].trim())}</w:t></w:r></w:p>`);
-    i = 2;
-  }
-
-  while (i < lines.length) {
-    const raw = lines[i];
-    const t = raw.trim();
-
-    // ── EMPTY LINE ── (skip, no spacer — tight layout)
-    if (!t) { i++; continue; }
-
-    // ── SECTION HEADER: all-caps word(s), no pipe ──
-    if (/^[A-Z][A-Z\s\/&]+$/.test(t) && t.length > 2 && !t.includes('|')) {
-      paras.push(`<w:p>
-        <w:pPr>
-          ${sp(140, 40)}
-          <w:pBdr><w:bottom w:val="single" w:sz="8" w:space="1" w:color="1a1a1a"/></w:pBdr>
-        </w:pPr>
-        <w:r><w:rPr><w:b/>${SZS}${F}</w:rPr><w:t>${esc(t)}</w:t></w:r>
-      </w:p>`);
-      i++; continue;
-    }
-
-    // ── BULLET ──
-    if (t.startsWith('•') || t.startsWith('-')) {
-      const content = esc(t.replace(/^[•\-]\s*/,''));
-      paras.push(`<w:p>
-        <w:pPr><w:ind w:left="200" w:hanging="160"/>${sp(0,28)}</w:pPr>
-        <w:r><w:rPr>${SZ}${F}</w:rPr><w:t xml:space="preserve">• ${content}</w:t></w:r>
-      </w:p>`);
-      i++; continue;
-    }
-
-    // ── TECH STACK LINE: starts with "Tech:" ──
-    if (t.startsWith('Tech:')) {
-      const content = esc(t.replace(/^Tech:\s*/,''));
-      paras.push(`<w:p>
-        <w:pPr>${sp(0,28)}</w:pPr>
-        <w:r><w:rPr><w:i/>${SZN}${F}<w:color w:val="444444"/></w:rPr>
-          <w:t xml:space="preserve">Tech: ${content}</w:t></w:r>
-      </w:p>`);
-      i++; continue;
-    }
-
-    // ── PIPE-SEPARATED LINE ── (Education OR Experience header OR Project header)
-    if (t.includes('|')) {
-      const parts = t.split('|').map(p => p.trim());
-
-      // Education line: "University, City | Degree, GPA | Date"  (3 parts, last is date)
-      const isEdu = parts.length >= 2 && /\d{4}/.test(parts[parts.length-1]) 
-                    && (t.toLowerCase().includes('university') || t.toLowerCase().includes('institute') 
-                        || t.toLowerCase().includes('college') || t.toLowerCase().includes('nmims')
-                        || t.toLowerCase().includes('bachelor') || t.toLowerCase().includes('master')
-                        || t.toLowerCase().includes('b.tech') || t.toLowerCase().includes('m.s'));
-
-      // Experience header: "Job Title | Company, City | Date Range"
-      const isExp = parts.length >= 2 && /\d{4}/.test(parts[parts.length-1])
-                    && (t.toLowerCase().includes('intern') || t.toLowerCase().includes('engineer')
-                        || t.toLowerCase().includes('scientist') || t.toLowerCase().includes('analyst')
-                        || t.toLowerCase().includes('developer') || t.toLowerCase().includes('manager'));
-
-      if (isEdu) {
-        // Left side: university + degree, Right side: date
-        const datePart = esc(parts[parts.length-1]);
-        const leftParts = parts.slice(0, parts.length-1).map(esc).join('  |  ');
-        paras.push(`<w:p>
-          <w:pPr>${rightTab}${sp(0,28)}</w:pPr>
-          <w:r><w:rPr><w:b/>${SZ}${F}</w:rPr><w:t xml:space="preserve">${leftParts}</w:t></w:r>
-          <w:r><w:rPr>${SZ}${F}</w:rPr><w:tab/><w:t>${datePart}</w:t></w:r>
-        </w:p>`);
-        i++; continue;
-      }
-
-      if (isExp) {
-        // "Job Title | Company, City | Date"
-        const datePart = esc(parts[parts.length-1]);
-        const titleAndCompany = parts.slice(0, parts.length-1).map(esc).join('  |  ');
-        paras.push(`<w:p>
-          <w:pPr>${rightTab}${sp(80,28)}</w:pPr>
-          <w:r><w:rPr><w:b/>${SZ}${F}</w:rPr><w:t xml:space="preserve">${titleAndCompany}</w:t></w:r>
-          <w:r><w:rPr>${SZ}${F}</w:rPr><w:tab/><w:t>${datePart}</w:t></w:r>
-        </w:p>`);
-        i++; continue;
-      }
-
-      // Project header: "Project Name | Tech Stack"
-      const projLeft = esc(parts[0]);
-      const projRight = parts.slice(1).map(esc).join(' | ');
-      paras.push(`<w:p>
-        <w:pPr>${sp(80,28)}</w:pPr>
-        <w:r><w:rPr><w:b/>${SZ}${F}</w:rPr><w:t xml:space="preserve">${projLeft}</w:t></w:r>
-        <w:r><w:rPr>${SZ}${F}</w:rPr><w:t xml:space="preserve"> | ${projRight}</w:t></w:r>
-      </w:p>`);
-      i++; continue;
-    }
-
-    // ── COURSEWORK / SKILLS line ── (starts with known label)
-    if (/^(Relevant Coursework|Languages|Frameworks|Databases|Tools|Skills)/i.test(t)) {
-      const colonIdx = t.indexOf(':');
-      if (colonIdx > -1) {
-        const label = esc(t.substring(0, colonIdx + 1));
-        const val = esc(t.substring(colonIdx + 1).trim());
-        paras.push(`<w:p><w:pPr>${sp(0,28)}</w:pPr>
-          <w:r><w:rPr><w:b/>${SZ}${F}</w:rPr><w:t xml:space="preserve">${label} </w:t></w:r>
-          <w:r><w:rPr>${SZ}${F}</w:rPr><w:t>${val}</w:t></w:r>
-        </w:p>`);
-        i++; continue;
-      }
-    }
-
-    // ── DEFAULT: plain line ──
-    paras.push(`<w:p><w:pPr>${sp(0,28)}</w:pPr>
-      <w:r><w:rPr>${SZ}${F}</w:rPr><w:t>${esc(t)}</w:t></w:r>
-    </w:p>`);
-    i++;
-  }
-
-  return paras.join('\n');
+  return {
+    name:       get('NAME'),
+    contact:    get('CONTACT'),
+    edu1Left:   get('EDU1_LEFT'),
+    edu1Date:   get('EDU1_DATE'),
+    edu1Course: get('EDU1_COURSE'),
+    edu2Left:   get('EDU2_LEFT'),
+    edu2Date:   get('EDU2_DATE'),
+    skill1Label: get('SKILL1_LABEL'), skill1Value: get('SKILL1_VALUE'),
+    skill2Label: get('SKILL2_LABEL'), skill2Value: get('SKILL2_VALUE'),
+    skill3Label: get('SKILL3_LABEL'), skill3Value: get('SKILL3_VALUE'),
+    exps: [1,2,3].map(i => ({
+      title:   get(`EXP${i}_TITLE`),
+      company: get(`EXP${i}_COMPANY`),
+      date:    get(`EXP${i}_DATE`),
+      tech:    get(`EXP${i}_TECH`),
+      bullets: [1,2,3].map(j => get(`EXP${i}_B${j}`)).filter(Boolean)
+    })).filter(e => e.title),
+    projs: [1,2].map(i => ({
+      name:    get(`PROJ${i}_NAME`),
+      stack:   get(`PROJ${i}_STACK`),
+      bullets: [1,2,3].map(j => get(`PROJ${i}_B${j}`)).filter(Boolean)
+    })).filter(p => p.name),
+    pubTitle:  get('PUB_TITLE'),
+    pubVenue:  get('PUB_VENUE'),
+    pubDesc:   get('PUB_DESC'),
+  };
 }
 
-function buildCoverXML(text) {
-  const lines = text.split('\n');
-  const paras = [];
-  const F = `<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/>`;
+async function buildResumeDOCX(text, filename) {
+  const {
+    Document, Paragraph, TextRun, Packer,
+    AlignmentType, LevelFormat, TabStopType, BorderStyle
+  } = docx;
 
-  function esc(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const f = parseResumeFields(text);
+
+  // ── Spacing constants (exact values from validated Node.js build) ──
+  const FONT    = "Calibri";
+  const SZ_NAME = 26;  // 13pt
+  const SZ_CONT = 18;  // 9pt
+  const SZ_SEC  = 21;  // 10.5pt
+  const SZ_BODY = 19;  // 9.5pt
+  const SZ_TECH = 18;  // 9pt
+  const RIGHT_TAB = 9504;
+
+  const sp = (before, after, line = 252) => ({ before, after, line, lineRule: "auto" });
+
+  // ── Helper builders ──
+  const mkName = (t) => new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: sp(0, 28),
+    children: [new TextRun({ text: t, font: FONT, size: SZ_NAME, bold: true })]
+  });
+
+  const mkContact = (t) => new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: sp(0, 110),
+    children: [new TextRun({ text: t, font: FONT, size: SZ_CONT })]
+  });
+
+  const mkSection = (t) => new Paragraph({
+    spacing: sp(118, 36),
+    border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "1f3864", space: 1 } },
+    children: [new TextRun({ text: t, font: FONT, size: SZ_SEC, bold: true, color: "1f3864" })]
+  });
+
+  const mkEduLine = (left, date) => new Paragraph({
+    spacing: sp(0, 18),
+    tabStops: [{ type: TabStopType.RIGHT, position: RIGHT_TAB }],
+    children: [
+      new TextRun({ text: left, font: FONT, size: SZ_BODY, bold: true }),
+      new TextRun({ text: "\t" + date, font: FONT, size: SZ_BODY })
+    ]
+  });
+
+  const mkCourse = (t) => new Paragraph({
+    spacing: sp(0, 52),
+    children: [
+      new TextRun({ text: "Relevant Coursework: ", font: FONT, size: SZ_BODY, bold: true }),
+      new TextRun({ text: t, font: FONT, size: SZ_BODY })
+    ]
+  });
+
+  const mkSkill = (label, value) => new Paragraph({
+    spacing: sp(0, 18),
+    children: [
+      new TextRun({ text: label + ": ", font: FONT, size: SZ_BODY, bold: true }),
+      new TextRun({ text: value, font: FONT, size: SZ_BODY })
+    ]
+  });
+
+  const mkExpHeader = (title, company, date) => new Paragraph({
+    spacing: sp(72, 14),
+    tabStops: [{ type: TabStopType.RIGHT, position: RIGHT_TAB }],
+    children: [
+      new TextRun({ text: `${title}  |  ${company}`, font: FONT, size: SZ_BODY, bold: true }),
+      new TextRun({ text: "\t" + date, font: FONT, size: SZ_BODY, bold: true })
+    ]
+  });
+
+  const mkTech = (t) => new Paragraph({
+    spacing: sp(0, 16),
+    children: [new TextRun({ text: "Tech: " + t, font: FONT, size: SZ_TECH, italics: true, color: "444444" })]
+  });
+
+  const mkBullet = (t) => new Paragraph({
+    spacing: sp(0, 34),
+    numbering: { reference: "bullets", level: 0 },
+    children: [new TextRun({ text: t, font: FONT, size: SZ_BODY })]
+  });
+
+  const mkProjHeader = (name, stack) => new Paragraph({
+    spacing: sp(68, 14),
+    children: [
+      new TextRun({ text: name, font: FONT, size: SZ_BODY, bold: true }),
+      new TextRun({ text: "  |  " + stack, font: FONT, size: SZ_TECH, color: "444444" })
+    ]
+  });
+
+  // ── Assemble children ──
+  const children = [];
+
+  // Header
+  children.push(mkName(f.name || "DHRUVIN JHAVERI"));
+  children.push(mkContact(f.contact));
+
+  // Education
+  children.push(mkSection("EDUCATION"));
+  children.push(mkEduLine(f.edu1Left, f.edu1Date));
+  if (f.edu1Course) children.push(mkCourse(f.edu1Course));
+  children.push(mkEduLine(f.edu2Left, f.edu2Date));
+
+  // Skills
+  children.push(mkSection("TECHNICAL SKILLS"));
+  children.push(mkSkill(f.skill1Label, f.skill1Value));
+  children.push(mkSkill(f.skill2Label, f.skill2Value));
+  children.push(mkSkill(f.skill3Label, f.skill3Value));
+
+  // Experience
+  children.push(mkSection("EXPERIENCE"));
+  for (const exp of f.exps) {
+    children.push(mkExpHeader(exp.title, exp.company, exp.date));
+    if (exp.tech) children.push(mkTech(exp.tech));
+    for (const b of exp.bullets) children.push(mkBullet(b));
   }
 
-  for (const line of lines) {
-    const t = line.trim();
-    if (!t) {
-      paras.push(`<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>`);
-      continue;
-    }
-    if (t.startsWith('•') || t.startsWith('-')) {
-      const bullet = esc(t.replace(/^[•\-]\s*/, ''));
-      paras.push(`<w:p>
-        <w:pPr><w:ind w:left="200" w:hanging="160"/><w:spacing w:after="60" w:line="240" w:lineRule="auto"/></w:pPr>
-        <w:r><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/>${F}</w:rPr>
-          <w:t xml:space="preserve">• ${bullet}</w:t></w:r>
-      </w:p>`);
-    } else {
-      paras.push(`<w:p>
-        <w:pPr><w:spacing w:after="120" w:line="240" w:lineRule="auto"/></w:pPr>
-        <w:r><w:rPr><w:sz w:val="22"/><w:szCs w:val="22"/>${F}</w:rPr>
-          <w:t>${esc(t)}</w:t></w:r>
-      </w:p>`);
-    }
+  // Projects
+  children.push(mkSection("PROJECTS"));
+  for (const proj of f.projs) {
+    children.push(mkProjHeader(proj.name, proj.stack));
+    for (const b of proj.bullets) children.push(mkBullet(b));
   }
-  return paras.join('\n');
-}
 
-async function makeDOCX(bodyXML, filename) {
-  const zip = new JSZip();
+  // Publication
+  if (f.pubTitle) {
+    children.push(mkSection("PUBLICATION"));
+    children.push(new Paragraph({
+      spacing: sp(0, 0),
+      children: [
+        new TextRun({ text: f.pubTitle, font: FONT, size: SZ_BODY, bold: true }),
+        new TextRun({ text: "  —  " + f.pubVenue, font: FONT, size: SZ_BODY })
+      ]
+    }));
+    if (f.pubDesc) children.push(new Paragraph({
+      spacing: sp(0, 0),
+      children: [new TextRun({ text: f.pubDesc, font: FONT, size: SZ_BODY })]
+    }));
+  }
 
-  zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-</Relationships>`);
+  // ── Build Document ──
+  const doc = new Document({
+    numbering: {
+      config: [{
+        reference: "bullets",
+        levels: [{
+          level: 0,
+          format: LevelFormat.BULLET,
+          text: "\u2022",
+          alignment: AlignmentType.LEFT,
+          style: {
+            paragraph: {
+              indent: { left: 280, hanging: 200 },
+              spacing: { after: 22 }
+            }
+          }
+        }]
+      }]
+    },
+    sections: [{
+      properties: {
+        page: {
+          size: { width: 12240, height: 15840 },
+          margin: { top: 432, right: 648, bottom: 432, left: 648 }
+        }
+      },
+      children
+    }]
+  });
 
-  zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-  <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
-</Types>`);
-
-  zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
-</Relationships>`);
-
-  zip.file('word/settings.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-  <w:defaultTabStop w:val="720"/>
-</w:settings>`);
-
-  zip.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-            xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-  <w:body>
-    ${bodyXML}
-    <w:sectPr>
-      <w:pgSz w:w="12240" w:h="15840"/>
-      <w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>
-    </w:sectPr>
-  </w:body>
-</w:document>`);
-
-  const blob = await zip.generateAsync({ type: 'blob' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const blob = await Packer.toBlob(doc);
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
   a.href = url;
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
 }
 
+async function buildCoverDOCX(text, filename) {
+  const { Document, Paragraph, TextRun, Packer, AlignmentType, BorderStyle } = docx;
+
+  const FONT = "Calibri";
+  const lines = text.split('\n');
+  const children = [];
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) {
+      children.push(new Paragraph({ spacing: { after: 0 } }));
+      continue;
+    }
+    if (t.startsWith('•') || t.startsWith('-')) {
+      children.push(new Paragraph({
+        spacing: { after: 80, line: 240, lineRule: "auto" },
+        indent: { left: 280, hanging: 200 },
+        children: [new TextRun({ text: '• ' + t.replace(/^[•\-]\s*/, ''), font: FONT, size: 22 })]
+      }));
+    } else {
+      children.push(new Paragraph({
+        spacing: { after: 140, line: 240, lineRule: "auto" },
+        children: [new TextRun({ text: t, font: FONT, size: 22 })]
+      }));
+    }
+  }
+
+  const doc = new Document({
+    sections: [{
+      properties: {
+        page: {
+          size: { width: 12240, height: 15840 },
+          margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 }
+        }
+      },
+      children
+    }]
+  });
+
+  const blob = await Packer.toBlob(doc);
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── DOWNLOAD HANDLERS ──
 async function downloadResume() {
   if (!resumeText) return;
   const company = document.getElementById('company').value.trim() || 'Company';
   setStatus('<span class="spinner"></span>&nbsp; Building DOCX...', 'info');
   try {
-    const xml = buildResumeXML(resumeText);
-    await makeDOCX(xml, `Dhruvin_Jhaveri_Resume_${company.replace(/\s+/g,'_')}.docx`);
+    await buildResumeDOCX(resumeText, `Dhruvin_Jhaveri_Resume_${company.replace(/\s+/g,'_')}.docx`);
     setStatus('✓ Resume DOCX downloaded', 'success');
   } catch(e) {
     setStatus('DOCX error: ' + e.message, 'error');
@@ -968,8 +966,7 @@ async function downloadCover() {
   const company = document.getElementById('company').value.trim() || 'Company';
   setStatus('<span class="spinner"></span>&nbsp; Building DOCX...', 'info');
   try {
-    const xml = buildCoverXML(coverText);
-    await makeDOCX(xml, `Dhruvin_Jhaveri_CoverLetter_${company.replace(/\s+/g,'_')}.docx`);
+    await buildCoverDOCX(coverText, `Dhruvin_Jhaveri_CoverLetter_${company.replace(/\s+/g,'_')}.docx`);
     setStatus('✓ Cover Letter DOCX downloaded', 'success');
   } catch(e) {
     setStatus('DOCX error: ' + e.message, 'error');
