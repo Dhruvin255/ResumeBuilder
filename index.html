@@ -1,442 +1,1520 @@
-# DHRUVIN'S RESUME BANK - 6 TRACK SYSTEM
-## ATS-Compliant Format Standards (USC Guidelines)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeForge - ATS Resume & Cover Letter Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-### TEMPLATE RULES (NON-NEGOTIABLE)
-✅ **Format:** Linear top-to-bottom, NO columns, NO tables, NO graphics
-✅ **Length:** Strictly 1 page (~550 words max)
-✅ **File type:** .docx (best ATS parsing)
-✅ **Font:** Standard sans-serif (Calibri equivalent)
-✅ **Margins:** 0.5" all sides
-✅ **Sections:** EDUCATION → TECHNICAL SKILLS → EXPERIENCE → PUBLICATIONS → PROJECTS
-✅ **Font sizes:** Name 14pt, Headers 10pt, Body 9.5pt
-✅ **Spacing:** Consistent (40pt before sections, 35pt between bullets)
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-### HEADER STRUCTURE
-```
-DHRUVIN JHAVERI (centered, bold, 14pt)
-[City, State] • djhaveri99@gmail.com • (123) 456-7890 • LinkedIn: dhruvinjhaveri • GitHub: Dhruvin255
-```
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
 
-### EDUCATION SECTION
-- **USC ALWAYS FIRST** (reverse chronological)
-- Include GPA: 3.40
-- Include expected graduation: May 2026
-- Include degree: Master of Science in Computer Science (Data Science Track)
-- **Optional coursework line** for relevant tracks (see track-specific rules below)
-- **NMIMS included** ONLY for finance/business analyst tracks (shows undergrad background)
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-### TECHNICAL SKILLS SECTION
-- **4 categories max** (3-4 lines)
-- **Order matters:** Most relevant category first
-- **Keywords from job description** embedded naturally
-- Format: **Category Name:** Skill, Skill, Skill, Skill
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
 
-### EXPERIENCE SECTION
-- **Exactly 3 experiences** (AWS always first)
-- **Company routing by track** (see below)
-- **3 bullets per experience** (occasionally 4 if space allows)
-- **Bullet structure:** Action verb + context + metric/impact + keywords
-- **Job title varies by track** (same company, different framing)
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
 
-### PUBLICATIONS SECTION
-- IEEE paper **always included** for ML/AI/Research tracks
-- **Skip for pure SWE/Backend tracks** unless research-heavy role
-- 1-2 bullets max
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
 
-### PROJECTS SECTION
-- **1-2 projects max**
-- **Project routing:**
-  - **Artist Search:** SDE, Backend, Data Science, Analytics
-  - **PharmaChain:** Supply chain, blockchain, enterprise innovation, consulting
-  - **Volumetric Dataset:** Medical imaging, research, healthcare tech (rarely used)
+        .panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .track-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .track-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .track-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .track-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .track-card h3 {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .track-card p {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .output-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .output-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .keyword-match {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .match-score {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .match-details {
+            text-align: right;
+        }
+
+        .keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .keyword-badge {
+            padding: 6px 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .keyword-badge.matched {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .keyword-badge.missing {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .location-input {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .location-input input {
+            flex: 1;
+        }
+
+        .location-input select {
+            flex: 0 0 200px;
+        }
+
+        .preview-section {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .preview-content {
+            font-family: 'Calibri', sans-serif;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tips-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .tips-section h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .tips-section ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .tips-section li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .track-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 ResumeForge</h1>
+            <p>ATS Resume & Cover Letter Generator | Powered by Claude Sonnet 4</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Panel: Configuration -->
+            <div class="panel">
+                <h2><span class="icon">⚙️</span> Configuration</h2>
+                
+                <div class="form-group">
+                    <label for="apiKey">Anthropic API Key</label>
+                    <input type="password" id="apiKey" placeholder="sk-ant-..." />
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Get your key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" placeholder="e.g., Google, Hudson River Trading" />
+                </div>
+
+                <div class="form-group">
+                    <label for="jobTitle">Job Title</label>
+                    <input type="text" id="jobTitle" placeholder="e.g., Software Engineer, Data Scientist" />
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <div class="location-input">
+                        <input type="text" id="locationCity" placeholder="City" value="New York" />
+                        <select id="locationState">
+                            <option value="NY">NY</option>
+                            <option value="CA">CA</option>
+                            <option value="WA">WA</option>
+                            <option value="IL">IL</option>
+                            <option value="TX">TX</option>
+                            <option value="MA">MA</option>
+                            <option value="NC">NC</option>
+                            <option value="Remote">Remote</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tips-section">
+                    <h4>💡 Pro Tips</h4>
+                    <ul>
+                        <li>Paste full job description for best results</li>
+                        <li>AI auto-detects track but you can override</li>
+                        <li>Target: 95% ATS score (4 optimization passes)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Panel: Job Description -->
+            <div class="panel">
+                <h2><span class="icon">📄</span> Job Description</h2>
+                
+                <div class="form-group">
+                    <label for="jobDescription">Paste Full Job Description</label>
+                    <textarea id="jobDescription" placeholder="Paste the entire job posting here...
+
+Responsibilities:
+- Build scalable backend systems
+- Work with distributed databases
+...
+
+Requirements:
+- 2+ years Python experience
+- Strong SQL skills
+..."></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="analyzeJob()" id="analyzeBtn">
+                    🔍 Analyze Job & Detect Track
+                </button>
+            </div>
+
+            <!-- Diagnostic Tools (Optional) -->
+            <div class="panel" style="grid-column: 1 / -1;">
+                <h2><span class="icon">🔬</span> Resume Diagnostic Tools (Optional)</h2>
+                <p style="margin-bottom: 15px; color: #666;">Run these before generating your resume for deeper insights:</p>
+                
+                <div class="button-group" style="margin-bottom: 0;">
+                    <button class="btn-secondary" onclick="runDiagnostic('roast')" id="roastBtn" style="flex: 0 0 auto; padding: 10px 20px; font-size: 0.95em;">
+                        🔥 Resume Roast
+                    </button>
+                    <button class="btn-secondary" onclick="runDiagnostic('decoder')" id="decoderBtn" style="flex: 0 0 auto; padding: 10px 20px; font-size: 0.95em;">
+                        🔍 JD Decoder
+                    </button>
+                    <button class="btn-secondary" onclick="runDiagnostic('bullet')" id="bulletBtn" style="flex: 0 0 auto; padding: 10px 20px; font-size: 0.95em;">
+                        ✍️ Bullet Rewrite
+                    </button>
+                    <button class="btn-secondary" onclick="runDiagnostic('gaps')" id="gapsBtn" style="flex: 0 0 auto; padding: 10px 20px; font-size: 0.95em;">
+                        📚 Skills Gap Fix
+                    </button>
+                    <button class="btn-secondary" onclick="runDiagnostic('action')" id="actionBtn" style="flex: 0 0 auto; padding: 10px 20px; font-size: 0.95em;">
+                        🎯 Action Plan
+                    </button>
+                </div>
+                
+                <div id="diagnosticOutput" style="display: none; margin-top: 20px;">
+                    <div class="preview-section">
+                        <div class="preview-content" id="diagnosticContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track Selection -->
+            <div class="panel" style="grid-column: 1 / -1;">
+                <h2><span class="icon">🎯</span> Select Resume Track</h2>
+                <p style="margin-bottom: 15px; color: #666;">AI will auto-detect, or manually select your track:</p>
+                
+                <div class="track-selector">
+                    <div class="track-card" data-track="sde" onclick="selectTrack('sde')">
+                        <h3>💻 Software Engineering</h3>
+                        <p>SDE, Full Stack, App Dev</p>
+                    </div>
+                    <div class="track-card" data-track="backend" onclick="selectTrack('backend')">
+                        <h3>⚙️ Backend Systems</h3>
+                        <p>Distributed, Infrastructure</p>
+                    </div>
+                    <div class="track-card" data-track="ds_ml" onclick="selectTrack('ds_ml')">
+                        <h3>🤖 Data Science / ML</h3>
+                        <p>ML Engineer, Research</p>
+                    </div>
+                    <div class="track-card" data-track="analytics" onclick="selectTrack('analytics')">
+                        <h3>📊 Data Analytics</h3>
+                        <p>BI, Analytics, Reporting</p>
+                    </div>
+                    <div class="track-card" data-track="business_analyst" onclick="selectTrack('business_analyst')">
+                        <h3>📋 Business Analyst</h3>
+                        <p>BA, Product, Finance Tech</p>
+                    </div>
+                    <div class="track-card" data-track="quant" onclick="selectTrack('quant')">
+                        <h3>📈 Quant / Feature Eng</h3>
+                        <p>Finance ML, Trading</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="output-panel" id="outputPanel" style="display: none;">
+                    <h2><span class="icon">✨</span> Generated Materials</h2>
+                    
+                    <div id="statusMessage"></div>
+                    
+                    <div id="keywordMatch" style="display: none;"></div>
+                    
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="generateResume()" id="generateResumeBtn" disabled>
+                            📝 Generate Resume
+                        </button>
+                        <button class="btn-primary" onclick="generateCoverLetter()" id="generateCoverBtn" disabled>
+                            ✉️ Generate Cover Letter
+                        </button>
+                        <button class="btn-secondary" onclick="downloadBoth()" id="downloadBothBtn" disabled style="display: none;">
+                            💾 Download Both (DOCX)
+                        </button>
+                    </div>
+
+                    <div id="previewSection" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTrack = null;
+        let analyzedData = null;
+        let generatedResume = null;
+        let generatedCoverLetter = null;
+
+        const TRACK_CONFIGS = {
+            sde: {
+                name: "Software Engineering",
+                keywords: ["software development", "full stack", "REST API", "microservices", "git", "agile", "CI/CD", "docker", "kubernetes", "cloud", "testing"],
+            },
+            backend: {
+                name: "Backend / Distributed Systems",
+                keywords: ["backend", "distributed systems", "microservices", "database", "API", "concurrency", "async", "message queue", "caching", "performance"],
+            },
+            ds_ml: {
+                name: "Data Science / Machine Learning",
+                keywords: ["machine learning", "data science", "feature engineering", "python", "pandas", "SQL", "model", "prediction", "statistics", "tensorflow", "pytorch"],
+            },
+            analytics: {
+                name: "Data Analytics / BI",
+                keywords: ["data analysis", "SQL", "tableau", "power bi", "dashboard", "reporting", "KPI", "excel", "visualization", "business intelligence"],
+            },
+            business_analyst: {
+                name: "Business Systems Analyst",
+                keywords: ["business analyst", "requirements", "stakeholder", "SDLC", "process", "documentation", "user stories", "agile", "JIRA", "UAT"],
+            },
+            quant: {
+                name: "Quant / Feature Engineering",
+                keywords: ["feature engineering", "quantitative", "statistical", "time series", "backtesting", "financial", "alpha", "trading", "portfolio", "risk"],
+            }
+        };
+
+
+
+### FIXED ELEMENTS (DO NOT CHANGE)
+1. **AWS Experience:**
+   - Company: "Amazon Web Services"
+   - Location: "Santa Clara, CA"
+   - Dates: "Summer 2025"
+   - NEVER change company name or location
+
+2. **Resume Length:**
+   - STRICTLY 1 page
+   - Maximum ~550 words
+   - If running long, shorten bullets NOT remove experiences
+
+3. **Contact Information:**
+   - Name: Dhruvin Jhaveri
+   - Email: djhaveri99@gmail.com
+   - Phone: (602) 793-6561
+   - LinkedIn: linkedin.com/in/dhruvinjhaveri
+   - GitHub: github.com/Dhruvin255
+
+4. **Education:**
+   - USC ALWAYS listed first (reverse chronological)
+   - University of Southern California, Los Angeles, CA
+   - Master of Science in Computer Science (Data Science Track)
+   - GPA: 3.40
+   - Expected May 2026
 
 ---
 
-## THE 6 RESUME TRACKS
+## COMPLETE EXPERIENCE BANK
 
-### TRACK 1: SOFTWARE ENGINEERING (SDE / Full Stack)
-**Target Roles:** SDE, Software Engineer, Full Stack Engineer, Application Developer
+### EXPERIENCE 1: Amazon Web Services (ALWAYS INCLUDE, ALWAYS FIRST)
+**Fixed Details:**
+- Company: Amazon Web Services
+- Location: Santa Clara, CA
+- Dates: Summer 2025
+- Project: AWS Redshift workload optimization
 
-**Contact Location:** Role-dependent (NYC primary, SF/Seattle secondary)
+**Job Title Options (Pick based on track):**
+- Software Development Engineer Intern, AWS Redshift (SDE, Backend tracks)
+- Data Scientist Intern, AWS Redshift (Data Science, Analytics, Quant tracks)
+- Machine Learning Engineer Intern, AWS Redshift (ML-heavy roles)
 
-**Skills Order:**
-1. Languages & Frameworks
-2. Cloud & DevOps
-3. Backend & APIs
-4. Databases & Tools
+**Bullet Bank (Pick 3-4 based on track):**
 
-**Experience Routing:**
-- AWS: "Software Development Engineer Intern, AWS Redshift"
-- Second: Imarticus "Backend Engineer Intern" OR Paypoint "Data Engineer Intern" (prefer Imarticus)
-- Third: Remaining company
+SDE Track Bullets:
+- Architected cloud-native workload scaling framework in C++ for Redshift Serverless optimizing distributed query processing and reducing latency by 35% across high-availability production infrastructure
+- Implemented CI/CD pipelines for automated deployment with unit testing, integration testing, and observability instrumentation using AWS CloudWatch and Prometheus for real-time performance monitoring
+- Collaborated on microservices architecture design reviews ensuring fault tolerance, horizontal scalability, and system resilience across distributed AWS infrastructure managing petabyte-scale data workloads
 
-**Experience Focus:**
-- AWS: Cloud architecture, CI/CD, microservices, distributed systems, scalability
-- Imarticus: REST APIs, Node.js, async patterns, horizontal scaling
-- Paypoint: ML deployment pipelines, Docker, automated testing
+Backend Track Bullets:
+- Architected distributed workload management system in C++ for Redshift Serverless implementing event-driven architecture, asynchronous processing, and reactive programming patterns improving throughput by 35%
+- Designed fault-tolerant distributed system with idempotent operations, distributed locking mechanisms, and data consistency guarantees ensuring ACID compliance across petabyte-scale transactional workloads
+- Implemented high-throughput message processing using async I/O, connection pooling, and optimized concurrency patterns managing 100,000+ queries per second with sub-second latency SLAs
 
-**Coursework:** Skip (not relevant for SWE)
+Data Science / ML Track Bullets:
+- Explored and profiled petabyte-scale workload performance datasets using SQL and Python identifying patterns in query behavior resource utilization and performance degradation through statistical analysis and data visualization
+- Engineered 20+ predictive features from raw query execution logs using feature extraction aggregation and time-series transformations achieving 35% improvement in workload prediction accuracy through rigorous cross-validation
+- Validated features through disciplined statistical testing including stationarity checks distribution analysis and point-in-time correctness ensuring signals were real and production-ready for ML model consumption
+- Built end-to-end data pipelines from prototype to production with monitoring for data quality anomaly detection and correctness integrating features into distributed analytics infrastructure
 
-**Publications:** Skip IEEE paper
+Analytics Track Bullets:
+- Analyzed petabyte-scale workload performance data using SQL window functions and CTEs identifying optimization opportunities that improved query execution efficiency by 35% across enterprise analytics workloads
+- Built predictive performance models using statistical analysis and machine learning to forecast resource utilization patterns enabling proactive scaling decisions and cost optimization for cloud infrastructure
+- Developed automated reporting dashboards tracking key performance metrics including query latency throughput and resource consumption supporting data-driven decision making across engineering teams
 
-**Projects:** Artist Search (emphasize REST endpoints, JWT auth, caching, system design)
+Business Analyst Track Bullets:
+- Elicited business requirements from stakeholders and product managers to design workload scaling system documenting functional specifications technical requirements and business rules throughout SDLC
+- Created and maintained comprehensive process documentation including detailed design documents flowcharts and technical specifications supporting petabyte-scale distributed systems improving query performance by 35%
+- Developed test plans and scenarios validating system functionality against business objectives documenting test results and identifying defects ensuring solution performance met stakeholder goals
 
----
-
-### TRACK 2: BACKEND / DISTRIBUTED SYSTEMS
-**Target Roles:** Backend Engineer, Systems Engineer, Infrastructure Engineer, Distributed Systems
-
-**Contact Location:** Role-dependent (NYC/SF/Seattle)
-
-**Skills Order:**
-1. Languages (emphasize C++, Java, Python)
-2. Backend Frameworks (Node.js, Spring Boot, gRPC, microservices)
-3. Databases & Messaging (PostgreSQL, Redis, Kafka, event-driven)
-4. Tools & Systems (Docker, AWS, distributed systems, ACID, idempotency)
-
-**Experience Routing:**
-- AWS: "Software Development Engineer Intern, AWS Redshift"
-- Second: Paypoint "Backend Engineer Intern"
-- Third: Imarticus "Backend Systems Engineer Intern"
-
-**Experience Focus:**
-- AWS: Distributed workload management, C++, event-driven architecture, fault tolerance
-- Paypoint: Transactional systems, PostgreSQL optimization, Redis caching, Kafka streaming
-- Imarticus: High-throughput APIs, async I/O, microservices, MongoDB sharding
-
-**Coursework:** Skip
-
-**Publications:** Skip IEEE paper
-
-**Projects:** 
-- Artist Search (emphasize distributed caching, MapReduce, idempotency)
-- PharmaChain (emphasize distributed consensus, blockchain backend, cryptographic integrity)
+Quant / Feature Engineering Track Bullets:
+- Explored and profiled petabyte-scale workload performance datasets using SQL and Python identifying patterns in query behavior resource utilization and performance degradation through statistical analysis
+- Engineered 20+ predictive features from raw query execution logs using feature extraction aggregation and time-series transformations achieving 35% improvement in workload prediction accuracy through rigorous cross-validation
+- Validated features through disciplined statistical testing including stationarity checks distribution analysis and point-in-time correctness ensuring signals were real and production-ready for ML model consumption
+- Built end-to-end data pipelines from prototype to production with monitoring for data quality anomaly detection and correctness integrating features into distributed analytics infrastructure
 
 ---
 
-### TRACK 3: DATA SCIENCE / MACHINE LEARNING
-**Target Roles:** Data Scientist, ML Engineer, Research Scientist, Applied Scientist
+### EXPERIENCE 2: Paypoint India
+**Fixed Details:**
+- Company: Paypoint India
+- Location: Ahmedabad, India OR Mumbai, India (use Ahmedabad for Backend/SDE, Mumbai for others)
+- Dates: Summer 2022
+- Project: Fintech credit risk modeling platform
 
-**Contact Location:** Role-dependent (NYC/SF/Seattle primary)
+**Job Title Options (Pick based on track):**
+- Data Engineer Intern (SDE track)
+- Backend Engineer Intern (Backend track)
+- Data Scientist Intern (Data Science, Quant tracks)
+- Data Science & Analytics Intern (Analytics track)
+- Business Analyst & Data Science Intern (Business Analyst track)
+- Machine Learning Engineer Intern (ML track)
 
-**Skills Order:**
-1. Data Science & ML (feature engineering, statistical validation, exploratory analysis)
-2. Languages & Tools (Python with Pandas/NumPy/Polars, SQL, R, Bash, Git)
-3. ML Frameworks (XGBoost, PyTorch, TensorFlow, time series, cross-validation)
-4. Infrastructure (PostgreSQL, MongoDB, AWS, data pipelines)
+**Bullet Bank (Pick 3-4 based on track):**
 
-**Experience Routing:**
-- AWS: "Data Scientist Intern, AWS Redshift" OR "Machine Learning Engineer Intern"
-- Second: Paypoint "Data Scientist Intern"
-- Third: Imarticus "Machine Learning Engineer Intern"
+SDE Track Bullets:
+- Designed automated ML deployment pipeline using Docker containerization and PostgreSQL for model versioning achieving 94% accuracy on production workloads processing 1,000+ daily transactions
+- Built real-time dashboard infrastructure with optimized SQL queries and caching strategies reducing query response time by 60% and enabling self-service analytics for cross-functional teams
+- Developed ETL data pipelines with idempotent processing and error handling ensuring data consistency and reliability across distributed systems handling high-throughput transactional data
 
-**Experience Focus:**
-- AWS: Feature engineering, statistical validation, exploratory analysis, data pipelines
-- Paypoint: Financial datasets, predictive features, A/B testing, model validation
-- Imarticus: NLP pipelines, embedding models, production ML systems
+Backend Track Bullets:
+- Built high-performance transactional system using PostgreSQL with optimized indexing query planning and connection pooling processing 1,000+ concurrent loan applications with ACID guarantees
+- Implemented distributed caching layer using Redis for session management and query result caching reducing database load by 70% and improving application throughput for high-concurrency scenarios
+- Designed event-driven data pipeline with Apache Kafka for real-time streaming analytics ensuring exactly-once delivery semantics and data integrity across distributed microservices architecture
 
-**Coursework:** Machine Learning, Statistical Analysis, Data Mining, Deep Learning, Financial Data Science (for quant/finance roles)
+Data Science / ML Track Bullets:
+- Curated and explored complex financial datasets from internal transaction systems and third-party credit bureaus profiling data quality identifying missing value patterns and understanding domain-specific quirks in lending data
+- Designed and implemented 40+ predictive features for credit risk modeling using statistical methods domain knowledge and feature engineering techniques including aggregations ratios and time-based transformations achieving 94% model accuracy
+- Conducted root-cause analysis on model performance degradation investigating data feed anomalies temporal shifts and distribution changes communicating findings to stakeholders and implementing corrective data quality checks
+- Performed A/B testing and statistical validation of feature sets using hypothesis testing cross-sectional analysis and backtesting frameworks ensuring model robustness across market conditions
 
-**Publications:** ALWAYS include IEEE paper (emphasize feature engineering, statistical rigor)
+Analytics Track Bullets:
+- Built predictive credit risk model using XGBoost achieving 94% accuracy across 1,000+ daily applications implementing feature engineering statistical validation and A/B testing frameworks for model evaluation
+- Designed executive dashboards in Tableau and Qlik Sense tracking business KPIs including approval rate default risk LTV and churn prediction enabling self-service analytics for stakeholders and leadership
+- Developed ETL pipelines using dbt and PostgreSQL implementing data governance quality checks and automated testing ensuring data consistency and statistical significance across reporting infrastructure
 
-**Projects:** Artist Search (reframe as recommendation engine with collaborative filtering, feature engineering)
+Business Analyst Track Bullets:
+- Gathered and documented business requirements from finance and risk management teams for credit decisioning system processing 1,000+ daily loan applications achieving 94% predictive accuracy using XGBoost modeling
+- Designed executive dashboards in Tableau and Power BI tracking financial KPIs including approval rate default risk LTV and churn metrics enabling data-driven decision making for leadership and stakeholders
+- Validated requirements throughout SDLC implementing A/B testing frameworks and statistical validation ensuring credit risk models met regulatory compliance and business performance objectives
+- Developed ETL data pipelines and process documentation establishing data governance quality checks and testing protocols reducing financial reporting errors and ensuring system integrity
 
----
-
-### TRACK 4: DATA ANALYTICS / BUSINESS INTELLIGENCE
-**Target Roles:** Data Analyst, Business Intelligence Analyst, Analytics Engineer, Reporting Analyst
-
-**Contact Location:** Role-dependent
-
-**Skills Order:**
-1. Languages & Tools (Python with Pandas/NumPy, SQL with window functions/CTEs, R, Excel Advanced)
-2. Visualization & BI (Tableau, Power BI, Qlik Sense, dashboards, data storytelling)
-3. Data Engineering (PostgreSQL, MongoDB, ETL, dbt, Airflow, data governance)
-4. Analytics & ML (predictive modeling, A/B testing, statistical analysis, XGBoost)
-
-**Experience Routing:**
-- AWS: "Software Development Engineer Intern, AWS Redshift" (keep engineering credibility)
-- Second: Paypoint "Data Science & Analytics Intern"
-- Third: Imarticus "Business Intelligence Analyst Intern"
-
-**Experience Focus:**
-- AWS: SQL analytics (window functions, CTEs), performance analysis, reporting dashboards
-- Paypoint: Executive dashboards, financial KPIs (approval rate, LTV, churn), Tableau/Power BI
-- Imarticus: ETL pipelines, business intelligence, real-time reporting, data storytelling
-
-**Coursework:** Skip (analytics roles don't care)
-
-**Publications:** Include IEEE paper (shows analytical rigor)
-
-**Projects:** "Predictive Analytics Dashboard System" (emphasize SQL, Tableau, BI, dashboard design)
+Quant / Feature Engineering Track Bullets:
+- Curated and explored complex financial datasets from internal transaction systems and third-party credit bureaus profiling data quality identifying missing value patterns and understanding domain-specific quirks in lending data
+- Designed and implemented 40+ predictive features for credit risk modeling using statistical methods domain knowledge and feature engineering techniques including aggregations ratios and time-based transformations achieving 94% model accuracy
+- Conducted root-cause analysis on model performance degradation investigating data feed anomalies temporal shifts and distribution changes communicating findings to stakeholders and implementing corrective data quality checks
+- Performed A/B testing and statistical validation of feature sets using hypothesis testing cross-sectional analysis and backtesting frameworks ensuring model robustness across market conditions
 
 ---
 
-### TRACK 5: BUSINESS SYSTEMS ANALYST / FINANCE TECH
-**Target Roles:** Business Analyst, Business Systems Analyst, Product Analyst, Fintech roles
+### EXPERIENCE 3: Imarticus Learning
+**Fixed Details:**
+- Company: Imarticus Learning
+- Location: Mumbai, India
+- Dates: January 2023 - May 2023
+- Context: 25-person startup, worked directly with CEO, product enablement
 
-**Contact Location:** Role-dependent
+**Job Title Options (Pick based on track):**
+- Backend Engineer Intern (SDE, Backend tracks)
+- Machine Learning Engineer Intern (Data Science, ML, Quant tracks)
+- Business Intelligence Analyst Intern (Analytics track)
+- Product Enablement & Business Intelligence Intern (Business Analyst track)
 
-**Skills Order:**
-1. Business Analysis (requirements elicitation, process documentation, SDLC, Agile, user stories)
-2. Financial Analytics (credit risk, financial forecasting, KPI dashboards, LTV, A/B testing)
-3. Data & Visualization (SQL, Python, Tableau, Power BI, Excel, statistical analysis)
-4. Tools & Platforms (PostgreSQL, MongoDB, ETL, AWS, JIRA, Confluence, process modeling)
+**Bullet Bank (Pick 3 based on track):**
 
-**Experience Routing:**
-- AWS: "Software Development Engineer Intern, AWS Redshift"
-- Second: Paypoint "Business Analyst & Data Science Intern"
-- Third: Imarticus "Product Enablement & Business Intelligence Intern"
+SDE Track Bullets:
+- Engineered scalable REST API using Node.js and Express.js handling 50,000+ daily requests with sub-100ms latency implementing async/await patterns rate limiting middleware and JWT authentication
+- Deployed microservices architecture with MongoDB integration event-driven workflows and automated testing achieving 99.5% uptime and horizontal scalability for production workloads
+- Optimized system performance through database indexing connection pooling and caching strategies reducing infrastructure costs by 40% while maintaining high availability and fault tolerance
 
-**Experience Focus:**
-- AWS: Requirements elicitation, process documentation, SDLC, test planning, stakeholder collaboration
-- Paypoint: Financial domain (credit risk, lending), dashboard design, requirements validation, A/B testing
-- Imarticus: Business process documents, workflow diagrams, system automation, stakeholder communication
+Backend Track Bullets:
+- Developed high-throughput REST API using Node.js async/await patterns and Express.js middleware handling 50,000+ requests daily with sub-100ms P95 latency through optimized concurrency and connection reuse
+- Implemented reactive microservices architecture with gRPC inter-service communication WebSocket streaming and MongoDB sharding ensuring horizontal scalability and eventual consistency across services
+- Optimized database performance through index tuning query optimization and database sharding reducing query latency by 80% while maintaining data consistency and transactional integrity
 
-**Coursework:** Skip
+Data Science / ML Track Bullets:
+- Explored and processed 50,000+ daily customer interaction records using Python Pandas and SQL performing exploratory data analysis data cleaning and feature extraction from unstructured text and audio data
+- Developed NLP feature pipeline extracting semantic embeddings sentiment scores and linguistic patterns from customer calls achieving 92% classification accuracy using BERT-based models and statistical validation
+- Built production data pipelines with automated quality monitoring leveraging Linux bash scripting git version control and workflow orchestration reducing manual data processing overhead by 90%
 
-**Publications:** Include IEEE paper (shows research rigor)
+Analytics Track Bullets:
+- Analyzed 5,000+ monthly customer interaction records using NLP and statistical methods achieving 92% classification accuracy uncovering actionable insights for customer experience improvement initiatives
+- Built automated data pipeline processing 50,000+ daily events using Python (Pandas/NumPy) and SQL reducing manual reporting time by 90% and enabling real-time business intelligence for operations teams
+- Created interactive dashboards with drill-down capabilities and storytelling visualizations translating complex analytical findings into actionable business recommendations for leadership decision making
 
-**Projects:** "Financial Analytics Dashboard System"
+Business Analyst Track Bullets:
+- Collaborated with program and IT staff to gather business requirements and analyze 5,000+ monthly customer interactions identifying process improvement opportunities and system enhancements
+- Created comprehensive business process documents and workflow diagrams documenting current-state and to-be-state processes supporting automation initiatives reducing manual operations by 90%
+- Developed test conditions and scenarios for NLP-powered automation system achieving 92% accuracy validating solution performance against business goals and stakeholder acceptance criteria
 
-**NMIMS degree:** INCLUDE (shows traditional undergrad background)
-
----
-
-### TRACK 6: QUANT / FEATURE ENGINEERING (Finance ML)
-**Target Roles:** Quantitative Researcher, Feature Engineering, Algorithmic Trading, Financial ML
-
-**Contact Location:** NYC (primary), Chicago (secondary)
-
-**Skills Order:**
-1. Data Science & ML (feature engineering, statistical validation, time series, backtesting)
-2. Languages & Tools (Python, SQL, R, C++, Bash, Linux, Git, CI/CD)
-3. ML Frameworks (XGBoost, LightGBM, PyTorch, cross-validation, ensemble methods)
-4. Infrastructure (PostgreSQL, AWS, data pipelines, low-latency systems)
-
-**Experience Routing:**
-- AWS: "Data Scientist Intern, AWS Redshift"
-- Second: Paypoint "Data Scientist Intern" (emphasize financial datasets)
-- Third: Imarticus "Machine Learning Engineer Intern"
-
-**Experience Focus:**
-- AWS: Feature engineering from time-series data, stationarity testing, cross-sectional analysis
-- Paypoint: Financial feature design (credit, transactions), statistical validation, domain knowledge
-- Imarticus: NLP features, production pipelines, automated quality monitoring
-
-**Coursework:** Machine Learning, Statistical Analysis, Financial Data Science, Deep Learning
-
-**Publications:** ALWAYS include IEEE paper
-
-**Projects:** Artist Search (reframe as recommendation with collaborative filtering features, statistical validation)
+Quant / ML Track Bullets:
+- Explored and processed 50,000+ daily customer interaction records using Python Pandas and SQL performing exploratory data analysis data cleaning and feature extraction from unstructured text and audio data
+- Developed NLP feature pipeline extracting semantic embeddings sentiment scores and linguistic patterns from customer calls achieving 92% classification accuracy using BERT-based models and statistical validation
+- Built production data pipelines with automated quality monitoring leveraging Linux bash scripting git version control and workflow orchestration reducing manual data processing overhead by 90%
 
 ---
 
-## EXPERIENCE BULLET ROUTING RULES
+## TECHNICAL SKILLS (SELECT 4 CATEGORIES BASED ON TRACK)
 
-### AWS BULLETS (Track-Specific)
+### SDE Track Skills:
+1. Languages & Frameworks: Python, C++, JavaScript, TypeScript, SQL, Node.js, Express.js, React
+2. Cloud & DevOps: AWS (S3, EC2, Redshift, Lambda), Docker, Kubernetes, CI/CD, Terraform, Serverless
+3. Backend & APIs: REST APIs, GraphQL, Microservices, JWT Authentication, WebSockets, gRPC
+4. Databases & Tools: MongoDB, PostgreSQL, Redis, Git, Tableau, TDD, Observability (Prometheus)
 
-**SDE Track:**
-- Cloud-native architecture, distributed query processing, latency optimization
-- CI/CD pipelines, automated deployment, observability (CloudWatch, Prometheus)
-- Microservices design reviews, fault tolerance, horizontal scalability
+### Backend Track Skills:
+1. Languages: Python, C++, Java, JavaScript, TypeScript, SQL, Go
+2. Backend Frameworks: Node.js, Express.js, Spring Boot, REST APIs, gRPC, WebSockets, Microservices
+3. Databases & Messaging: PostgreSQL, MongoDB, Redis, Apache Kafka, Event-Driven Architecture, ACID
+4. Tools & Systems: Docker, AWS (S3, EC2, Redshift), Git, Distributed Systems, Idempotency, Fault Tolerance
 
-**Backend Track:**
-- Distributed workload management in C++, event-driven architecture
-- Fault-tolerant systems, idempotent operations, ACID compliance
-- High-throughput message processing, async I/O, connection pooling
+### Data Science / ML Track Skills:
+1. Data Science & ML: Feature Engineering, Statistical Validation, Exploratory Analysis, Predictive Modeling, A/B Testing
+2. Languages & Tools: Python (Pandas, NumPy, Polars, Scikit-learn), SQL, R, Bash, Linux/Unix, Git, CI/CD
+3. ML Frameworks: XGBoost, PyTorch, TensorFlow, BERT, LightGBM, Time Series Analysis, Cross-Validation
+4. Infrastructure: PostgreSQL, MongoDB, AWS (S3, EC2), Docker, Data Pipelines, Workflow Orchestration
 
-**Data Science / ML Track:**
-- Feature engineering from query logs, statistical validation, cross-validation
-- Exploratory analysis on petabyte-scale data, pattern identification
-- Production data pipelines, monitoring, anomaly detection
+### Analytics Track Skills:
+1. Languages & Tools: Python (Pandas, NumPy), SQL (Window Functions, CTEs), R, Excel (Advanced)
+2. Visualization & BI: Tableau, Power BI, Qlik Sense, Data Storytelling, Dashboard Design
+3. Data Engineering: PostgreSQL, MongoDB, ETL Pipelines, dbt, Apache Airflow, Data Governance
+4. Analytics & ML: Predictive Modeling, A/B Testing, Statistical Analysis, XGBoost, Scikit-learn, Feature Engineering
 
-**Analytics Track:**
-- SQL analytics (window functions, CTEs), workload performance analysis
-- Predictive performance models, statistical analysis, forecasting
-- Automated reporting dashboards, KPI tracking, data-driven decisions
+### Business Analyst Track Skills:
+1. Business Analysis: Requirements Elicitation, Process Documentation, SDLC, Agile, Waterfall, User Stories
+2. Financial Analytics: Credit Risk Modeling, Financial Forecasting, KPI Dashboards, LTV Analysis, A/B Testing
+3. Data & Visualization: SQL, Python (Pandas, NumPy), Tableau, Power BI, Excel (Advanced), Statistical Analysis
+4. Tools & Platforms: PostgreSQL, MongoDB, ETL Pipelines, AWS, JIRA, Confluence, Git, Process Modeling
 
-**Business Analyst Track:**
-- Requirements elicitation from stakeholders, functional specifications
-- Process documentation (design docs, flowcharts, technical specs)
-- Test plans and scenarios, validation against business objectives
-
-**Quant / Feature Eng Track:**
-- Feature engineering from time-series query data, 20+ predictive features
-- Statistical validation (stationarity checks, distribution analysis, point-in-time correctness)
-- End-to-end pipelines with data quality monitoring
-
----
-
-### PAYPOINT BULLETS (Track-Specific)
-
-**SDE Track:**
-- Automated ML deployment pipeline, Docker containerization, PostgreSQL versioning
-- Real-time dashboard infrastructure, optimized SQL, caching strategies
-- ETL pipelines, idempotent processing, error handling
-
-**Backend Track:**
-- High-performance transactional system, PostgreSQL optimization, connection pooling
-- Distributed caching with Redis, session management
-- Event-driven pipeline with Kafka, exactly-once delivery, data integrity
-
-**Data Science / ML Track:**
-- Financial dataset curation (internal transactions, credit bureaus), data profiling
-- 40+ predictive features using statistical methods, 94% accuracy
-- Root-cause analysis on model degradation, A/B testing, statistical validation
-
-**Analytics Track:**
-- XGBoost credit risk model, 94% accuracy, feature engineering, A/B testing
-- Executive dashboards (Tableau, Qlik), KPIs (approval rate, LTV, churn)
-- ETL pipelines with dbt, data governance, quality checks
-
-**Business Analyst Track:**
-- Requirements gathering from finance/risk teams for credit decisioning
-- Dashboards tracking financial KPIs, data-driven decision making
-- Requirements validation in SDLC, A/B testing, regulatory compliance
-- ETL pipelines, process documentation, data governance
-
-**Quant / Feature Eng Track:**
-- Financial dataset exploration, third-party credit data, domain quirks
-- 40+ predictive features (aggregations, ratios, time-based transformations)
-- Root-cause analysis, distribution changes, data feed anomalies
-- A/B testing, hypothesis testing, backtesting frameworks
+### Quant / Feature Engineering Track Skills:
+1. Data Science & ML: Feature Engineering, Statistical Validation, Time Series, Backtesting, Predictive Modeling
+2. Languages & Tools: Python (Pandas, NumPy, Polars), SQL, R, C++, Bash, Linux/Unix, Git, CI/CD
+3. ML Frameworks: XGBoost, LightGBM, PyTorch, TensorFlow, Cross-Validation, Ensemble Methods, Stationarity Testing
+4. Infrastructure: PostgreSQL, MongoDB, AWS (S3, EC2), Docker, Data Pipelines, Low-Latency Systems
 
 ---
 
-### IMARTICUS BULLETS (Track-Specific)
+## PUBLICATIONS
 
-**SDE Track:**
-- Scalable REST API (Node.js, Express), 50K+ daily requests, sub-100ms latency
-- Microservices with MongoDB, event-driven workflows, 99.5% uptime
-- Database indexing, connection pooling, caching, infrastructure cost reduction
+### IEEE ICISAA 2024 Paper
+**Include for:** Data Science, ML, Quant, Research-heavy roles
+**Skip for:** Pure SDE, Backend (unless research company)
 
-**Backend Track:**
-- High-throughput REST API, async/await patterns, rate limiting, JWT auth
-- Microservices architecture, gRPC, WebSocket streaming, MongoDB sharding
-- Database optimization, index tuning, query optimization
+**Title:** IEEE ICISAA 2024, Toxic Comment Classification (Published Research) • 2024
 
-**Data Science / ML Track:**
-- Exploratory analysis on 50K+ daily customer records, Pandas/SQL
-- NLP feature pipeline, semantic embeddings, sentiment scores, 92% accuracy
-- Production pipelines, bash scripting, git, workflow orchestration
+**Bullet Options:**
 
-**Analytics Track:**
-- Analyzed 5K+ monthly customer interactions, 92% classification accuracy
-- Automated data pipeline, 50K+ daily events, Python/SQL, 90% time reduction
-- Interactive dashboards, drill-down, data storytelling for leadership
+Standard Version (1 bullet):
+- Co-authored peer-reviewed IEEE paper fine-tuning BERT-based transformer models for large-scale toxic content detection outperforming traditional classifiers across social media datasets
 
-**Business Analyst Track:**
-- Collaborated with IT staff, gathered requirements, analyzed 5K+ interactions
-- Business process documents, workflow diagrams, current-state/to-be-state
-- Test conditions for NLP automation, 92% accuracy, stakeholder acceptance
-
-**Quant / Feature Eng Track:**
-- Explored 50K+ daily customer records, Python Pandas/SQL, EDA
-- NLP features (semantic embeddings, sentiment, linguistic patterns), 92% accuracy
-- Production pipelines, quality monitoring, bash/git, 90% overhead reduction
+Data Science / Feature Engineering Version (1-2 bullets):
+- Engineered text-based features and conducted statistical analysis on 100,000+ social media comments achieving F1 score of 0.91 demonstrating rigorous feature validation and model evaluation methodology
+- Co-authored peer-reviewed IEEE paper on BERT-based NLP models achieving F1 score of 0.91 on large-scale social media datasets requiring extensive data annotation quality validation and iterative model refinement
 
 ---
 
-## PROJECT ROUTING RULES
+## PROJECTS
 
-### Artist Search App
-**Use for:** SDE, Backend, Data Science, Analytics, Quant
+### PROJECT ROUTING RULES:
 
-**SDE framing:**
-- "Artist Search Microservice" or "Full Stack Artist Search Application"
-- Emphasize: 13 REST endpoints, JWT auth, cloud-native, Docker, horizontal scaling
-- Tech: Node.js, Express.js, MongoDB, Docker, JWT
-
-**Backend framing:**
-- "Distributed Artist Search Backend System"
-- Emphasize: Event-driven microservices, MapReduce, Redis caching, idempotency
-- Tech: Node.js, MongoDB, Redis, Kafka
-
-**Data Science framing:**
-- "Artist Search & Recommendation Engine"
-- Emphasize: Feature engineering (interaction graphs, collaborative filtering, embeddings)
-- Tech: Python, SQL, MongoDB, Feature Engineering
-
-**Analytics framing:**
-- "Predictive Analytics Dashboard System"
-- Emphasize: SQL analytics (window functions, CTEs), caching, BI
-- Tech: Python, SQL, Tableau, MongoDB
-
-**Quant framing:**
-- Same as Data Science (recommendation engine with statistical validation)
+**Use Artist Search for:** SDE, Backend, Data Science, Analytics, Quant tracks
+**Use PharmaChain for:** Supply chain, blockchain, enterprise innovation, consulting roles (rare)
 
 ---
 
-### PharmaChain
-**Use for:** Supply chain roles, blockchain roles, enterprise innovation, consulting
+### PROJECT 1: Artist Search Application (PRIMARY PROJECT)
 
-**Framing:**
-- "PharmaChain – Blockchain Supply Chain Platform" OR "Distributed Ledger System"
-- Emphasize: Ethereum smart contracts, distributed consensus, data integrity, 95% counterfeit reduction
-- Tech: Ethereum, Solidity, Node.js, React (or PostgreSQL for hybrid architecture)
+**Title Variations (Pick based on track):**
+- SDE: "Full Stack Artist Search Application" OR "Artist Search Microservice"
+- Backend: "Distributed Artist Search Backend System"
+- Data Science: "Artist Search & Recommendation Engine"
+- Analytics: "Predictive Analytics Dashboard System"
+- Quant: "Artist Search & Recommendation Engine"
+
+**Tech Stack Variations:**
+- SDE: Node.js, Express.js, MongoDB, Docker, JWT
+- Backend: Node.js, MongoDB, Redis, Kafka
+- Data Science: Python, SQL, MongoDB, Feature Engineering
+- Analytics: Python, SQL, Tableau, MongoDB
+- Quant: Python, SQL, MongoDB, Feature Engineering
+
+**Bullet Options (Pick 2-3 based on track):**
+
+SDE Track:
+- Built cloud-native REST API with 13 endpoints implementing JWT authentication role-based access control and automated deployment pipelines for containerized production environments
+- Optimized distributed system performance achieving 172ms p95 latency through MongoDB sharding MapReduce caching layer and horizontal scaling reducing duplicate requests by 50% under load testing
+- Delivered cross-platform auto-scaling application with Node.js backend Express.js middleware achieving sub-100ms response time with session handling and route protection
+
+Backend Track:
+- Architected event-driven microservices backend with 13 REST endpoints implementing asynchronous message processing distributed caching and rate limiting achieving 172ms P95 latency under load
+- Implemented MapReduce aggregation pipeline with Redis caching layer and MongoDB sharding reducing duplicate queries by 50% while ensuring data consistency and idempotent operations
+- Built distributed system with fault tolerance connection pooling and optimized concurrency patterns managing high-throughput requests with sub-second latency SLAs
+
+Data Science / ML Track:
+- Built end-to-end recommendation system processing complex relational music datasets performing feature engineering including user-artist interaction graphs collaborative filtering features and semantic embeddings
+- Implemented 13 API endpoints with advanced SQL queries aggregations and caching achieving 172ms p95 latency through query optimization and MapReduce-based feature computation reducing duplicate requests by 50%
+- Conducted exploratory data analysis and statistical validation identifying user behavior patterns and optimizing recommendation accuracy through iterative feature refinement and A/B testing
+
+Analytics Track:
+- Developed end-to-end analytics system with 13 API endpoints supporting data exploration statistical analysis and predictive modeling achieving 172ms query performance for interactive BI applications
+- Implemented advanced SQL analytics using window functions CTEs and aggregation pipelines with intelligent caching reducing computational overhead by 50% while maintaining data freshness for decision support
+- Created interactive dashboards with drill-down capabilities and real-time reporting enabling stakeholders to explore music consumption patterns and user engagement metrics
+
+Quant Track:
+- Built end-to-end recommendation system processing complex relational music datasets performing feature engineering including user-artist interaction graphs collaborative filtering features and semantic embeddings
+- Implemented 13 API endpoints with advanced SQL queries aggregations and caching achieving 172ms p95 latency through query optimization and MapReduce-based feature computation reducing duplicate requests by 50%
+- Conducted exploratory data analysis and statistical validation identifying user behavior patterns and optimizing recommendation accuracy through iterative feature refinement and A/B testing
 
 ---
 
-## DYNAMIC RULES
+## EDUCATION VARIATIONS
 
-### Contact Location
-- **Primary preference:** Job posting location
-- **NYC roles:** New York, NY
-- **SF/Bay Area roles:** San Francisco, CA OR Los Angeles, CA
-- **Seattle roles:** Seattle, WA
-- **Albany roles:** Albany, NY
-- **Chicago roles:** Chicago, IL
-- **Remote roles:** Los Angeles, CA (current location)
+### Standard (All Tracks):
+University of Southern California • Los Angeles, CA • GPA: 3.40 • Expected May 2026
+Master of Science in Computer Science (Data Science Track)
 
-### Coursework Line
-- **Include for:** Data Science, ML, Quant, Finance-heavy roles
-- **Skip for:** SDE, Backend, Analytics (unless ML-heavy)
+### With Coursework (Data Science, ML, Quant, Finance tracks):
+University of Southern California • Los Angeles, CA • GPA: 3.40 • Expected May 2026
+Master of Science in Computer Science (Data Science Track)
+Relevant Coursework: Machine Learning, Statistical Analysis, Data Mining, Deep Learning, Financial Data Science
 
-### NMIMS Degree
-- **Include for:** Business Analyst, Finance roles, consulting
-- **Skip for:** SDE, Backend, Data Science, ML (emphasize USC only)
+### With NMIMS (Business Analyst, Finance tracks ONLY):
+University of Southern California • Los Angeles, CA • GPA: 3.40 • Expected May 2026
+Master of Science in Computer Science (Data Science Track)
 
-### Publications Section
-- **Include for:** ML, Data Science, Quant, Research, Academic roles
-- **Skip for:** SDE, Backend (unless research-focused company)
+NMIMS University • Mumbai, India • GPA: 3.61
+Bachelor of Technology in Computer Engineering
 
 ---
 
-## KEYWORD OPTIMIZATION STRATEGY
+## KEYWORD EMBEDDING RULES
 
-### ATS Keyword Embedding
-1. **Read job description carefully**
-2. **Extract 10-15 critical keywords/phrases**
-3. **Embed naturally in:**
-   - Skills section (highest weight)
+1. **Extract 10-15 keywords from job description**
+2. **Embed in this priority order:**
+   - Skills section (highest ATS weight)
    - Experience bullets (second highest)
    - Project descriptions (third)
+3. **Use EXACT phrasing from JD when possible**
+   - If JD says "requirements elicitation" use that, not "requirements gathering"
+   - If JD says "cross-sectional analysis" use that exact phrase
 4. **Never keyword stuff** - must read naturally
-5. **Use exact phrasing from JD** when possible (e.g., "requirements elicitation" not "gathering requirements")
-
-### Common Keyword Categories by Track
-**SDE:** microservices, CI/CD, REST APIs, distributed systems, cloud-native, Docker, Kubernetes, Git, Agile
-**Backend:** event-driven, asynchronous, idempotent, ACID, connection pooling, message queues, gRPC
-**Data Science:** feature engineering, statistical validation, exploratory analysis, cross-validation, A/B testing
-**Analytics:** SQL (window functions, CTEs), Tableau, Power BI, KPIs, dashboards, data storytelling
-**Business Analyst:** requirements elicitation, SDLC, process documentation, stakeholder, user stories, Agile
-**Quant:** stationarity testing, backtesting, cross-sectional analysis, time series, statistical arbitrage
+5. **Prioritize technical skills over soft skills**
 
 ---
 
-## FINAL CHECKLIST BEFORE SENDING
+## FORMATTING RULES (ATS COMPLIANCE)
 
-✅ **ATS Format:** No columns, tables, graphics
-✅ **Length:** Exactly 1 page
-✅ **Contact:** Location matches job or target city
-✅ **Keywords:** 10+ from job description embedded naturally
-✅ **Skills order:** Most relevant category first
-✅ **Experience:** 3 companies, track-appropriate titles and bullets
-✅ **Coursework:** Included if relevant track
-✅ **NMIMS:** Included only for business/finance tracks
-✅ **Publications:** Included for ML/DS/Quant/Research
-✅ **Projects:** 1-2 max, track-appropriate framing
-✅ **Metrics:** Every bullet has quantifiable impact
-✅ **File name:** Dhruvin_Resume_[Track]_[Company].docx
-✅ **File type:** .docx
+### MUST DO:
+✅ Linear top-to-bottom format (NO columns, NO tables)
+✅ Standard section headers: EDUCATION, TECHNICAL SKILLS, EXPERIENCE, PUBLICATIONS, PROJECTS
+✅ Exactly 1 page (~550 words max)
+✅ Contact info at top: Name, Location, Email, Phone, LinkedIn, GitHub
+✅ Bullet points with "- " (dash + space)
+✅ Bold for company names, job titles
+✅ Italics for degree names, job positions
+
+### NEVER DO:
+❌ Graphics, logos, images, text boxes
+❌ Headers/footers
+❌ Columns or tables
+❌ Color (except in HTML preview)
+❌ Fancy fonts
+❌ Go over 1 page
+
+---
+
+## GENERATION INSTRUCTIONS
+
+When generating resume:
+
+1. **Read job description carefully** and extract keywords
+2. **Identify track** (or use provided track)
+3. **Select appropriate job titles** for all 3 experiences based on track
+4. **Choose 3-4 bullets per experience** from bullet bank that match JD keywords
+5. **Select 4 skill categories** in priority order for the track
+6. **Embed JD keywords naturally** into bullets where they fit
+7. **Choose project(s)** and frame with track-appropriate title and bullets
+8. **Include/exclude publications** based on track rules
+9. **Include/exclude coursework** based on track rules
+10. **Include/exclude NMIMS** based on track rules
+11. **Verify 1 page length** - if too long, shorten bullets NOT remove content
+12. **Use location from input** in contact header
+
+---
+
+## QUALITY CHECKLIST
+
+Before returning resume, verify:
+✅ AWS company name and location unchanged
+✅ Exactly 1 page (not more, not less)
+✅ 3 experiences included
+✅ USC listed first in education
+✅ Skills section has 4 categories
+✅ 10+ JD keywords embedded naturally
+✅ All metrics/numbers accurate
+✅ Contact info complete and accurate
+✅ No typos or grammatical errors
+✅ Bullets read naturally (not keyword soup)
+✅ Track-appropriate project selection
+✅ Publications included/excluded correctly
+✅ NMIMS included/excluded correctly`;
+
+        function selectTrack(track) {
+            selectedTrack = track;
+            document.querySelectorAll('.track-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-track="${track}"]`).classList.add('selected');
+            
+            document.getElementById('generateResumeBtn').disabled = false;
+            document.getElementById('generateCoverBtn').disabled = false;
+        }
+
+        async function analyzeJob() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+
+            if (!apiKey) {
+                showStatus('Please enter your Anthropic API key', 'error');
+                return;
+            }
+
+            if (!jobDescription) {
+                showStatus('Please paste the job description', 'error');
+                return;
+            }
+
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('outputPanel').style.display = 'block';
+            showStatus('Analyzing job description with Claude Sonnet 4...', 'info');
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 2000,
+                        messages: [{
+                            role: 'user',
+                            content: `Analyze this job description and determine which resume track it belongs to. Also extract key requirements and keywords.
+
+Job Description:
+${jobDescription}
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "track": "one of: sde, backend, ds_ml, analytics, business_analyst, quant",
+  "confidence": "high or medium or low",
+  "reasoning": "brief explanation",
+  "keywords": ["keyword1", "keyword2", "keyword3"],
+  "required_skills": ["skill1", "skill2"],
+  "responsibilities": ["resp1", "resp2"]
+}`
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const content = data.content[0].text;
+                
+                // Extract JSON from response
+                const jsonMatch = content.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) {
+                    throw new Error('Failed to parse AI response');
+                }
+                
+                analyzedData = JSON.parse(jsonMatch[0]);
+                
+                // Auto-select detected track
+                selectTrack(analyzedData.track);
+                
+                showStatus(`✅ Detected Track: ${TRACK_CONFIGS[analyzedData.track].name} (${analyzedData.confidence} confidence)`, 'success');
+                displayKeywordMatch(analyzedData);
+
+            } catch (error) {
+                showStatus('Error analyzing job: ' + error.message, 'error');
+                console.error(error);
+            } finally {
+                document.getElementById('analyzeBtn').disabled = false;
+            }
+        }
+
+        function displayKeywordMatch(data) {
+            const trackConfig = TRACK_CONFIGS[data.track];
+            const jdKeywords = data.keywords.map(k => k.toLowerCase());
+            const trackKeywords = trackConfig.keywords;
+            
+            const matched = trackKeywords.filter(tk => 
+                jdKeywords.some(jk => jk.includes(tk) || tk.includes(jk))
+            );
+            
+            const matchPercent = Math.round((matched.length / trackKeywords.length) * 100);
+            
+            const html = `
+                <div class="keyword-match">
+                    <div>
+                        <h3>Keyword Match Score</h3>
+                        <p>${matched.length} of ${trackKeywords.length} core keywords found</p>
+                    </div>
+                    <div class="match-score">${matchPercent}%</div>
+                </div>
+                <div class="keyword-list">
+                    ${trackKeywords.map(kw => {
+                        const isMatched = matched.includes(kw);
+                        return `<span class="keyword-badge ${isMatched ? 'matched' : 'missing'}">${kw}</span>`;
+                    }).join('')}
+                </div>
+            `;
+            
+            document.getElementById('keywordMatch').innerHTML = html;
+            document.getElementById('keywordMatch').style.display = 'block';
+        }
+
+        async function generateResume() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const companyName = document.getElementById('companyName').value.trim();
+            const jobTitle = document.getElementById('jobTitle').value.trim();
+            const city = document.getElementById('locationCity').value.trim();
+            const state = document.getElementById('locationState').value;
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+
+            if (!selectedTrack) {
+                showStatus('Please select a resume track', 'error');
+                return;
+            }
+
+            document.getElementById('generateResumeBtn').disabled = true;
+            showStatus('Generating ATS-optimized resume with Claude Sonnet 4 (target: 95% ATS)...', 'info');
+
+            const trackConfig = TRACK_CONFIGS[selectedTrack];
+            const location = state === 'Remote' ? 'Remote' : `${city}, ${state}`;
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 4000,
+                        messages: [{
+                            role: 'user',
+                            content: `${RESUME_SYSTEM_PROMPT}
+
+---
+
+## TASK: Generate ATS-Optimized Resume
+
+**Track:** ${selectedTrack}
+**Company:** ${companyName}
+**Job Title:** ${jobTitle}
+**Location for Contact Header:** ${location}
+
+**Job Description:**
+${jobDescription}
+
+**INSTRUCTIONS:**
+1. Follow the complete system prompt above for track: ${selectedTrack}
+2. Extract 10-15 keywords from the job description
+3. Generate resume targeting 95% ATS score
+4. Embed keywords naturally in skills, experience bullets, and projects
+5. Use exact track routing for job titles, skills, projects, publications
+6. STRICTLY 1 page (~550 words)
+7. Format for ATS parsing (linear, no columns/tables)
+
+Return the complete resume text in plain text format ready for DOCX conversion.`
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                generatedResume = data.content[0].text;
+                
+                showStatus('✅ Resume generated successfully! Target: 95% ATS optimization', 'success');
+                displayPreview(generatedResume, 'Resume');
+                document.getElementById('downloadBothBtn').style.display = 'inline-block';
+                document.getElementById('downloadBothBtn').disabled = false;
+
+            } catch (error) {
+                showStatus('Error generating resume: ' + error.message, 'error');
+                console.error(error);
+            } finally {
+                document.getElementById('generateResumeBtn').disabled = false;
+            }
+        }
+
+        async function generateCoverLetter() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const companyName = document.getElementById('companyName').value.trim();
+            const jobTitle = document.getElementById('jobTitle').value.trim();
+            const city = document.getElementById('locationCity').value.trim();
+            const state = document.getElementById('locationState').value;
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+
+            if (!selectedTrack) {
+                showStatus('Please select a resume track', 'error');
+                return;
+            }
+
+            document.getElementById('generateCoverBtn').disabled = true;
+            showStatus('Generating cover letter with Claude Sonnet 4...', 'info');
+
+            const trackConfig = TRACK_CONFIGS[selectedTrack];
+            const location = state === 'Remote' ? 'Remote' : `${city}, ${state}`;
+
+            const COVER_LETTER_PROMPT = `## COVER LETTER EXPERIENCE HOOKS
+
+### ALWAYS MENTION (Weave naturally):
+1. **Graduating May 2026** - "graduating from USC's MS in Computer Science program in May 2026"
+2. **Available mid-June 2026** - "available to start mid-June 2026"
+3. **Willing to relocate** - "eager to relocate to [City] for the right opportunity"
+
+### GDSC EXPERIENCE (Use for leadership, teamwork, community):
+- "Founded USC's competitive coding club and grew it from 10 to 200+ members"
+- "Led weekly technical workshops and coding competitions"
+- "Built collaborative learning environment at USC's Google Developer Student Club"
+
+### IMARTICUS STARTUP EXPERIENCE (Use for Analytics, Business Analyst, Data Science tracks):
+- "Worked directly with CEO and leadership team in 25-person startup"
+- "Thrived in fast-moving startup environment at Imarticus Learning"
+- "Wore multiple hats across product, data, and engineering in early-stage startup"
+
+### AWS BIG TECH EXPERIENCE (Use for SDE, Backend, ML tracks):
+- "Internship at AWS working on petabyte-scale systems"
+- "Contributed to production infrastructure serving millions of queries daily"
+- "Collaborated with distributed engineering teams at AWS Redshift"
+
+---
+
+## COVER LETTER STRUCTURE (250-300 words, 4 paragraphs)
+
+### Paragraph 1: The Hook (2-3 sentences)
+- Express genuine excitement about specific role/company
+- Mention ONE specific detail about company (product, tech, mission, recent news)
+- Connect why THIS company, why THIS role, why NOW
+
+### Paragraph 2: The Fit (3-4 sentences)
+- Lead with strongest relevant experience with METRICS
+- Connect background directly to their needs
+- Use keywords from job description
+- Mention specific technical skills they need
+
+### Paragraph 3: The Differentiator (2-3 sentences)
+PICK ONE BASED ON TRACK:
+- **SDE/Backend:** GDSC leadership (200 members) + systems thinking
+- **Data Science/ML:** IEEE publication + curiosity-driven exploration
+- **Analytics:** Startup experience (Imarticus CEO) + data storytelling
+- **Business Analyst:** Startup experience + stakeholder communication
+- **Quant:** Research rigor + domain knowledge
+
+### Paragraph 4: The Close (2 sentences)
+- Reaffirm enthusiasm
+- Call to action ("I'd love to discuss...")
+- Professional sign-off
+
+---
+
+## TASK: Generate Cover Letter
+
+**Track:** ${selectedTrack}
+**Company:** ${companyName}
+**Job Title:** ${jobTitle}
+**Location:** ${location}
+
+**Job Description:**
+${jobDescription}
+
+**CANDIDATE BACKGROUND:**
+- Graduating USC MS CS (Data Science) May 2026
+- AWS Redshift SDE Intern (Summer 2025) - C++, distributed systems, petabyte-scale
+- Paypoint India Intern (Summer 2022) - fintech, credit risk, 94% accuracy
+- Imarticus Learning Intern (Jan-May 2023) - 25-person startup, CEO collaboration, NLP
+- Founded GDSC competitive coding club (10→200+ members)
+- IEEE ICISAA 2024 publication (BERT, F1 0.91)
+- Available mid-June 2026, willing to relocate
+
+**TONE:** Professional yet energetic, genuine excitement, not desperate. Show passion.
+
+**INSTRUCTIONS:**
+1. Follow 4-paragraph structure above
+2. Use track-appropriate experience hook
+3. Keep to 250-300 words
+4. Include: May 2026 graduation, mid-June availability, relocation willingness
+5. Mention specific company detail if possible
+6. Lead with strongest experience with metrics
+
+Generate the complete cover letter in business letter format.`;
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 2000,
+                        messages: [{
+                            role: 'user',
+                            content: COVER_LETTER_PROMPT
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                generatedCoverLetter = data.content[0].text;
+                
+                showStatus('✅ Cover letter generated successfully!', 'success');
+                displayPreview(generatedCoverLetter, 'Cover Letter');
+                document.getElementById('downloadBothBtn').style.display = 'inline-block';
+                document.getElementById('downloadBothBtn').disabled = false;
+
+            } catch (error) {
+                showStatus('Error generating cover letter: ' + error.message, 'error');
+                console.error(error);
+            } finally {
+                document.getElementById('generateCoverBtn').disabled = false;
+            }
+        }
+
+        function displayPreview(content, type) {
+            const previewSection = document.getElementById('previewSection');
+            previewSection.style.display = 'block';
+            
+            const html = `
+                <h3>${type} Preview</h3>
+                <div class="preview-section">
+                    <div class="preview-content">${content}</div>
+                </div>
+            `;
+            
+            if (type === 'Resume' && !generatedCoverLetter) {
+                previewSection.innerHTML = html;
+            } else if (type === 'Cover Letter' && !generatedResume) {
+                previewSection.innerHTML = html;
+            } else {
+                previewSection.innerHTML = `
+                    <h3>Resume Preview</h3>
+                    <div class="preview-section">
+                        <div class="preview-content">${generatedResume || 'Not generated yet'}</div>
+                    </div>
+                    <h3 style="margin-top: 20px;">Cover Letter Preview</h3>
+                    <div class="preview-section">
+                        <div class="preview-content">${generatedCoverLetter || 'Not generated yet'}</div>
+                    </div>
+                `;
+            }
+        }
+
+        async function downloadBoth() {
+            const companyName = document.getElementById('companyName').value.trim() || 'Company';
+            const jobTitle = document.getElementById('jobTitle').value.trim() || 'Position';
+            
+            showStatus('Generating DOCX files...', 'info');
+
+            try {
+                if (generatedResume) {
+                    await createDOCX(generatedResume, `Dhruvin_Jhaveri_Resume_${companyName}.docx`);
+                }
+                if (generatedCoverLetter) {
+                    await createDOCX(generatedCoverLetter, `Dhruvin_Jhaveri_CoverLetter_${companyName}.docx`);
+                }
+                showStatus('✅ DOCX files downloaded successfully!', 'success');
+            } catch (error) {
+                showStatus('Error creating DOCX: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        async function createDOCX(content, filename) {
+            const zip = new JSZip();
+
+            // Create DOCX structure
+            const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+            const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+    <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+    <Default Extension="xml" ContentType="application/xml"/>
+    <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+
+            const wordRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+</Relationships>`;
+
+            // Convert content to DOCX XML with proper formatting
+            const paragraphs = content.split('\n').map(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return '<w:p/>';
+                
+                // Bold text
+                if (trimmed.match(/^\*\*.*\*\*$/)) {
+                    const text = trimmed.replace(/\*\*/g, '');
+                    return `<w:p><w:pPr><w:spacing w:before="120" w:after="120"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+                }
+                
+                // Bullet points
+                if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
+                    const text = trimmed.substring(1).trim();
+                    return `<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr><w:spacing w:before="60" w:after="60"/></w:pPr><w:r><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+                }
+                
+                // Regular paragraph
+                return `<w:p><w:pPr><w:spacing w:before="120" w:after="120"/></w:pPr><w:r><w:t xml:space="preserve">${escapeXml(trimmed)}</w:t></w:r></w:p>`;
+            }).join('');
+
+            const document = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    <w:body>
+        ${paragraphs}
+    </w:body>
+</w:document>`;
+
+            // Add files to zip
+            zip.file('_rels/.rels', rels);
+            zip.file('[Content_Types].xml', contentTypes);
+            zip.file('word/_rels/document.xml.rels', wordRels);
+            zip.file('word/document.xml', document);
+
+            // Generate and download
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function escapeXml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+        }
+
+        async function runDiagnostic(type) {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+
+            if (!apiKey) {
+                showStatus('Please enter your Anthropic API key', 'error');
+                return;
+            }
+
+            const diagnosticPrompts = {
+                roast: `Prompt 1: The Resume Roast (Before you apply anywhere)
+
+Here is my resume [paste your current resume or use the generated one from earlier].
+
+Brutally analyze it from the perspective of a hiring manager at a top company.
+
+Tell me what's weak, what's vague, what will get me rejected in 10 seconds, and what's completely missing.
+
+Don't sugarcoat anything.
+
+Provide specific, actionable fixes for each issue you identify.`,
+
+                decoder: `Prompt 2: The JD Decoder (When you find a role you want)
+
+Here is a job description [paste JD]:
+${jobDescription}
+
+And here is my resume [paste resume].
+
+Extract the top 10 skills and keywords this employer actually cares about.
+
+Now map each one against my resume and tell me where I match, where I'm weak, and what exact phrases I should add to pass both ATS screening and a human recruiter's 6-second scan.`,
+
+                bullet: `Prompt 3: The Bullet Rewriter (The game-changer)
+
+Rewrite these experience and project bullet points from my resume [paste bullets] using the X-Y-Z formula:
+
+Accomplished X, by doing Y, which resulted in Z.
+
+Make them specific, quantified, and tailored to this role [paste JD].
+
+${jobDescription}
+
+If I haven't mentioned numbers, suggest realistic metrics I could include based on the type of work.`,
+
+                gaps: `Prompt 4: The Skills Gap Fixer (When you're underqualified)
+
+Here's the job description [paste JD]:
+${jobDescription}
+
+And my resume [paste resume].
+
+I know I don't meet every requirement.
+
+Identify the exact gaps, then suggest 2-3 micro-projects or certifications I can realistically complete in 2 weeks that would fill each gap.
+
+Also rewrite my resume summary to honestly position me as a fast learner who's actively bridging these gaps.`,
+
+                action: `Prompt 5: The Role-Specific Resume Generator (Final weapon)
+
+Here is the job description [paste JD]:
+${jobDescription}
+
+My resume [paste resume], and my current skill set [list skills].
+
+I have 2 weeks before the interview. Give me a complete action plan:
+
+List 2 portfolio projects I can build from scratch that directly demonstrate the skills this role demands. Each project should be completable in 2-3 days, impressive enough to discuss in an interview, and hosted on GitHub with a proper README.
+
+Suggest the top 2 free/affordable certifications (Google, IBM, Coursera, or any credible platform) that would instantly strengthen my profile for this exact role. Tell me which ones can be completed fastest and which carry the most weight with recruiters.
+
+For each project and certification, give me the exact line I should add to my resume and the talking point I should prepare for the interview to explain why I did it.`
+            };
+
+            const buttonId = type + 'Btn';
+            document.getElementById(buttonId).disabled = true;
+            showStatus(`Running ${type} diagnostic...`, 'info');
+            document.getElementById('diagnosticOutput').style.display = 'block';
+            document.getElementById('diagnosticContent').textContent = 'Analyzing...';
+
+            try {
+                const prompt = diagnosticPrompts[type];
+                
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 4000,
+                        messages: [{
+                            role: 'user',
+                            content: prompt + '\n\nMy current resume:\n' + (generatedResume || 'No resume generated yet - use my profile from the system prompt')
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const result = data.content[0].text;
+                
+                document.getElementById('diagnosticContent').textContent = result;
+                showStatus(`✅ ${type.charAt(0).toUpperCase() + type.slice(1)} diagnostic complete!`, 'success');
+
+            } catch (error) {
+                showStatus(`Error running ${type} diagnostic: ` + error.message, 'error');
+                console.error(error);
+            } finally {
+                document.getElementById(buttonId).disabled = false;
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
