@@ -3,378 +3,716 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v3</title>
+<title>ResumeForge v4</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-  :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-  .app{display:grid;grid-template-columns:340px 1fr;min-height:100vh;}
-  .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 24px;display:flex;flex-direction:column;gap:22px;overflow-y:auto;position:sticky;top:0;height:100vh;}
-  .logo{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--border);}
-  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-  .logo-text{font-size:18px;font-weight:600;letter-spacing:-0.3px;}
-  .logo-version{font-size:11px;color:var(--muted);margin-top:1px;}
-  .field-group{display:flex;flex-direction:column;gap:6px;}
-  .field-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);}
-  input[type="text"],input[type="password"],textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;width:100%;transition:border-color 0.15s;outline:none;}
-  input[type="text"]:focus,input[type="password"]:focus,textarea:focus{border-color:var(--accent);}
-  input[type="password"]{font-family:'DM Mono',monospace;font-size:13px;}
-  textarea{min-height:110px;resize:vertical;font-size:13px;line-height:1.5;}
-  .track-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
-  .track-btn{padding:9px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.15s;}
-  .track-btn:hover{border-color:var(--border2);color:var(--text);}
-  .track-btn.active{background:var(--accent);border-color:var(--accent);color:white;}
-  .main{display:flex;flex-direction:column;min-height:100vh;}
-  .toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-  .btn{padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;display:flex;align-items:center;gap:6px;}
-  .btn-primary{background:var(--accent);color:white;}
-  .btn-primary:hover:not(:disabled){background:#6a59e0;}
-  .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border2);}
-  .btn-secondary:hover:not(:disabled){background:#26263a;}
-  .btn-success{background:#1a3a32;color:var(--success);border:1px solid #2a5a4a;}
-  .btn-success:hover:not(:disabled){background:#1f4a3e;}
-  .btn:disabled{opacity:0.4;cursor:not-allowed;}
-  .status-bar{padding:10px 28px;font-size:13px;display:none;align-items:center;gap:8px;}
-  .status-bar.show{display:flex;}
-  .status-bar.error{color:var(--danger);background:rgba(240,107,107,0.08);}
-  .status-bar.success{color:var(--success);background:rgba(95,235,196,0.08);}
-  .status-bar.info{color:var(--accent2);background:rgba(95,235,196,0.05);}
-  .status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
-  .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 28px;}
-  .tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
-  .tab:hover{color:var(--text);}
-  .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-  .tab .badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--success);color:#000;font-size:10px;margin-left:6px;}
-  .content{flex:1;padding:24px 28px;overflow-y:auto;}
-  .preview-pane{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 32px;font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.7;color:#c8c4e8;white-space:pre-wrap;max-height:65vh;overflow-y:auto;min-height:200px;}
-  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;gap:12px;color:var(--muted);}
-  .empty-icon{font-size:40px;opacity:0.4;}
-  .empty-title{font-size:16px;font-weight:500;color:var(--text);opacity:0.5;}
-  .empty-sub{font-size:13px;text-align:center;max-width:300px;line-height:1.5;}
-  .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .ats-row{display:flex;align-items:center;gap:12px;}
-  input[type="range"]{flex:1;accent-color:var(--accent);height:4px;}
-  .ats-value{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--accent2);min-width:36px;text-align:right;}
-  .divider{height:1px;background:var(--border);margin:4px 0;}
-  ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-  @media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.app{display:grid;grid-template-columns:340px 1fr;min-height:100vh;}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 24px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;position:sticky;top:0;height:100vh;}
+.logo{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text{font-size:18px;font-weight:600;letter-spacing:-0.3px;}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.field-group{display:flex;flex-direction:column;gap:6px;}
+.field-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);}
+input[type=text],input[type=password],textarea,select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;width:100%;outline:none;transition:border-color .15s;}
+input[type=text]:focus,input[type=password]:focus,textarea:focus{border-color:var(--accent);}
+input[type=password]{font-family:'DM Mono',monospace;font-size:13px;}
+textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
+.track-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+.track-btn{padding:9px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;}
+.track-btn:hover{border-color:var(--border2);color:var(--text);}
+.track-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.divider{height:1px;background:var(--border);margin:2px 0;}
+.main{display:flex;flex-direction:column;min-height:100vh;}
+.toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.btn{padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover:not(:disabled){background:#6a59e0;}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border2);}
+.btn-secondary:hover:not(:disabled){background:#26263a;}
+.btn-green{background:#1a3a32;color:var(--success);border:1px solid #2a5a4a;}
+.btn-green:hover:not(:disabled){background:#1f4a3e;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.status{padding:10px 28px;font-size:13px;display:none;align-items:center;gap:8px;}
+.status.show{display:flex;}
+.status.err{color:var(--danger);background:rgba(240,107,107,.08);}
+.status.ok{color:var(--success);background:rgba(95,235,196,.08);}
+.status.info{color:var(--accent2);background:rgba(95,235,196,.05);}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 28px;}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--success);color:#000;font-size:10px;margin-left:6px;}
+.content{flex:1;padding:24px 28px;overflow-y:auto;}
+.preview{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 32px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.75;color:#c8c4e8;white-space:pre-wrap;max-height:70vh;overflow-y:auto;min-height:200px;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;gap:12px;color:var(--muted);}
+.empty-icon{font-size:40px;opacity:.4;}
+.empty-title{font-size:15px;font-weight:500;color:var(--text);opacity:.5;}
+.empty-sub{font-size:13px;text-align:center;max-width:300px;line-height:1.5;}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:currentColor;border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">✦</div>
-      <div><div class="logo-text">ResumeForge</div><div class="logo-version">v3.0 — Tight Layout</div></div>
-    </div>
-    <div class="field-group"><div class="field-label">Anthropic API Key</div><input type="password" id="apiKey" placeholder="sk-ant-..."></div>
-    <div class="divider"></div>
-    <div class="field-group"><div class="field-label">Company</div><input type="text" id="company" placeholder="Google"></div>
-    <div class="field-group"><div class="field-label">Job Title</div><input type="text" id="jobTitle" placeholder="Software Engineer"></div>
-    <div class="field-group"><div class="field-label">Contact Location</div><input type="text" id="location" placeholder="New York, NY" value="New York, NY"></div>
-    <div class="field-group"><div class="field-label">Job Description</div><textarea id="jd" placeholder="Paste full job description here..."></textarea></div>
-    <div class="field-group">
-      <div class="field-label">Track</div>
-      <div class="track-grid">
-        <button class="track-btn" data-track="sde">SDE</button>
-        <button class="track-btn" data-track="backend">Backend</button>
-        <button class="track-btn" data-track="ds_ml">ML / DS</button>
-        <button class="track-btn" data-track="analytics">Analytics</button>
-        <button class="track-btn" data-track="business_analyst">Business</button>
-        <button class="track-btn" data-track="quant">Quant</button>
-      </div>
-    </div>
-    <div class="field-group">
-      <div class="field-label">ATS Target Score</div>
-      <div class="ats-row"><input type="range" id="atsSlider" min="70" max="100" value="90" step="5"><div class="ats-value" id="atsVal">90%</div></div>
-    </div>
+
+<!-- ─── SIDEBAR ─── -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v4 — Always Full Page</div></div>
   </div>
 
-  <div class="main">
-    <div class="toolbar">
-      <button class="btn btn-primary" onclick="generate('resume')"><span>◎</span> Generate Resume</button>
-      <button class="btn btn-secondary" onclick="generate('cover')"><span>✉</span> Cover Letter</button>
-      <div style="flex:1"></div>
-      <button class="btn btn-success" id="dlResume" onclick="downloadResume()" disabled><span>↓</span> Resume DOCX</button>
-      <button class="btn btn-success" id="dlCover" onclick="downloadCover()" disabled><span>↓</span> Cover DOCX</button>
-    </div>
-    <div class="status-bar" id="statusBar"><div class="status-dot"></div><span id="statusMsg"></span></div>
-    <div class="tabs">
-      <div class="tab active" data-tab="resume" onclick="switchTab('resume')">Resume <span class="badge" id="resumeBadge" style="display:none">✓</span></div>
-      <div class="tab" data-tab="cover" onclick="switchTab('cover')">Cover Letter <span class="badge" id="coverBadge" style="display:none">✓</span></div>
-    </div>
-    <div class="content">
-      <div id="resumeTab">
-        <div class="empty-state" id="resumeEmpty"><div class="empty-icon">◎</div><div class="empty-title">No resume yet</div><div class="empty-sub">Fill fields and click Generate Resume</div></div>
-        <div id="resumePreview" class="preview-pane" style="display:none"></div>
-      </div>
-      <div id="coverTab" style="display:none">
-        <div class="empty-state" id="coverEmpty"><div class="empty-icon">✉</div><div class="empty-title">No cover letter yet</div><div class="empty-sub">Click Cover Letter to generate</div></div>
-        <div id="coverPreview" class="preview-pane" style="display:none"></div>
-      </div>
+  <div class="field-group">
+    <div class="field-label">Anthropic API Key</div>
+    <input type="password" id="apiKey" placeholder="sk-ant-...">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field-group">
+    <div class="field-label">Company</div>
+    <input type="text" id="company" placeholder="Quantifind">
+  </div>
+
+  <div class="field-group">
+    <div class="field-label">Job Title</div>
+    <input type="text" id="jobTitle" placeholder="Data Scientist">
+  </div>
+
+  <div class="field-group">
+    <div class="field-label">Location on Resume</div>
+    <input type="text" id="location" value="New York, NY">
+  </div>
+
+  <div class="field-group">
+    <div class="field-label">Job Description</div>
+    <textarea id="jd" placeholder="Paste full JD here..."></textarea>
+  </div>
+
+  <div class="field-group">
+    <div class="field-label">Track</div>
+    <div class="track-grid">
+      <button class="track-btn" data-track="sde">SDE</button>
+      <button class="track-btn" data-track="backend">Backend</button>
+      <button class="track-btn" data-track="ds_ml">ML / DS</button>
+      <button class="track-btn" data-track="analytics">Analytics</button>
+      <button class="track-btn" data-track="business">Business</button>
+      <button class="track-btn" data-track="quant">Quant</button>
     </div>
   </div>
+</div>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="generate('resume')"><span>◎</span> Generate Resume</button>
+    <button class="btn btn-secondary" onclick="generate('cover')"><span>✉</span> Cover Letter</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-green" id="dlR" onclick="downloadResume()" disabled><span>↓</span> Resume DOCX</button>
+    <button class="btn btn-green" id="dlC" onclick="downloadCover()" disabled><span>↓</span> Cover DOCX</button>
+  </div>
+
+  <div class="status" id="status"><div class="sdot"></div><span id="smsg"></span></div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="resume" onclick="switchTab('resume')">Resume <span class="badge" id="rb" style="display:none">✓</span></div>
+    <div class="tab" data-tab="cover" onclick="switchTab('cover')">Cover Letter <span class="badge" id="cb" style="display:none">✓</span></div>
+  </div>
+
+  <div class="content">
+    <div id="resumeTab">
+      <div class="empty" id="rEmpty"><div class="empty-icon">◎</div><div class="empty-title">No resume yet</div><div class="empty-sub">Paste a JD, pick a track, click Generate</div></div>
+      <div id="rPreview" class="preview" style="display:none"></div>
+    </div>
+    <div id="coverTab" style="display:none">
+      <div class="empty" id="cEmpty"><div class="empty-icon">✉</div><div class="empty-title">No cover letter yet</div><div class="empty-sub">Click Cover Letter after generating a resume</div></div>
+      <div id="cPreview" class="preview" style="display:none"></div>
+    </div>
+  </div>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 'use strict';
-var selectedTrack=null,resumeText=null,coverText=null;
 
-document.querySelectorAll('.track-btn').forEach(function(btn){
-  btn.onclick=function(){document.querySelectorAll('.track-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');selectedTrack=btn.dataset.track;};
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+var selectedTrack = null;
+var resumeData = null;   // parsed structured object
+var coverText  = null;   // raw string
+
+document.querySelectorAll('.track-btn').forEach(function(b){
+  b.onclick = function(){
+    document.querySelectorAll('.track-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    selectedTrack = b.dataset.track;
+  };
 });
-document.getElementById('atsSlider').oninput=function(){document.getElementById('atsVal').textContent=this.value+'%';};
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===name);});
-  document.getElementById('resumeTab').style.display=name==='resume'?'block':'none';
-  document.getElementById('coverTab').style.display=name==='cover'?'block':'none';
-}
-function setStatus(msg,type){var bar=document.getElementById('statusBar');bar.className='status-bar show '+type;document.getElementById('statusMsg').innerHTML=msg;}
-function allBtns(dis){document.querySelectorAll('.btn').forEach(function(b){b.disabled=dis;});}
-function restoreBtns(){document.querySelectorAll('.btn').forEach(function(b){if(b.id==='dlResume'&&!resumeText)return;if(b.id==='dlCover'&&!coverText)return;b.disabled=false;});}
 
-// ── PROMPTS ──────────────────────────────────────────────────
-function getResumePrompt(company,title,loc,jd,track,ats){
-  var tg={sde:'SDE: C++/Python/Java, distributed systems, scalability, algorithms, APIs',backend:'Backend: Node.js/Java/SQL, microservices, REST APIs, database optimization',ds_ml:'ML/DS: PyTorch/BERT/LangChain, NLP, model training, F1/accuracy metrics',analytics:'Analytics: SQL, Tableau, Redshift, KPIs, ETL, data visualization',business_analyst:'Business Analyst: SQL, dashboards, process improvement, stakeholder communication',quant:'Quant: Python/C++, statistical modeling, risk models, XGBoost, time-series'};
-  return 'You are an expert ATS resume writer. Generate a resume for Dhruvin Jhaveri.\nTARGET: '+ats+'% ATS match. Track: '+(tg[track]||track)+'\nCompany: '+company+' | Role: '+title+' | Location: '+loc+'\n\nJOB DESCRIPTION:\n'+jd+'\n\nEXPERIENCE OPTIONS (always AWS as EXP1, pick 2 more by track):\nA) Software Development Engineer Intern | AWS (Amazon Web Services), Santa Clara, CA | May \u2013 Aug 2025\n   Tech: C++, SQL, AWS Redshift, AWS S3, CI/CD, Distributed Systems\n   B1: Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production\n   B2: Designed auto-resizing mechanism with GUC config logic; built S3 workload history for persistent SQL scaling analytics\n   B3: Built CI/CD regression pipelines across 12 distributed nodes; achieved 99.8% uptime with zero-downtime deploys\n\nB) Product Enablement Intern | Imarticus Learning, Mumbai, India | Jan \u2013 May 2023\n   Tech: Python, BERT, LangChain, Node.js, PostgreSQL, MongoDB, REST APIs\n   B1: Built NLP evaluation pipeline with BERT and LangChain; classified 50k+ daily learner events at 92% accuracy\n   B2: Automated 90% of content-tagging via Node.js microservices and REST APIs, saving 4 engineering hours daily\n   B3: Integrated PostgreSQL analytics endpoints; enabled real-time performance dashboards for 5 product managers\n\nC) Data Analyst Intern | Paypoint India, Ahmedabad, India | Apr \u2013 Jul 2023\n   Tech: Python, XGBoost, SQL, PostgreSQL, Tableau, Qlik Sense, Docker, AWS EC2\n   B1: Trained XGBoost credit risk model with RFE feature selection; achieved 94% accuracy on 1,000+ daily loan applications\n   B2: Built Tableau and Qlik Sense dashboards tracking 12 KPIs; identified patterns cutting loan default rate 18%\n   B3: Implemented ETL pipelines in PostgreSQL and Python, processing 500k+ financial records daily with auto-reconciliation\n\nD) Co-Founder, Competitive Coding Dept. | Google Developer Student Clubs (GDSC), Mumbai | Jul 2022 \u2013 Jul 2023\n   Tech: Java, DSA, Competitive Programming, LeetCode, Codeforces, Hackerrank\n   B1: Founded GDSC coding department from scratch; scaled to 200+ active members and 40+ competitions in one year\n   B2: Mentored 45+ students across LeetCode, Codeforces, and Hackerrank; multiple placements in ACM SemiCode\n   B3: Organized inter-college hackathons and DSA bootcamps; grew department engagement 5x in under 12 months\n\nPROJECT OPTIONS (pick 2):\nP1) Full Stack Artist Search Application | Node.js, MongoDB, Express, JWT, MapReduce\n   B1: Engineered 13 REST API endpoints with JWT auth and role-based access; achieved 172ms P95 latency under 10k concurrent users\n   B2: Implemented MapReduce caching layer, cutting duplicate upstream API requests 50% and tripling read throughput\n   B3: Designed schema-optimized MongoDB collections and query indexes; reduced average DB response time by 40%\n\nP2) PharmaChain \u2014 Blockchain Supply Chain Platform | Ethereum, Solidity, Node.js, Web3.js\n   B1: Architected Ethereum smart contracts with off-chain aggregation layer; improved traceability 95% across 4 supplier tiers\n   B2: Cut on-chain gas costs 25% via test-driven contract optimization; 2nd place Study Australia Challenge, AUD 4,000 funding\n   B3: Integrated MetaMask wallet auth and Web3.js event listeners; deployed via Truffle with automated smart contract tests\n\nOUTPUT ONLY this exact block, nothing else before or after:\nRESUME_START\nNAME: Dhruvin Jhaveri\nCONTACT: (602) 793-6561  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255  |  '+loc+'\nEDU1_LEFT: University of Southern California, Los Angeles, CA  |  M.S. Computer Science (Data Science), GPA: 3.40\nEDU1_DATE: May 2026\nEDU1_COURSE: [3-4 relevant courses]\nEDU2_LEFT: NMIMS University, Mumbai, India  |  B.Tech. Computer Engineering, GPA: 3.61\nEDU2_DATE: May 2023\nSKILL1_LABEL: Languages\nSKILL1_VALUE: [languages]\nSKILL2_LABEL: Frameworks & Libraries\nSKILL2_VALUE: [frameworks]\nSKILL3_LABEL: Databases & Cloud\nSKILL3_VALUE: [databases/cloud]\nEXP1_TITLE: [title]\nEXP1_COMPANY: [company, city, state]\nEXP1_DATE: [dates]\nEXP1_TECH: [tech]\nEXP1_B1: [bullet]\nEXP1_B2: [bullet]\nEXP1_B3: [bullet]\nEXP2_TITLE: [title]\nEXP2_COMPANY: [company, city, state]\nEXP2_DATE: [dates]\nEXP2_TECH: [tech]\nEXP2_B1: [bullet]\nEXP2_B2: [bullet]\nEXP2_B3: [bullet]\nEXP3_TITLE: [title]\nEXP3_COMPANY: [company, city, state]\nEXP3_DATE: [dates]\nEXP3_TECH: [tech]\nEXP3_B1: [bullet]\nEXP3_B2: [bullet]\nEXP3_B3: [bullet]\nPROJ1_NAME: [name]\nPROJ1_STACK: [stack]\nPROJ1_B1: [bullet]\nPROJ1_B2: [bullet]\nPROJ1_B3: [bullet]\nPROJ2_NAME: [name]\nPROJ2_STACK: [stack]\nPROJ2_B1: [bullet]\nPROJ2_B2: [bullet]\nPROJ2_B3: [bullet]\nPUB_TITLE: Toxic Comment Classification using BERT-based Transformer Models\nPUB_VENUE: IEEE ICISAA 2024, Pune, India\nPUB_DESC: Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4.\nRESUME_END\n\nRULES: EXP1=AWS always. SDE/Backend: EXP2=Imarticus EXP3=GDSC. Analytics/Quant: EXP2=Paypoint EXP3=Imarticus. ML/DS: EXP2=Imarticus EXP3=Paypoint. Artist Search first for SDE/Backend; PharmaChain first for Quant/BizOps. Tailor bullets to JD keywords. Bullets max 18 words.';
+function switchTab(n){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===n);});
+  document.getElementById('resumeTab').style.display = n==='resume'?'block':'none';
+  document.getElementById('coverTab').style.display  = n==='cover'?'block':'none';
 }
-
-function getCoverPrompt(company,title,loc,jd){
-  return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+'.\nJD: '+jd+'\nBackground: USC MS CS May 2026 | AWS SDE Intern C++ Redshift 35% | BERT NLP 92% | XGBoost 94% | IEEE ICISAA 2024 F1:0.91 | GDSC 200+ members | PharmaChain AUD 4,000 | relocating NYC mid-June 2026.\nRules: 200-250 words. Start "Dear Hiring Manager,". Opening excitement 1-2 sentences. 3-4 metric bullets. Closing NYC hook. End with: djhaveri99@gmail.com  |  (602) 793-6561. No double hyphens. Human voice. Output ONLY the letter.';
+function setS(msg,type){var s=document.getElementById('status');s.className='status show '+type;document.getElementById('smsg').innerHTML=msg;}
+function lockBtns(){document.querySelectorAll('.btn').forEach(function(b){b.disabled=true;});}
+function unlockBtns(){
+  document.querySelectorAll('.btn').forEach(function(b){
+    if(b.id==='dlR'&&!resumeData)return;
+    if(b.id==='dlC'&&!coverText)return;
+    b.disabled=false;
+  });
 }
 
-// ── GENERATE ─────────────────────────────────────────────────
-async function generate(type){
-  var key=document.getElementById('apiKey').value.trim();
-  var company=document.getElementById('company').value.trim();
-  var title=document.getElementById('jobTitle').value.trim();
-  var loc=document.getElementById('location').value.trim()||'New York, NY';
-  var jd=document.getElementById('jd').value.trim();
-  var ats=document.getElementById('atsSlider').value;
-  if(!key)return setStatus('API key required','error');
-  if(!jd)return setStatus('Job description required','error');
-  if(!selectedTrack)return setStatus('Select a track','error');
-  setStatus('<span class="spinner"></span>&nbsp;Generating '+(type==='resume'?'resume':'cover letter')+'...','info');
-  allBtns(true);
-  var prompt=type==='resume'?getResumePrompt(company,title,loc,jd,selectedTrack,ats):getCoverPrompt(company,title,loc,jd);
-  try{
-    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:4096,messages:[{role:'user',content:prompt}]})});
-    if(!res.ok){var e=await res.json();throw new Error(e.error&&e.error.message?e.error.message:'HTTP '+res.status);}
-    var data=await res.json();
-    var text=data.content[0].text.trim();
-    if(type==='resume'){
-      resumeText=text;
-      document.getElementById('resumePreview').textContent=text;
-      document.getElementById('resumePreview').style.display='block';
-      document.getElementById('resumeEmpty').style.display='none';
-      document.getElementById('resumeBadge').style.display='inline-flex';
-      document.getElementById('dlResume').disabled=false;
-      switchTab('resume');
-    }else{
-      coverText=text;
-      document.getElementById('coverPreview').textContent=text;
-      document.getElementById('coverPreview').style.display='block';
-      document.getElementById('coverEmpty').style.display='none';
-      document.getElementById('coverBadge').style.display='inline-flex';
-      document.getElementById('dlCover').disabled=false;
-      switchTab('cover');
+// ═══════════════════════════════════════════════════════════
+// FULL CANDIDATE DATA — hardcoded, AI only rewrites bullets
+// ═══════════════════════════════════════════════════════════
+var CANDIDATE = {
+  name: "DHRUVIN JHAVERI",
+  phone: "(602) 793-6561",
+  email: "djhaveri99@gmail.com",
+  linkedin: "linkedin.com/in/dhruvinjhaveri",
+  github: "github.com/Dhruvin255",
+
+  edu: [
+    { left: "University of Southern California, Los Angeles, CA  |  M.S. Computer Science (Data Science), GPA: 3.40", date: "May 2026" },
+    { left: "NMIMS University, Mumbai, India  |  B.Tech. Computer Engineering, GPA: 3.61", date: "May 2023" }
+  ],
+
+  // Skills vary by track — AI picks from these pools
+  skillPools: {
+    sde:      { lang:"Python, C++, Java, SQL, JavaScript, TypeScript", fw:"Node.js, Express, React, Django, Flask, PyTorch, LangChain, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, REST APIs" },
+    backend:  { lang:"Python, Java, SQL, JavaScript, TypeScript, C++", fw:"Node.js, Express, Django, Flask, REST APIs, LangChain, BERT, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, Kubernetes" },
+    ds_ml:    { lang:"Python, SQL, R, Scala, Java, C++, PySpark", fw:"PyTorch, TensorFlow, BERT, LangChain, Scikit-learn, XGBoost, Spark MLlib, Pandas, NumPy", db:"AWS Redshift, PostgreSQL, MongoDB, S3, Tableau, Qlik Sense, Docker, EC2, Snowflake" },
+    analytics:{ lang:"Python, SQL, R, Java, Scala, C++", fw:"Scikit-learn, XGBoost, Pandas, NumPy, Tableau, Power BI, Spark, ETL pipelines", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Qlik Sense" },
+    business: { lang:"Python, SQL, R, JavaScript, Java", fw:"Tableau, Power BI, Scikit-learn, Pandas, XGBoost, ETL, REST APIs, LangChain", db:"PostgreSQL, MongoDB, Redshift, Snowflake, AWS (S3, EC2), Docker, Google Analytics" },
+    quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" }
+  },
+
+  // 4 experience roles — ALWAYS ALL 4, always in this order
+  // AI rewrites bullets to match JD keywords
+  experiences: [
+    {
+      title: "Software Development Engineer Intern",
+      company: "AWS (Amazon Web Services), Santa Clara, CA",
+      date: "May \u2013 Aug 2025",
+      tech: "C++, SQL, AWS Redshift, AWS S3, CI/CD, Distributed Systems",
+      defaultBullets: [
+        "Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production",
+        "Designed auto-resizing mechanism with GUC config logic; built S3 workload history for persistent SQL scaling analytics",
+        "Built CI/CD regression pipelines across 12 distributed nodes; achieved 99.8% uptime with zero-downtime deploys"
+      ]
+    },
+    {
+      title: "Data Analyst Intern",
+      company: "Paypoint India, Ahmedabad, India",
+      date: "Apr \u2013 Jul 2023",
+      tech: "Python, XGBoost, SQL, PostgreSQL, Tableau, Qlik Sense, Docker, AWS EC2",
+      defaultBullets: [
+        "Trained XGBoost credit risk model with RFE feature selection; achieved 94% accuracy on 1,000+ daily loan applications",
+        "Built Tableau and Qlik Sense dashboards tracking 12 KPIs; identified patterns cutting loan default rate 18%",
+        "Implemented ETL pipelines in PostgreSQL and Python, processing 500k+ financial records daily with auto-reconciliation"
+      ]
+    },
+    {
+      title: "Product Enablement Intern",
+      company: "Imarticus Learning, Mumbai, India",
+      date: "Jan \u2013 May 2023",
+      tech: "Python, BERT, LangChain, Node.js, PostgreSQL, MongoDB, REST APIs",
+      defaultBullets: [
+        "Built NLP evaluation pipeline with BERT and LangChain; classified 50k+ daily learner events at 92% accuracy",
+        "Automated 90% of content-tagging via Node.js microservices and REST APIs, saving 4 engineering hours daily",
+        "Integrated PostgreSQL analytics endpoints; enabled real-time performance dashboards for 5 product managers"
+      ]
+    },
+    {
+      title: "Co-Founder, Competitive Coding Dept.",
+      company: "Google Developer Student Clubs (GDSC), Mumbai",
+      date: "Jul 2022 \u2013 Jul 2023",
+      tech: "Java, DSA, Competitive Programming, LeetCode, Codeforces, Hackerrank",
+      defaultBullets: [
+        "Founded GDSC coding department from scratch; scaled to 200+ active members and 40+ competitions in one year",
+        "Mentored 45+ students across LeetCode, Codeforces, and Hackerrank; multiple placements in ACM SemiCode",
+        "Organized inter-college hackathons and DSA bootcamps; grew department engagement 5x in under 12 months"
+      ]
     }
-    setStatus('&#10003; Generated successfully','success');
-  }catch(e){setStatus('Error: '+e.message,'error');}
-  restoreBtns();
+  ],
+
+  // 2 projects — track decides order, AI rewrites bullets
+  projects: {
+    artist: {
+      name: "Full Stack Artist Search Application",
+      stack: "Node.js, MongoDB, Express, JWT, MapReduce",
+      defaultBullets: [
+        "Engineered 13 REST API endpoints with JWT auth and role-based access; achieved 172ms P95 latency under 10k concurrent users",
+        "Implemented MapReduce caching layer, cutting duplicate upstream API requests 50% and tripling read throughput",
+        "Designed schema-optimized MongoDB collections and query indexes; reduced average DB response time by 40%"
+      ]
+    },
+    pharma: {
+      name: "PharmaChain \u2014 Blockchain Supply Chain Platform",
+      stack: "Ethereum, Solidity, Node.js, Web3.js",
+      defaultBullets: [
+        "Architected Ethereum smart contracts with off-chain aggregation layer; improved traceability 95% across 4 supplier tiers",
+        "Cut on-chain gas costs 25% via test-driven contract optimization; 2nd place Study Australia Challenge, AUD 4,000 funding",
+        "Integrated MetaMask wallet auth and Web3.js event listeners; deployed via Truffle with automated smart contract tests"
+      ]
+    }
+  },
+
+  pub: {
+    title: "Toxic Comment Classification using BERT-based Transformer Models",
+    venue: "IEEE ICISAA 2024, Pune, India",
+    desc:  "Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4."
+  }
+};
+
+// Project order by track
+function getProjectOrder(track){
+  if(track==='sde'||track==='backend') return ['artist','pharma'];
+  return ['pharma','artist'];
 }
 
-// ── DOCX XML HELPERS ─────────────────────────────────────────
-// All XML validated against Word schema — no w15 namespace, no problematic attributes
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// ═══════════════════════════════════════════════════════════
+// PROMPTS — AI only tailors bullets, skills, coursework
+// ═══════════════════════════════════════════════════════════
+function buildTailorPrompt(company, title, loc, jd, track){
+  var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.ds_ml;
+  var projOrder = getProjectOrder(track);
 
-var WNS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
-var F='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:eastAsia="Calibri" w:hAnsi="Calibri"/>';
+  var expLines = CANDIDATE.experiences.map(function(e,i){
+    return 'EXP'+(i+1)+' ('+e.title+' @ '+e.company+'):\n'
+      + 'Default bullets:\n'
+      + e.defaultBullets.map(function(b){return '  - '+b;}).join('\n');
+  }).join('\n\n');
 
-function mkRun(text,o){
-  o=o||{};
-  var sz=o.size||19;
-  var rp=F+(o.bold?'<w:b/><w:bCs/>':'')+(o.italic?'<w:i/><w:iCs/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>'+(o.color?'<w:color w:val="'+o.color+'"/>':'');
-  return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+esc(text)+'</w:t></w:r>';
+  var proj1 = CANDIDATE.projects[projOrder[0]];
+  var proj2 = CANDIDATE.projects[projOrder[1]];
+
+  return 'You are an ATS resume expert. Tailor Dhruvin Jhaveri\'s resume for this role.\n\n'
+    + 'COMPANY: '+company+'\nROLE: '+title+'\nLOCATION: '+loc+'\nTRACK: '+track+'\n\n'
+    + 'JOB DESCRIPTION:\n'+jd+'\n\n'
+    + '=== YOUR ONLY JOB ===\n'
+    + 'Rewrite bullets to embed JD keywords naturally. Keep all metrics. Max 18 words per bullet.\n'
+    + 'Do NOT change structure, roles, companies, dates, or facts.\n\n'
+    + '=== CURRENT BULLETS (rewrite these) ===\n\n'
+    + expLines + '\n\n'
+    + 'PROJ1 ('+proj1.name+'):\n'+proj1.defaultBullets.map(function(b){return '  - '+b;}).join('\n')+'\n\n'
+    + 'PROJ2 ('+proj2.name+'):\n'+proj2.defaultBullets.map(function(b){return '  - '+b;}).join('\n')+'\n\n'
+    + '=== ALSO OUTPUT ===\n'
+    + 'COURSEWORK: [4 courses relevant to this JD from: Distributed Systems, Database Systems, Machine Learning, Statistical Learning, Data Mining, NLP, Algorithms, Computer Vision, Big Data Analytics]\n'
+    + 'SKILL_LANG: [best 6-7 languages from this pool for the JD: '+pool.lang+']\n'
+    + 'SKILL_FW: [best frameworks from this pool for the JD: '+pool.fw+']\n'
+    + 'SKILL_DB: [best databases/cloud from this pool for the JD: '+pool.db+']\n\n'
+    + '=== OUTPUT FORMAT (EXACTLY, no extra text) ===\n'
+    + 'OUTPUT_START\n'
+    + 'COURSEWORK: [courses]\n'
+    + 'SKILL_LANG: [languages]\n'
+    + 'SKILL_FW: [frameworks]\n'
+    + 'SKILL_DB: [databases/cloud]\n'
+    + 'EXP1_B1: [bullet]\n'
+    + 'EXP1_B2: [bullet]\n'
+    + 'EXP1_B3: [bullet]\n'
+    + 'EXP2_B1: [bullet]\n'
+    + 'EXP2_B2: [bullet]\n'
+    + 'EXP2_B3: [bullet]\n'
+    + 'EXP3_B1: [bullet]\n'
+    + 'EXP3_B2: [bullet]\n'
+    + 'EXP3_B3: [bullet]\n'
+    + 'EXP4_B1: [bullet]\n'
+    + 'EXP4_B2: [bullet]\n'
+    + 'EXP4_B3: [bullet]\n'
+    + 'PROJ1_B1: [bullet]\n'
+    + 'PROJ1_B2: [bullet]\n'
+    + 'PROJ1_B3: [bullet]\n'
+    + 'PROJ2_B1: [bullet]\n'
+    + 'PROJ2_B2: [bullet]\n'
+    + 'PROJ2_B3: [bullet]\n'
+    + 'OUTPUT_END\n\n'
+    + 'RULES: Every bullet max 18 words. Keep ALL metrics (35%, 94%, 50%, etc). Only swap verbs/nouns to match JD keywords. No invented facts.';
 }
 
-function mkSp(bef,aft,line){line=line||252;return '<w:spacing w:after="'+aft+'" w:before="'+bef+'" w:line="'+line+'" w:lineRule="auto"/>';}
+function buildCoverPrompt(company, title, loc, jd){
+  return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+'.\n\n'
+    + 'JD:\n'+jd+'\n\n'
+    + 'Background: USC MS CS May 2026 GPA 3.40 | AWS SDE Intern C++ Redshift 35% query improvement | '
+    + 'BERT NLP pipeline 92% accuracy LangChain | XGBoost credit risk 94% accuracy | '
+    + 'IEEE ICISAA 2024 BERT classifier F1 0.91 | GDSC 200+ members | '
+    + 'PharmaChain AUD 4,000 Study Australia prize | relocating NYC mid-June 2026 | F-1 OPT STEM eligible.\n\n'
+    + 'Rules:\n'
+    + '- 200-250 words total\n'
+    + '- Start: "Dear Hiring Manager,"\n'
+    + '- Para 1: 2 sentences genuine excitement for this specific role/company\n'
+    + '- Para 2: 3-4 bullet points, strongest metric-backed experiences first, tailored to JD\n'
+    + '- Para 3: 1-2 sentences — unique angle (research/leadership/entrepreneurship)\n'
+    + '- Closing: NYC hook + available mid-June 2026\n'
+    + '- Sign off: Dhruvin Jhaveri\n'
+    + '- Postscript line: djhaveri99@gmail.com  |  (602) 793-6561\n'
+    + '- No double hyphens. No OPT/visa language. Human voice, not AI-sounding.\n'
+    + '- Output ONLY the letter text, nothing else.';
+}
 
-var RTAB='<w:tabs><w:tab w:val="right" w:pos="9504"/></w:tabs>';
+// ═══════════════════════════════════════════════════════════
+// API CALL
+// ═══════════════════════════════════════════════════════════
+async function callAPI(key, prompt){
+  var res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-opus-4-5',
+      max_tokens:3000,
+      messages:[{role:'user',content:prompt}]
+    })
+  });
+  if(!res.ok){var e=await res.json();throw new Error(e.error&&e.error.message?e.error.message:'HTTP '+res.status);}
+  var d=await res.json();
+  return d.content[0].text.trim();
+}
 
-function pName(t){return '<w:p><w:pPr>'+mkSp(0,28)+'<w:jc w:val="center"/></w:pPr>'+mkRun(t,{bold:true,size:26})+'</w:p>';}
-function pContact(t){return '<w:p><w:pPr>'+mkSp(0,110)+'<w:jc w:val="center"/></w:pPr>'+mkRun(t,{size:18})+'</w:p>';}
-function pSec(t){return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:color="1f3864" w:sz="6" w:space="1"/></w:pBdr>'+mkSp(118,36)+'</w:pPr>'+mkRun(t,{bold:true,size:21,color:'1f3864'})+'</w:p>';}
-function pEdu(left,date){return '<w:p><w:pPr>'+RTAB+mkSp(0,18)+'</w:pPr>'+mkRun(left,{bold:true})+mkRun('\t'+date,{})+'</w:p>';}
-function pCourse(t){return '<w:p><w:pPr>'+mkSp(0,52)+'</w:pPr>'+mkRun('Relevant Coursework: ',{bold:true})+mkRun(t,{})+'</w:p>';}
-function pSkill(lbl,val){return '<w:p><w:pPr>'+mkSp(0,18)+'</w:pPr>'+mkRun(lbl+': ',{bold:true})+mkRun(val,{})+'</w:p>';}
-function pExpH(title,co,date){return '<w:p><w:pPr>'+RTAB+mkSp(72,14)+'</w:pPr>'+mkRun(title+'  |  '+co,{bold:true})+mkRun('\t'+date,{bold:true})+'</w:p>';}
-function pTech(t){return '<w:p><w:pPr>'+mkSp(0,16)+'</w:pPr>'+mkRun('Tech: '+t,{italic:true,size:18,color:'444444'})+'</w:p>';}
-function pBullet(t){return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr>'+mkSp(0,34)+'</w:pPr>'+mkRun(t,{})+'</w:p>';}
-function pProj(name,stack){return '<w:p><w:pPr>'+mkSp(68,14)+'</w:pPr>'+mkRun(name,{bold:true})+mkRun('  |  '+stack,{size:18,color:'444444'})+'</w:p>';}
-function pMixed(bold,plain){return '<w:p><w:pPr>'+mkSp(0,0)+'</w:pPr>'+mkRun(bold,{bold:true})+mkRun(plain,{})+'</w:p>';}
-function pPlain(t){return '<w:p><w:pPr>'+mkSp(0,0)+'</w:pPr>'+mkRun(t,{})+'</w:p>';}
+// ═══════════════════════════════════════════════════════════
+// PARSE AI RESPONSE
+// ═══════════════════════════════════════════════════════════
+function parseTailored(text, track){
+  var m = text.match(/OUTPUT_START([\s\S]*?)OUTPUT_END/);
+  var block = m ? m[1] : text;
 
-function parseFields(text){
-  var m=text.match(/RESUME_START([\s\S]*?)RESUME_END/);
-  var block=m?m[1]:text;
-  function g(k){var r=block.match(new RegExp('^'+k+':\\s*(.+)$','m'));return r?r[1].trim():'';}
-  return{
-    name:g('NAME'),contact:g('CONTACT'),
-    e1l:g('EDU1_LEFT'),e1d:g('EDU1_DATE'),e1c:g('EDU1_COURSE'),
-    e2l:g('EDU2_LEFT'),e2d:g('EDU2_DATE'),
-    s1l:g('SKILL1_LABEL'),s1v:g('SKILL1_VALUE'),
-    s2l:g('SKILL2_LABEL'),s2v:g('SKILL2_VALUE'),
-    s3l:g('SKILL3_LABEL'),s3v:g('SKILL3_VALUE'),
-    exps:[1,2,3].map(function(i){return{ti:g('EXP'+i+'_TITLE'),co:g('EXP'+i+'_COMPANY'),dt:g('EXP'+i+'_DATE'),tc:g('EXP'+i+'_TECH'),bs:[1,2,3].map(function(j){return g('EXP'+i+'_B'+j);}).filter(Boolean)};}).filter(function(e){return e.ti;}),
-    prjs:[1,2].map(function(i){return{nm:g('PROJ'+i+'_NAME'),st:g('PROJ'+i+'_STACK'),bs:[1,2,3].map(function(j){return g('PROJ'+i+'_B'+j);}).filter(Boolean)};}).filter(function(p){return p.nm;}),
-    pt:g('PUB_TITLE'),pv:g('PUB_VENUE'),pd:g('PUB_DESC')
+  function g(key){
+    var r = block.match(new RegExp('^'+key+':\\s*(.+)$','m'));
+    return r ? r[1].trim() : '';
+  }
+
+  var projOrder = getProjectOrder(track);
+  var proj1key = projOrder[0], proj2key = projOrder[1];
+
+  return {
+    coursework: g('COURSEWORK'),
+    skillLang:  g('SKILL_LANG'),
+    skillFw:    g('SKILL_FW'),
+    skillDb:    g('SKILL_DB'),
+    exp1: [g('EXP1_B1'),g('EXP1_B2'),g('EXP1_B3')].filter(Boolean),
+    exp2: [g('EXP2_B1'),g('EXP2_B2'),g('EXP2_B3')].filter(Boolean),
+    exp3: [g('EXP3_B1'),g('EXP3_B2'),g('EXP3_B3')].filter(Boolean),
+    exp4: [g('EXP4_B1'),g('EXP4_B2'),g('EXP4_B3')].filter(Boolean),
+    proj1: { key:proj1key, bullets:[g('PROJ1_B1'),g('PROJ1_B2'),g('PROJ1_B3')].filter(Boolean) },
+    proj2: { key:proj2key, bullets:[g('PROJ2_B1'),g('PROJ2_B2'),g('PROJ2_B3')].filter(Boolean) }
   };
 }
 
-function buildDocXML(f){
-  var DOCNS='xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" mc:Ignorable="w14"';
+// Fallback to defaults if AI parsing failed
+function ensureBullets(aiArr, defaults){
+  if(aiArr && aiArr.length>=2) return aiArr;
+  return defaults;
+}
+
+// ═══════════════════════════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════════════════════════
+async function generate(type){
+  var key     = document.getElementById('apiKey').value.trim();
+  var company = document.getElementById('company').value.trim() || 'Company';
+  var title   = document.getElementById('jobTitle').value.trim() || 'Role';
+  var loc     = document.getElementById('location').value.trim() || 'New York, NY';
+  var jd      = document.getElementById('jd').value.trim();
+
+  if(!key)           return setS('API key required','err');
+  if(!jd)            return setS('Paste a job description first','err');
+  if(!selectedTrack) return setS('Select a track','err');
+
+  lockBtns();
+
+  if(type==='resume'){
+    setS('<span class="spin"></span>&nbsp; Tailoring bullets to JD...','info');
+    try{
+      var raw = await callAPI(key, buildTailorPrompt(company,title,loc,jd,selectedTrack));
+      var parsed = parseTailored(raw, selectedTrack);
+      var projOrder = getProjectOrder(selectedTrack);
+
+      resumeData = {
+        loc:        loc,
+        company:    company,
+        coursework: parsed.coursework || 'Distributed Systems, Database Systems, Machine Learning, Algorithms',
+        skillLang:  parsed.skillLang  || CANDIDATE.skillPools[selectedTrack].lang,
+        skillFw:    parsed.skillFw    || CANDIDATE.skillPools[selectedTrack].fw,
+        skillDb:    parsed.skillDb    || CANDIDATE.skillPools[selectedTrack].db,
+        expBullets: [
+          ensureBullets(parsed.exp1, CANDIDATE.experiences[0].defaultBullets),
+          ensureBullets(parsed.exp2, CANDIDATE.experiences[1].defaultBullets),
+          ensureBullets(parsed.exp3, CANDIDATE.experiences[2].defaultBullets),
+          ensureBullets(parsed.exp4, CANDIDATE.experiences[3].defaultBullets)
+        ],
+        proj1: { key:projOrder[0], bullets:ensureBullets(parsed.proj1.bullets, CANDIDATE.projects[projOrder[0]].defaultBullets) },
+        proj2: { key:projOrder[1], bullets:ensureBullets(parsed.proj2.bullets, CANDIDATE.projects[projOrder[1]].defaultBullets) }
+      };
+
+      // Show preview text
+      var preview = buildPreviewText(resumeData);
+      document.getElementById('rPreview').textContent = preview;
+      document.getElementById('rPreview').style.display = 'block';
+      document.getElementById('rEmpty').style.display = 'none';
+      document.getElementById('rb').style.display = 'inline-flex';
+      document.getElementById('dlR').disabled = false;
+      switchTab('resume');
+      setS('&#10003; Resume tailored — click Resume DOCX to download','ok');
+    }catch(e){
+      setS('Error: '+e.message,'err');
+      console.error(e);
+    }
+  } else {
+    setS('<span class="spin"></span>&nbsp; Writing cover letter...','info');
+    try{
+      coverText = await callAPI(key, buildCoverPrompt(company,title,loc,jd));
+      document.getElementById('cPreview').textContent = coverText;
+      document.getElementById('cPreview').style.display = 'block';
+      document.getElementById('cEmpty').style.display = 'none';
+      document.getElementById('cb').style.display = 'inline-flex';
+      document.getElementById('dlC').disabled = false;
+      switchTab('cover');
+      setS('&#10003; Cover letter ready — click Cover DOCX to download','ok');
+    }catch(e){
+      setS('Error: '+e.message,'err');
+      console.error(e);
+    }
+  }
+  unlockBtns();
+}
+
+function buildPreviewText(d){
+  var lines = [];
+  lines.push('DHRUVIN JHAVERI');
+  lines.push('(602) 793-6561  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255  |  '+d.loc);
+  lines.push('');
+  lines.push('EDUCATION');
+  lines.push('University of Southern California  |  M.S. CS (Data Science), GPA: 3.40  |  May 2026');
+  lines.push('Relevant Coursework: '+d.coursework);
+  lines.push('NMIMS University  |  B.Tech. Computer Engineering, GPA: 3.61  |  May 2023');
+  lines.push('');
+  lines.push('TECHNICAL SKILLS');
+  lines.push('Languages: '+d.skillLang);
+  lines.push('Frameworks & Libraries: '+d.skillFw);
+  lines.push('Databases & Cloud: '+d.skillDb);
+  lines.push('');
+  lines.push('EXPERIENCE');
+  CANDIDATE.experiences.forEach(function(e,i){
+    lines.push(e.title+' | '+e.company+' | '+e.date);
+    lines.push('Tech: '+e.tech);
+    d.expBullets[i].forEach(function(b){lines.push('• '+b);});
+    lines.push('');
+  });
+  lines.push('PROJECTS');
+  [d.proj1,d.proj2].forEach(function(p){
+    var pr = CANDIDATE.projects[p.key];
+    lines.push(pr.name+' | '+pr.stack);
+    p.bullets.forEach(function(b){lines.push('• '+b);});
+    lines.push('');
+  });
+  lines.push('PUBLICATION');
+  lines.push(CANDIDATE.pub.title+' — '+CANDIDATE.pub.venue);
+  lines.push(CANDIDATE.pub.desc);
+  return lines.join('\n');
+}
+
+// ═══════════════════════════════════════════════════════════
+// DOCX BUILDER — pure JSZip + validated XML
+// ═══════════════════════════════════════════════════════════
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+var F='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:eastAsia="Calibri" w:hAnsi="Calibri"/>';
+function mkR(t,o){
+  o=o||{};var sz=o.sz||19;
+  var rp=F+(o.b?'<w:b/><w:bCs/>':'')+(o.i?'<w:i/><w:iCs/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>'+(o.c?'<w:color w:val="'+o.c+'"/>':'');
+  return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>';
+}
+function sp(b,a,l){l=l||252;return '<w:spacing w:after="'+a+'" w:before="'+b+'" w:line="'+l+'" w:lineRule="auto"/>';}
+var RT='<w:tabs><w:tab w:val="right" w:pos="9504"/></w:tabs>';
+
+function pN(t){return '<w:p><w:pPr>'+sp(0,28)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{b:true,sz:26})+'</w:p>';}
+function pC(t){return '<w:p><w:pPr>'+sp(0,110)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{sz:18})+'</w:p>';}
+function pS(t){return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:color="1f3864" w:sz="6" w:space="1"/></w:pBdr>'+sp(118,36)+'</w:pPr>'+mkR(t,{b:true,sz:21,c:'1f3864'})+'</w:p>';}
+function pE(l,d){return '<w:p><w:pPr>'+RT+sp(0,18)+'</w:pPr>'+mkR(l,{b:true})+mkR('\t'+d,{})+'</w:p>';}
+function pCr(t){return '<w:p><w:pPr>'+sp(0,52)+'</w:pPr>'+mkR('Relevant Coursework: ',{b:true})+mkR(t,{})+'</w:p>';}
+function pSk(l,v){return '<w:p><w:pPr>'+sp(0,18)+'</w:pPr>'+mkR(l+': ',{b:true})+mkR(v,{})+'</w:p>';}
+function pXH(ti,co,dt){return '<w:p><w:pPr>'+RT+sp(72,14)+'</w:pPr>'+mkR(ti+'  |  '+co,{b:true})+mkR('\t'+dt,{b:true})+'</w:p>';}
+function pT(t){return '<w:p><w:pPr>'+sp(0,16)+'</w:pPr>'+mkR('Tech: '+t,{i:true,sz:18,c:'444444'})+'</w:p>';}
+function pB(t){return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr>'+sp(0,34)+'</w:pPr>'+mkR(t,{})+'</w:p>';}
+function pPH(n,s){return '<w:p><w:pPr>'+sp(68,14)+'</w:pPr>'+mkR(n,{b:true})+mkR('  |  '+s,{sz:18,c:'444444'})+'</w:p>';}
+function pMx(b,pl){return '<w:p><w:pPr>'+sp(0,0)+'</w:pPr>'+mkR(b,{b:true})+mkR(pl,{})+'</w:p>';}
+function pPl(t){return '<w:p><w:pPr>'+sp(0,0)+'</w:pPr>'+mkR(t,{})+'</w:p>';}
+
+function buildDocXML(d){
+  var NS='xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" '
+       + 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" '
+       + 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
+       + 'xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" '
+       + 'mc:Ignorable="w14"';
   var p=[];
   p.push('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
-  p.push('<w:document '+DOCNS+'><w:body>');
-  p.push(pName(f.name||'DHRUVIN JHAVERI'));
-  p.push(pContact(f.contact));
-  p.push(pSec('EDUCATION'));
-  p.push(pEdu(f.e1l,f.e1d));
-  if(f.e1c)p.push(pCourse(f.e1c));
-  p.push(pEdu(f.e2l,f.e2d));
-  p.push(pSec('TECHNICAL SKILLS'));
-  p.push(pSkill(f.s1l,f.s1v));
-  p.push(pSkill(f.s2l,f.s2v));
-  p.push(pSkill(f.s3l,f.s3v));
-  p.push(pSec('EXPERIENCE'));
-  f.exps.forEach(function(e){
-    p.push(pExpH(e.ti,e.co,e.dt));
-    if(e.tc)p.push(pTech(e.tc));
-    e.bs.forEach(function(b){p.push(pBullet(b));});
+  p.push('<w:document '+NS+'><w:body>');
+
+  // Header
+  p.push(pN(CANDIDATE.name));
+  p.push(pC(CANDIDATE.phone+'  |  '+CANDIDATE.email+'  |  '+CANDIDATE.linkedin+'  |  '+CANDIDATE.github+'  |  '+d.loc));
+
+  // Education
+  p.push(pS('EDUCATION'));
+  p.push(pE(CANDIDATE.edu[0].left, CANDIDATE.edu[0].date));
+  p.push(pCr(d.coursework));
+  p.push(pE(CANDIDATE.edu[1].left, CANDIDATE.edu[1].date));
+
+  // Skills
+  p.push(pS('TECHNICAL SKILLS'));
+  p.push(pSk('Languages', d.skillLang));
+  p.push(pSk('Frameworks & Libraries', d.skillFw));
+  p.push(pSk('Databases & Cloud', d.skillDb));
+
+  // Experience — always all 4
+  p.push(pS('EXPERIENCE'));
+  CANDIDATE.experiences.forEach(function(e,i){
+    p.push(pXH(e.title, e.company, e.date));
+    p.push(pT(e.tech));
+    d.expBullets[i].forEach(function(b){ p.push(pB(b)); });
   });
-  p.push(pSec('PROJECTS'));
-  f.prjs.forEach(function(pr){
-    p.push(pProj(pr.nm,pr.st));
-    pr.bs.forEach(function(b){p.push(pBullet(b));});
+
+  // Projects — 2, track-ordered
+  p.push(pS('PROJECTS'));
+  [d.proj1, d.proj2].forEach(function(pr){
+    var proj = CANDIDATE.projects[pr.key];
+    p.push(pPH(proj.name, proj.stack));
+    pr.bullets.forEach(function(b){ p.push(pB(b)); });
   });
-  if(f.pt){
-    p.push(pSec('PUBLICATION'));
-    p.push(pMixed(f.pt,f.pv?'  \u2014  '+f.pv:''));
-    if(f.pd)p.push(pPlain(f.pd));
-  }
-  p.push('<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="432" w:right="648" w:bottom="432" w:left="648" w:header="360" w:footer="360" w:gutter="0"/></w:sectPr>');
+
+  // Publication
+  p.push(pS('PUBLICATION'));
+  p.push(pMx(CANDIDATE.pub.title, '  \u2014  '+CANDIDATE.pub.venue));
+  p.push(pPl(CANDIDATE.pub.desc));
+
+  // Page setup
+  p.push('<w:sectPr>'
+    +'<w:pgSz w:w="12240" w:h="15840"/>'
+    +'<w:pgMar w:top="432" w:right="648" w:bottom="432" w:left="648" w:header="360" w:footer="360" w:gutter="0"/>'
+    +'</w:sectPr>');
   p.push('</w:body></w:document>');
   return p.join('');
 }
 
-async function makeDOCX(docXML,filename){
-  if(typeof JSZip==='undefined')throw new Error('JSZip not loaded. Please reload the page and try again.');
-  var zip=new JSZip();
+async function makeDOCX(docXML, filename){
+  if(typeof JSZip==='undefined') throw new Error('JSZip not loaded — reload the page');
+  var zip = new JSZip();
 
   zip.file('_rels/.rels',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
-    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'+
-    '</Relationships>');
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    +'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    +'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'
+    +'</Relationships>');
 
   zip.file('[Content_Types].xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
-    '<Default ContentType="application/vnd.openxmlformats-package.relationships+xml" Extension="rels"/>'+
-    '<Default ContentType="application/xml" Extension="xml"/>'+
-    '<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml" PartName="/word/document.xml"/>'+
-    '<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml" PartName="/word/styles.xml"/>'+
-    '<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml" PartName="/word/numbering.xml"/>'+
-    '<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml" PartName="/word/settings.xml"/>'+
-    '</Types>');
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    +'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+    +'<Default ContentType="application/vnd.openxmlformats-package.relationships+xml" Extension="rels"/>'
+    +'<Default ContentType="application/xml" Extension="xml"/>'
+    +'<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml" PartName="/word/document.xml"/>'
+    +'<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml" PartName="/word/styles.xml"/>'
+    +'<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml" PartName="/word/numbering.xml"/>'
+    +'<Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml" PartName="/word/settings.xml"/>'
+    +'</Types>');
 
   zip.file('word/_rels/document.xml.rels',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
-    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
-    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>'+
-    '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>'+
-    '</Relationships>');
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    +'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    +'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+    +'<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>'
+    +'<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>'
+    +'</Relationships>');
 
-  // Styles — only ListParagraph needed for bullets
   zip.file('word/styles.xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
-    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
-    '<w:docDefaults><w:rPrDefault/><w:pPrDefault/></w:docDefaults>'+
-    '<w:style w:type="paragraph" w:styleId="ListParagraph">'+
-    '<w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:qFormat/>'+
-    '</w:style>'+
-    '</w:styles>');
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    +'<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    +'<w:docDefaults><w:rPrDefault/><w:pPrDefault/></w:docDefaults>'
+    +'<w:style w:type="paragraph" w:styleId="ListParagraph">'
+    +'<w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:qFormat/>'
+    +'</w:style>'
+    +'</w:styles>');
 
-  // Numbering — clean, no w15 namespace
   zip.file('word/numbering.xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
-    '<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
-    '<w:abstractNum w:abstractNumId="2">'+
-    '<w:multiLevelType w:val="hybridMultilevel"/>'+
-    '<w:lvl w:ilvl="0">'+
-    '<w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x2022;"/><w:lvlJc w:val="left"/>'+
-    '<w:pPr><w:spacing w:after="22"/><w:ind w:left="280" w:hanging="200"/></w:pPr>'+
-    '<w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:sz w:val="19"/><w:szCs w:val="19"/></w:rPr>'+
-    '</w:lvl>'+
-    '</w:abstractNum>'+
-    '<w:num w:numId="2"><w:abstractNumId w:val="2"/></w:num>'+
-    '</w:numbering>');
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    +'<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    +'<w:abstractNum w:abstractNumId="2">'
+    +'<w:multiLevelType w:val="hybridMultilevel"/>'
+    +'<w:lvl w:ilvl="0">'
+    +'<w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x2022;"/><w:lvlJc w:val="left"/>'
+    +'<w:pPr><w:spacing w:after="22"/><w:ind w:left="280" w:hanging="200"/></w:pPr>'
+    +'<w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:sz w:val="19"/><w:szCs w:val="19"/></w:rPr>'
+    +'</w:lvl>'
+    +'</w:abstractNum>'
+    +'<w:num w:numId="2"><w:abstractNumId w:val="2"/></w:num>'
+    +'</w:numbering>');
 
   zip.file('word/settings.xml',
-    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
-    '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
-    '<w:compat><w:compatSetting w:val="15" w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word"/></w:compat>'+
-    '</w:settings>');
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    +'<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    +'<w:compat><w:compatSetting w:val="15" w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word"/></w:compat>'
+    +'</w:settings>');
 
   zip.file('word/document.xml', docXML);
 
-  // Generate as Uint8Array then convert to Blob — avoids Safari MIME type issues
   var content = await zip.generateAsync({type:'uint8array'});
   var blob = new Blob([content],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
   a.href=url; a.download=filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
 }
 
 async function downloadResume(){
-  if(!resumeText)return;
-  var company=document.getElementById('company').value.trim()||'Company';
-  setStatus('<span class="spinner"></span>&nbsp;Building DOCX...','info');
+  if(!resumeData) return;
+  setS('<span class="spin"></span>&nbsp; Building DOCX...','info');
   try{
-    var f=parseFields(resumeText);
-    if(!f.exps.length)throw new Error('Could not parse resume fields. Try regenerating.');
-    var xml=buildDocXML(f);
-    await makeDOCX(xml,'Dhruvin_Jhaveri_Resume_'+company.replace(/\s+/g,'_')+'.docx');
-    setStatus('&#10003; Resume DOCX downloaded','success');
-  }catch(e){setStatus('DOCX error: '+e.message,'error');console.error(e);}
+    var xml = buildDocXML(resumeData);
+    var co  = document.getElementById('company').value.trim()||'Company';
+    await makeDOCX(xml,'Dhruvin_Jhaveri_Resume_'+co.replace(/\s+/g,'_')+'.docx');
+    setS('&#10003; Resume DOCX downloaded','ok');
+  }catch(e){ setS('DOCX error: '+e.message,'err'); console.error(e); }
 }
 
+// ─── COVER LETTER DOCX ─────────────────────────────────────
 async function downloadCover(){
-  if(!coverText)return;
-  var company=document.getElementById('company').value.trim()||'Company';
-  setStatus('<span class="spinner"></span>&nbsp;Building DOCX...','info');
+  if(!coverText) return;
+  setS('<span class="spin"></span>&nbsp; Building DOCX...','info');
   try{
-    var lines=coverText.split('\n');
-    var cRpr='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:hAnsi="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/>';
-    var paras=lines.map(function(line){
+    var rpr='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:hAnsi="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/>';
+    var paras = coverText.split('\n').map(function(line){
       var t=line.trim();
-      if(!t)return '<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>';
+      if(!t) return '<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>';
       if(t[0]==='\u2022'||t[0]==='-')
-        return '<w:p><w:pPr><w:ind w:left="280" w:hanging="200"/><w:spacing w:after="80" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr>'+cRpr+'</w:rPr><w:t xml:space="preserve">\u2022 '+esc(t.replace(/^[\u2022\-]\s*/,''))+'</w:t></w:r></w:p>';
-      return '<w:p><w:pPr><w:spacing w:after="140" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr>'+cRpr+'</w:rPr><w:t>'+esc(t)+'</w:t></w:r></w:p>';
+        return '<w:p><w:pPr><w:ind w:left="280" w:hanging="200"/><w:spacing w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'
+              +'<w:r><w:rPr>'+rpr+'</w:rPr><w:t xml:space="preserve">\u2022 '+esc(t.replace(/^[\u2022\-]\s*/,''))+'</w:t></w:r></w:p>';
+      return '<w:p><w:pPr><w:spacing w:after="140" w:line="240" w:lineRule="auto"/></w:pPr>'
+            +'<w:r><w:rPr>'+rpr+'</w:rPr><w:t>'+esc(t)+'</w:t></w:r></w:p>';
     }).join('');
-    var docXML='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+paras+'<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr></w:body></w:document>';
-    await makeDOCX(docXML,'Dhruvin_Jhaveri_CoverLetter_'+company.replace(/\s+/g,'_')+'.docx');
-    setStatus('&#10003; Cover Letter DOCX downloaded','success');
-  }catch(e){setStatus('DOCX error: '+e.message,'error');console.error(e);}
+    var docXML='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      +'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'
+      +paras
+      +'<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr>'
+      +'</w:body></w:document>';
+    var co = document.getElementById('company').value.trim()||'Company';
+    await makeDOCX(docXML,'Dhruvin_Jhaveri_CoverLetter_'+co.replace(/\s+/g,'_')+'.docx');
+    setS('&#10003; Cover Letter DOCX downloaded','ok');
+  }catch(e){ setS('DOCX error: '+e.message,'err'); console.error(e); }
 }
 </script>
 </body>
