@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v6</title>
+<title>ResumeForge v8</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -66,7 +66,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v6 — 7 Sections Always</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v8 — Tinder Voice</div></div>
   </div>
 
   <div class="field-group">
@@ -314,67 +314,124 @@ function buildTailorPrompt(company, title, loc, jd, track){
   var proj1 = CANDIDATE.projects[projOrder[0]];
   var proj2 = CANDIDATE.projects[projOrder[1]];
 
-  return 'You are an ATS resume expert. Tailor Dhruvin Jhaveri\'s resume for this role.\n\n'
-    + 'COMPANY: '+company+'\nROLE: '+title+'\nLOCATION: '+loc+'\nTRACK: '+track+'\n\n'
+  var verbBank = 'Engineered,Architected,Configured,Constructed,Delivered,Deployed,Designed,Established,Evaluated,Founded,Integrated,Launched,Led,Mentored,Migrated,Modeled,Optimized,Orchestrated,Overhauled,Pioneered,Processed,Reduced,Refactored,Shipped,Spearheaded,Streamlined,Structured,Trained,Validated,Wired';
+
+  return 'You are an elite ATS resume writer. Your output will be used directly in job applications — treat it as a final professional deliverable, not a draft.\n\n'
+    + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+'\n\n'
     + 'JOB DESCRIPTION:\n'+jd+'\n\n'
-    + '=== YOUR ONLY JOB ===\n'
-    + 'Rewrite bullets to embed JD keywords naturally. Keep all metrics. Max 18 words per bullet.\n'
-    + 'Do NOT change structure, roles, companies, dates, or facts.\n\n'
-    + '=== CURRENT BULLETS (rewrite these) ===\n\n'
+
+    + '════ STEP 1 — KEYWORD EXTRACTION ════\n'
+    + 'Before writing anything, mentally extract from the JD:\n'
+    + '  • Core technical skills (languages, tools, frameworks)\n'
+    + '  • Domain verbs (the actions this role performs daily)\n'
+    + '  • Impact language (what success looks like: latency, throughput, accuracy, cost, scale)\n'
+    + 'Every bullet you write must contain at least one JD keyword naturally embedded.\n\n'
+
+    + '════ STEP 2 — BULLET RULES (NON-NEGOTIABLE) ════\n'
+    + 'Each bullet MUST follow this exact formula:\n'
+    + '  [Strong unique verb] + [what you did / how] + [semicolon] + [quantified result]\n'
+    + 'Example: "Configured CI/CD regression pipelines across 12 nodes; sustained 99.8% uptime via zero-downtime deploys"\n\n'
+    + 'R1 — VERB DIVERSITY: No action verb used more than ONCE across ALL 18 bullets combined.\n'
+    + '     Choose from this bank (or similar strong verbs): '+verbBank+'\n'
+    + '     FORBIDDEN repeat verbs: Built, Developed, Implemented, Automated, Achieved, Integrated — these are overused. Avoid or use max once total.\n\n'
+    + 'R2 — LENGTH: Every bullet 13–18 words. Count carefully. No bullet under 13 or over 18 words.\n\n'
+    + 'R3 — METRICS: Every bullet must contain at least one number/metric. Preserve ALL existing metrics exactly:\n'
+    + '     35%, 99.8%, 94%, 18%, 500k+, 50k+, 90%, 92%, 4hrs, 5x, 45+, 200+, 172ms, 10k, 50%, 40%, 95%, 25%, 5 PMs\n'
+    + '     You may move metrics between bullets within the same role but NEVER drop or invent them.\n\n'
+    + 'R4 — ACTIVE VOICE: Every bullet starts with a past-tense action verb. Never start with "Worked on", "Helped", "Assisted", "Responsible for".\n\n'
+    + 'R5 — NO REPETITION: No phrase, noun, or concept repeated across bullets in the same role.\n\n'
+    + 'R6 — FACTS ONLY: Never invent technologies, companies, titles, dates, or metrics. Only embed JD keywords into existing factual context.\n\n'
+
+    + '════ STEP 3 — CURRENT BULLETS TO REWRITE ════\n\n'
     + expLines + '\n\n'
     + 'PROJ1 ('+proj1.name+'):\n'+proj1.defaultBullets.map(function(b){return '  - '+b;}).join('\n')+'\n\n'
     + 'PROJ2 ('+proj2.name+'):\n'+proj2.defaultBullets.map(function(b){return '  - '+b;}).join('\n')+'\n\n'
-    + '=== ALSO OUTPUT ===\n'
-    + 'COURSEWORK: [4 courses relevant to this JD from: Distributed Systems, Database Systems, Machine Learning, Statistical Learning, Data Mining, NLP, Algorithms, Computer Vision, Big Data Analytics]\n'
-    + 'SKILL_LANG: [best 6-7 languages from this pool for the JD: '+pool.lang+']\n'
-    + 'SKILL_FW: [best frameworks from this pool for the JD: '+pool.fw+']\n'
-    + 'SKILL_DB: [best databases/cloud from this pool for the JD: '+pool.db+']\n\n'
-    + '=== OUTPUT FORMAT (EXACTLY, no extra text) ===\n'
+
+    + '════ STEP 4 — SKILLS & COURSEWORK ════\n'
+    + 'SKILL_LANG: Select 6-7 languages from this pool that best match the JD: '+pool.lang+'\n'
+    + 'SKILL_FW: Select frameworks from this pool that best match the JD: '+pool.fw+'\n'
+    + 'SKILL_DB: Select databases/cloud from this pool that best match the JD: '+pool.db+'\n'
+    + 'COURSEWORK: Pick exactly 4 courses from: [Distributed Systems, Database Systems, Machine Learning, Statistical Learning, Data Mining, NLP, Algorithms, Computer Vision, Big Data Analytics]\n\n'
+
+    + '════ OUTPUT FORMAT — STRICT, NO DEVIATIONS ════\n'
     + 'OUTPUT_START\n'
-    + 'COURSEWORK: [courses]\n'
+    + 'COURSEWORK: [course1, course2, course3, course4]\n'
     + 'SKILL_LANG: [languages]\n'
     + 'SKILL_FW: [frameworks]\n'
     + 'SKILL_DB: [databases/cloud]\n'
-    + 'EXP1_B1: [bullet]\n'
-    + 'EXP1_B2: [bullet]\n'
-    + 'EXP1_B3: [bullet]\n'
-    + 'EXP2_B1: [bullet]\n'
-    + 'EXP2_B2: [bullet]\n'
-    + 'EXP2_B3: [bullet]\n'
-    + 'EXP3_B1: [bullet]\n'
-    + 'EXP3_B2: [bullet]\n'
-    + 'EXP3_B3: [bullet]\n'
-    + 'EXP4_B1: [bullet]\n'
-    + 'EXP4_B2: [bullet]\n'
-    + 'EXP4_B3: [bullet]\n'
-    + 'PROJ1_B1: [bullet]\n'
-    + 'PROJ1_B2: [bullet]\n'
-    + 'PROJ1_B3: [bullet]\n'
-    + 'PROJ2_B1: [bullet]\n'
-    + 'PROJ2_B2: [bullet]\n'
-    + 'PROJ2_B3: [bullet]\n'
+    + 'EXP1_B1: [bullet — 13-18 words, unique verb, metric, JD keyword]\n'
+    + 'EXP1_B2: [bullet — 13-18 words, unique verb, metric, JD keyword]\n'
+    + 'EXP1_B3: [bullet — 13-18 words, unique verb, metric, JD keyword]\n'
+    + 'EXP2_B1: [bullet]\nEXP2_B2: [bullet]\nEXP2_B3: [bullet]\n'
+    + 'EXP3_B1: [bullet]\nEXP3_B2: [bullet]\nEXP3_B3: [bullet]\n'
+    + 'EXP4_B1: [bullet]\nEXP4_B2: [bullet]\nEXP4_B3: [bullet]\n'
+    + 'PROJ1_B1: [bullet]\nPROJ1_B2: [bullet]\nPROJ1_B3: [bullet]\n'
+    + 'PROJ2_B1: [bullet]\nPROJ2_B2: [bullet]\nPROJ2_B3: [bullet]\n'
     + 'OUTPUT_END\n\n'
-    + 'RULES: Every bullet max 18 words. Keep ALL metrics (35%, 94%, 50%, etc). Only swap verbs/nouns to match JD keywords. No invented facts.';
+    + 'FINAL SELF-CHECK before outputting:\n'
+    + '  □ Every bullet is 13-18 words\n'
+    + '  □ No action verb appears more than once across all 18 bullets\n'
+    + '  □ Every bullet contains a metric\n'
+    + '  □ Every bullet starts with a strong past-tense verb\n'
+    + '  □ No facts invented\n'
+    + 'If any check fails, fix before outputting.';
 }
 
 function buildCoverPrompt(company, title, loc, jd){
-  return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+'.\n\n'
-    + 'JD:\n'+jd+'\n\n'
-    + 'Background: USC MS CS May 2026 GPA 3.40 | AWS SDE Intern C++ Redshift 35% query improvement | '
-    + 'BERT NLP pipeline 92% accuracy LangChain | XGBoost credit risk 94% accuracy | '
-    + 'IEEE ICISAA 2024 BERT classifier F1 0.91 | GDSC 200+ members | '
-    + 'PharmaChain AUD 4,000 Study Australia prize | relocating NYC mid-June 2026 | F-1 OPT STEM eligible.\n\n'
-    + 'Rules:\n'
-    + '- 200-250 words total\n'
-    + '- Start: "Dear Hiring Manager,"\n'
-    + '- Para 1: 2 sentences genuine excitement for this specific role/company\n'
-    + '- Para 2: 3-4 bullet points, strongest metric-backed experiences first, tailored to JD\n'
-    + '- Para 3: 1-2 sentences — unique angle (research/leadership/entrepreneurship)\n'
-    + '- Closing: NYC hook + available mid-June 2026\n'
-    + '- Sign off: Dhruvin Jhaveri\n'
-    + '- Postscript line: djhaveri99@gmail.com  |  (602) 793-6561\n'
-    + '- No double hyphens. No OPT/visa language. Human voice, not AI-sounding.\n'
-    + '- Output ONLY the letter text, nothing else.';
+  return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+' in '+loc+'.\n\n'
+
+    + '════ WHO DHRUVIN IS ════\n'
+    + 'USC MS Computer Science (Data Science), graduating May 2026, GPA 3.40\n'
+    + 'AWS SDE Intern — built C++ auto-scaling framework for Redshift Serverless, 35% query improvement, 99.8% uptime across 12 nodes\n'
+    + 'Paypoint India — XGBoost credit risk model 94% accuracy on 1,000+ daily loan applications; ETL pipelines processing 500k+ records/day\n'
+    + 'Imarticus Learning — BERT+LangChain NLP pipeline at 92% accuracy; automated 90% of content-tagging saving 4 engineering hours daily\n'
+    + 'GDSC — co-founded competitive coding department, scaled to 200+ members\n'
+    + 'PharmaChain — Harvard-recognized Study Australia runner-up, AUD 10,000 prize\n'
+    + 'IEEE ICISAA 2024 — published BERT classifier, F1: 0.91\n'
+    + 'Relocating to NYC mid-June 2026\n\n'
+
+    + '════ JOB DESCRIPTION ════\n'
+    + jd+'\n\n'
+
+    + '════ THE TINDER BENCHMARK — THIS IS THE VOICE AND STRUCTURE TO MATCH ════\n'
+    + 'Here is an example of a great cover letter Dhruvin wrote. Study the voice, structure, and argument style:\n\n'
+    + '---\n'
+    + 'Dear Hiring Team,\n\n'
+    + 'Tinder works on a problem that sounds simple but is actually one of the hardest in technology: using behavioral data to create conditions for genuine human connection. The matching logic, the network economics, the psychology of how people present themselves and respond to others — it is all fascinating. I am finishing my MS in Computer Science at USC this May and moving to New York, and the Rotation Program Analyst role is exactly the kind of start I am looking for.\n\n'
+    + 'Why I am the right fit:\n\n'
+    + '- I analyze complex problems and build models that drive decisions. At Amazon I developed analytical models evaluating system performance and forecasting scaling behavior to inform product and roadmap priorities. At Paypoint I built financial analytics pipelines and dashboards that directly influenced risk strategy and executive decision-making.\n\n'
+    + '- I present findings to senior stakeholders and drive alignment. Across every internship I presented data-driven recommendations to product, risk, and engineering leadership, adapting the depth and framing to the audience.\n\n'
+    + '- I demonstrate ownership and curiosity in fast-paced environments. At Imarticus I identified a business problem independently, built the solution end to end, and delivered a 90% reduction in manual overhead. The PharmaChain platform I built as a student project received industry funding and placed 2nd in a Harvard-recognized entrepreneurship competition.\n\n'
+    + 'New York is the move and Match Group is where I want to start building. Thank you for your time.\n\n'
+    + 'Sincerely,\nDhruvin Jhaveri\n'
+    + '---\n\n'
+
+    + '════ RULES FOR THE NEW LETTER ════\n'
+    + 'STRUCTURE — use this exact format:\n'
+    + '  Dear Hiring Manager,\n'
+    + '  [BLANK LINE]\n'
+    + '  [Opening paragraph: 2-4 sentences. Make a genuine, specific observation about THIS company or problem space — not about Dhruvin yet. Show you understand what they actually do and why it is interesting. No "I am excited to apply". No flattery. A real point of view.]\n'
+    + '  [BLANK LINE]\n'
+    + '  Why I am the right fit:\n'
+    + '  [BLANK LINE]\n'
+    + '  [3-4 bullet arguments. Each bullet is a CLAIM followed by EVIDENCE, not a resume line. Format: "- [Claim about what he does/is]. [1-2 sentences of evidence from his background that prove it.]"]\n'
+    + '  [BLANK LINE]\n'
+    + '  [Closing: 1-2 sentences. Forward-looking, NYC relocation mention, confident not desperate.]\n'
+    + '  [BLANK LINE]\n'
+    + '  Sincerely,\n'
+    + '  Dhruvin Jhaveri\n\n'
+
+    + 'VOICE RULES — non-negotiable:\n'
+    + '  - Write in first person, present/past tense, complete sentences. No fragments.\n'
+    + '  - Confident, not performative. Never: "I am excited to", "I would love to", "leverage my skills", "passion for"\n'
+    + '  - Each bullet must open with a CLAIM ("I build X" / "I do Y") then prove it with specifics\n'
+    + '  - The opening paragraph must demonstrate knowledge of the company or problem — not just enthusiasm\n'
+    + '  - No double hyphens. No visa/OPT language. No "As a [Title]..."\n'
+    + '  - Human. Compressed. No corporate filler words.\n\n'
+
+    + 'LENGTH: 280-350 words. Slightly longer than the Tinder example is fine — depth over brevity here.\n\n'
+
+    + 'OUTPUT: The letter text only. No preamble, no explanation, no subject line.';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -483,7 +540,23 @@ async function generate(type){
       document.getElementById('rb').style.display = 'inline-flex';
       document.getElementById('dlR').disabled = false;
       switchTab('resume');
-      setS('&#10003; Resume tailored — click Resume DOCX to download','ok');
+      // Client-side verb audit
+      var allBullets = [];
+      resumeData.expBullets.forEach(function(arr){allBullets=allBullets.concat(arr);});
+      allBullets=allBullets.concat(resumeData.proj1.bullets).concat(resumeData.proj2.bullets);
+      var verbCounts={};
+      allBullets.forEach(function(b){
+        var v=(b.trim().split(' ')[0]||'').toLowerCase();
+        verbCounts[v]=(verbCounts[v]||0)+1;
+      });
+      var dupes=Object.keys(verbCounts).filter(function(v){return verbCounts[v]>1;});
+      var wc=allBullets.reduce(function(s,b){return s+b.split(' ').length;},0);
+      var avgWc=Math.round(wc/allBullets.length);
+      if(dupes.length>0){
+        setS('&#9888; Verb repeats detected: '+dupes.join(', ')+' — consider regenerating','err');
+      } else {
+        setS('&#10003; Resume ready — '+allBullets.length+' bullets, avg '+avgWc+' words, 0 verb repeats','ok');
+      }
     }catch(e){
       setS('Error: '+e.message,'err');
       console.error(e);
@@ -727,22 +800,51 @@ async function downloadCover(){
   if(!coverText) return;
   setS('<span class="spin"></span>&nbsp; Building DOCX...','info');
   try{
-    var rpr='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:hAnsi="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/>';
-    var paras = coverText.split('\n').map(function(line){
-      var t=line.trim();
-      if(!t) return '<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>';
-      if(t[0]==='\u2022'||t[0]==='-')
-        return '<w:p><w:pPr><w:ind w:left="280" w:hanging="200"/><w:spacing w:after="80" w:line="240" w:lineRule="auto"/></w:pPr>'
-              +'<w:r><w:rPr>'+rpr+'</w:rPr><w:t xml:space="preserve">\u2022 '+esc(t.replace(/^[\u2022\-]\s*/,''))+'</w:t></w:r></w:p>';
-      return '<w:p><w:pPr><w:spacing w:after="140" w:line="240" w:lineRule="auto"/></w:pPr>'
-            +'<w:r><w:rPr>'+rpr+'</w:rPr><w:t>'+esc(t)+'</w:t></w:r></w:p>';
+    var F2='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:hAnsi="Calibri"/>';
+    function rn(t,o){o=o||{};var sz=o.sz||22;var rp=F2+(o.b?'<w:b/><w:bCs/>':'')+(o.c?'<w:color w:val="'+o.c+'"/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>';return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>';}
+    function sp2(b,a,l){l=l||276;return '<w:spacing w:after="'+a+'" w:before="'+b+'" w:line="'+l+'" w:lineRule="auto"/>';}
+
+    var loc  = document.getElementById('location').value.trim()||'New York, NY';
+    var co   = document.getElementById('company').value.trim()||'Company';
+
+    // Header block — bold name, contact line
+    var header =
+      '<w:p><w:pPr>'+sp2(0,40)+'<w:jc w:val="center"/></w:pPr>'+rn('DHRUVIN JHAVERI',{b:true,sz:28})+'</w:p>'
+     +'<w:p><w:pPr>'+sp2(0,200)+'<w:jc w:val="center"/></w:pPr>'+rn(loc+'  |  (602) 793-6561  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri',{sz:19,c:'444444'})+'</w:p>';
+
+    // Body — parse letter lines
+    var lines = coverText.split('\n');
+    var body = lines.map(function(line){
+      var t = line.trim();
+      if(!t) return '<w:p><w:pPr><w:spacing w:after="0" w:before="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>';
+
+      // Section label: "Why I am the right fit:" — bold
+      if(t.match(/^Why I am/i)||t.match(/^Why Dhruvin/i)){
+        return '<w:p><w:pPr>'+sp2(80,40)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>';
+      }
+      // Bullet lines
+      if(t[0]==='\u2022'||t[0]==='-'){
+        var bt=t.replace(/^[\u2022\-]\s*/,'');
+        // split on first ". " to bold the claim
+        var dot=bt.indexOf('. ');
+        var inner=(dot>0)
+          ? rn(bt.slice(0,dot+1),{b:true,sz:21})+rn(' '+bt.slice(dot+2),{sz:21})
+          : rn(bt,{sz:21});
+        return '<w:p><w:pPr><w:ind w:left="360" w:hanging="220"/><w:spacing w:after="120" w:line="260" w:lineRule="auto"/></w:pPr>'
+              +'<w:r><w:rPr>'+F2+'<w:sz w:val="21"/><w:szCs w:val="21"/></w:rPr><w:t xml:space="preserve">\u2022  </w:t></w:r>'+inner+'</w:p>';
+      }
+      // Signoff name — bold
+      if(t==='Dhruvin Jhaveri'){ return '<w:p><w:pPr>'+sp2(0,0)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>'; }
+      // Normal paragraph
+      return '<w:p><w:pPr>'+sp2(0,120)+'</w:pPr>'+rn(t,{sz:22})+'</w:p>';
     }).join('');
+
     var docXML='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
       +'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'
-      +paras
+      +header+body
       +'<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080"/></w:sectPr>'
       +'</w:body></w:document>';
-    var co = document.getElementById('company').value.trim()||'Company';
+
     await makeDOCX(docXML,'Dhruvin_Jhaveri_CoverLetter_'+co.replace(/\s+/g,'_')+'.docx');
     setS('&#10003; Cover Letter DOCX downloaded','ok');
   }catch(e){ setS('DOCX error: '+e.message,'err'); console.error(e); }
