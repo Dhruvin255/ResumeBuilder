@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v9</title>
+<title>ResumeForge v10</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -66,7 +66,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v9 — Human Voice</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v10 — No Dashes</div></div>
   </div>
 
   <div class="field-group">
@@ -433,10 +433,11 @@ function buildCoverPrompt(company, title, loc, jd){
     + '  - BANNED PHRASES: "I am excited to", "I would love to", "leverage my skills", "passion for", "I am a fast learner", "team player", "results-driven"\n'
     + '  - Opening must show you understand the company PROBLEM — not that you want the job\n'
     + '  - No double hyphens. No visa/OPT language. No "As a [Title]..."\n'
-    + '  - DO NOT repeat exact metrics from the resume (35%, 92%, 94%, 500k+, etc.) — the resume already has them. Reference the STORY not the number.\n'
-    + '  - DO use personality: chess thinking, the itch to fix broken things, building from scratch, being comfortable starting fresh\n'
+    + '  - NEVER use " -- " (double hyphen) or " — " (em-dash) anywhere. These patterns look AI-generated. Use a comma, colon, or rewrite the sentence instead.\n'
+    + '  - DO NOT repeat exact metrics from the resume (35%, 92%, 94%, 500k+, etc.). The resume already has them. Reference the STORY not the number.\n'
+    + '  - DO use personality: chess thinking, the itch to fix broken things, building from scratch, being comfortable starting fresh.\n'
     + '  - Each bullet: one CLAIM about who he is as a person/engineer, then brief proof. Not a credentials list.\n'
-    + '  - The letter should feel like a sharp, curious person wrote it — not a resume generator.\n\n'
+    + '  - The letter should feel like a sharp, curious person wrote it, not a resume generator.\n\n'
 
     + 'LENGTH: 280-340 words.\n\n'
 
