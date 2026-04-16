@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v10</title>
+<title>ResumeForge v11</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -66,7 +66,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v10 — No Dashes</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v11 — Brackets Fixed</div></div>
   </div>
 
   <div class="field-group">
@@ -179,7 +179,7 @@ function unlockBtns(){
 var CANDIDATE = {
   name: "DHRUVIN JHAVERI",
   phone: "(602) 793-6561",
-  email: "djhaveri99@gmail.com",
+  email: "dhruvinj@usc.edu",
   linkedin: "linkedin.com/in/dhruvinjhaveri",
   github: "github.com/Dhruvin255",
 
@@ -204,7 +204,7 @@ var CANDIDATE = {
     {
       title: "Software Development Engineer Intern",
       company: "AWS (Amazon Web Services), Santa Clara, CA",
-      date: "May \u2013 Aug 2025",
+      date: "May \u2013 Aug 2025",  // DATE FORMAT RULE: Mon – Mon YYYY (en-dash, no comma, no slash)
       tech: "C++, SQL, AWS Redshift, AWS S3, CI/CD, Distributed Systems",
       defaultBullets: [
         "Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production",
@@ -593,7 +593,7 @@ async function generate(type){
 function buildPreviewText(d){
   var lines = [];
   lines.push('DHRUVIN JHAVERI');
-  lines.push('(602) 793-6561  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255  |  '+d.loc);
+  lines.push('(602) 793-6561  |  dhruvinj@usc.edu  |  linkedin.com/in/dhruvinjhaveri  |  github.com/Dhruvin255  |  '+d.loc);
   lines.push('');
   lines.push('EDUCATION');
   lines.push('University of Southern California  |  M.S. CS (Data Science), GPA: 3.40  |  May 2026');
@@ -648,8 +648,8 @@ function pN(t){return '<w:p><w:pPr>'+sp(0,28)+'<w:jc w:val="center"/></w:pPr>'+m
 function pC(t){return '<w:p><w:pPr>'+sp(0,110)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{sz:18})+'</w:p>';}
 function pS(t){return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:color="1f3864" w:sz="6" w:space="1"/></w:pBdr>'+sp(118,36)+'</w:pPr>'+mkR(t,{b:true,sz:21,c:'1f3864'})+'</w:p>';}
 function pE(l,d){return '<w:p><w:pPr>'+RT+sp(0,18)+'</w:pPr>'+mkR(l,{b:true})+mkR('\t'+d,{})+'</w:p>';}
-function pCr(t){return '<w:p><w:pPr>'+sp(0,52)+'</w:pPr>'+mkR('Relevant Coursework: ',{b:true})+mkR(t,{})+'</w:p>';}
-function pSk(l,v){return '<w:p><w:pPr>'+sp(0,18)+'</w:pPr>'+mkR(l+': ',{b:true})+mkR(v,{})+'</w:p>';}
+function pCr(t){t=(t||'').replace(/^\[|\]$/g,'');return '<w:p><w:pPr>'+sp(0,52)+'</w:pPr>'+mkR('Relevant Coursework: ',{b:true})+mkR(t,{})+'</w:p>';}
+function pSk(l,v){v=(v||'').replace(/^\[|\]$/g,'');return '<w:p><w:pPr>'+sp(0,18)+'</w:pPr>'+mkR(l+': ',{b:true})+mkR(v,{})+'</w:p>';}
 function pXH(ti,co,dt){return '<w:p><w:pPr>'+RT+sp(72,14)+'</w:pPr>'+mkR(ti+'  |  '+co,{b:true})+mkR('\t'+dt,{b:true})+'</w:p>';}
 function pT(t){return '<w:p><w:pPr>'+sp(0,16)+'</w:pPr>'+mkR('Tech: '+t,{i:true,sz:18,c:'444444'})+'</w:p>';}
 function pB(t){return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr>'+sp(0,34)+'</w:pPr>'+mkR(t,{})+'</w:p>';}
@@ -820,7 +820,7 @@ async function downloadCover(){
     // Header block — bold name, contact line
     var header =
       '<w:p><w:pPr>'+sp2(0,40)+'<w:jc w:val="center"/></w:pPr>'+rn('DHRUVIN JHAVERI',{b:true,sz:28})+'</w:p>'
-     +'<w:p><w:pPr>'+sp2(0,200)+'<w:jc w:val="center"/></w:pPr>'+rn(loc+'  |  (602) 793-6561  |  djhaveri99@gmail.com  |  linkedin.com/in/dhruvinjhaveri',{sz:19,c:'444444'})+'</w:p>';
+     +'<w:p><w:pPr>'+sp2(0,200)+'<w:jc w:val="center"/></w:pPr>'+rn(loc+'  |  (602) 793-6561  |  dhruvinj@usc.edu  |  linkedin.com/in/dhruvinjhaveri',{sz:19,c:'444444'})+'</w:p>';
 
     // Body — parse letter lines
     var lines = coverText.split('\n');
