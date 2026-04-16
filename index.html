@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v8</title>
+<title>ResumeForge v9</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -66,7 +66,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v8 — Tinder Voice</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v9 — Human Voice</div></div>
   </div>
 
   <div class="field-group">
@@ -380,15 +380,22 @@ function buildTailorPrompt(company, title, loc, jd, track){
 function buildCoverPrompt(company, title, loc, jd){
   return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+' in '+loc+'.\n\n'
 
-    + '════ WHO DHRUVIN IS ════\n'
+    + '════ WHO DHRUVIN IS — FACTS AND PERSONALITY ════\n'
+    + 'TECHNICAL BACKGROUND:\n'
     + 'USC MS Computer Science (Data Science), graduating May 2026, GPA 3.40\n'
-    + 'AWS SDE Intern — built C++ auto-scaling framework for Redshift Serverless, 35% query improvement, 99.8% uptime across 12 nodes\n'
-    + 'Paypoint India — XGBoost credit risk model 94% accuracy on 1,000+ daily loan applications; ETL pipelines processing 500k+ records/day\n'
-    + 'Imarticus Learning — BERT+LangChain NLP pipeline at 92% accuracy; automated 90% of content-tagging saving 4 engineering hours daily\n'
-    + 'GDSC — co-founded competitive coding department, scaled to 200+ members\n'
+    + 'AWS SDE Intern — C++ auto-scaling framework for Redshift Serverless, 35% query improvement, 99.8% uptime across 12 nodes\n'
+    + 'Paypoint India — XGBoost credit risk model 94% accuracy, ETL pipelines 500k+ records/day\n'
+    + 'Imarticus Learning — BERT+LangChain NLP pipeline 92% accuracy, automated 90% of content-tagging\n'
+    + 'GDSC — co-founded competitive coding dept from scratch, scaled to 200+ members\n'
     + 'PharmaChain — Harvard-recognized Study Australia runner-up, AUD 10,000 prize\n'
     + 'IEEE ICISAA 2024 — published BERT classifier, F1: 0.91\n'
-    + 'Relocating to NYC mid-June 2026\n\n'
+    + 'Relocating to Bay Area / NYC mid-June 2026\n\n'
+    + 'PERSONALITY — THIS IS WHAT MAKES HIM HUMAN, USE IT:\n'
+    + '- Chess player. Thinks in patterns and long sequences. Naturally looks 3 moves ahead on any problem.\n'
+    + '- Has a problem-solving itch — cannot leave a broken system alone. Built PharmaChain not because it was assigned but because he saw the gap.\n'
+    + '- Founded GDSC competitive coding dept from zero members. Not a joiner — a builder. Shows up and creates structure where there was none.\n'
+    + '- From Mumbai, studying in LA, moving to a new city — comfortable being the new person, figuring things out, starting fresh.\n'
+    + '- Genuinely curious about how systems work at the edges — what breaks, what scales, what does not.\n\n'
 
     + '════ JOB DESCRIPTION ════\n'
     + jd+'\n\n'
@@ -422,16 +429,18 @@ function buildCoverPrompt(company, title, loc, jd){
     + '  Dhruvin Jhaveri\n\n'
 
     + 'VOICE RULES — non-negotiable:\n'
-    + '  - Write in first person, present/past tense, complete sentences. No fragments.\n'
-    + '  - Confident, not performative. Never: "I am excited to", "I would love to", "leverage my skills", "passion for"\n'
-    + '  - Each bullet must open with a CLAIM ("I build X" / "I do Y") then prove it with specifics\n'
-    + '  - The opening paragraph must demonstrate knowledge of the company or problem — not just enthusiasm\n'
+    + '  - First person. Complete sentences. Confident, never desperate.\n'
+    + '  - BANNED PHRASES: "I am excited to", "I would love to", "leverage my skills", "passion for", "I am a fast learner", "team player", "results-driven"\n'
+    + '  - Opening must show you understand the company PROBLEM — not that you want the job\n'
     + '  - No double hyphens. No visa/OPT language. No "As a [Title]..."\n'
-    + '  - Human. Compressed. No corporate filler words.\n\n'
+    + '  - DO NOT repeat exact metrics from the resume (35%, 92%, 94%, 500k+, etc.) — the resume already has them. Reference the STORY not the number.\n'
+    + '  - DO use personality: chess thinking, the itch to fix broken things, building from scratch, being comfortable starting fresh\n'
+    + '  - Each bullet: one CLAIM about who he is as a person/engineer, then brief proof. Not a credentials list.\n'
+    + '  - The letter should feel like a sharp, curious person wrote it — not a resume generator.\n\n'
 
-    + 'LENGTH: 280-350 words. Slightly longer than the Tinder example is fine — depth over brevity here.\n\n'
+    + 'LENGTH: 280-340 words.\n\n'
 
-    + 'OUTPUT: The letter text only. No preamble, no explanation, no subject line.';
+    + 'OUTPUT: Letter text only. No preamble, no explanation, no subject line.';
 }
 
 // ═══════════════════════════════════════════════════════════
