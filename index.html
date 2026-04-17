@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v11</title>
+<title>ResumeForge v12</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -56,6 +56,21 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:currentColor;border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.tracker-wrap{padding:0;}
+.tracker-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.tracker-stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:12px;color:var(--muted);}
+.tracker-stat strong{color:var(--text);font-size:15px;display:block;margin-bottom:2px;}
+table.tlog{width:100%;border-collapse:collapse;font-size:12px;}
+table.tlog th{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border2);color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:11px;white-space:nowrap;}
+table.tlog td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+table.tlog tr:hover td{background:var(--surface2);}
+.pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;}
+.pill-r{background:#1a2a3a;color:#5ba8f5;}
+.pill-c{background:#1a3a2a;color:#5febc4;}
+.pill-b{background:#2a1a3a;color:#a88af7;}
+.del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;}
+.del-btn:hover{color:var(--danger);background:rgba(240,107,107,.12);}
+.empty-tracker{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:8px;color:var(--muted);}
 @media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}}
 </style>
 </head>
@@ -66,7 +81,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v11 — Brackets Fixed</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v12 — With Tracker</div></div>
   </div>
 
   <div class="field-group">
@@ -124,6 +139,7 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
   <div class="tabs">
     <div class="tab active" data-tab="resume" onclick="switchTab('resume')">Resume <span class="badge" id="rb" style="display:none">✓</span></div>
     <div class="tab" data-tab="cover" onclick="switchTab('cover')">Cover Letter <span class="badge" id="cb" style="display:none">✓</span></div>
+    <div class="tab" data-tab="tracker" onclick="switchTab('tracker')">Tracker <span class="badge" id="tb" style="display:none" id="tcnt">0</span></div>
   </div>
 
   <div class="content">
@@ -134,6 +150,24 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
     <div id="coverTab" style="display:none">
       <div class="empty" id="cEmpty"><div class="empty-icon">✉</div><div class="empty-title">No cover letter yet</div><div class="empty-sub">Click Cover Letter after generating a resume</div></div>
       <div id="cPreview" class="preview" style="display:none"></div>
+    </div>
+    <div id="trackerTab" style="display:none">
+      <div class="tracker-wrap">
+        <div class="tracker-toolbar">
+          <div class="tracker-stat"><strong id="stat-total">0</strong>Total docs</div>
+          <div class="tracker-stat"><strong id="stat-companies">0</strong>Companies</div>
+          <div class="tracker-stat"><strong id="stat-resumes">0</strong>Resumes</div>
+          <div class="tracker-stat"><strong id="stat-covers">0</strong>Cover letters</div>
+          <div style="flex:1"></div>
+          <button class="btn btn-secondary" onclick="exportCSV()" style="font-size:12px;padding:7px 14px;">⬇ Export CSV for Google Sheets</button>
+          <button class="btn btn-secondary" onclick="clearTracker()" style="font-size:12px;padding:7px 14px;color:var(--danger);">Clear all</button>
+        </div>
+        <div id="trackerEmpty" class="empty-tracker"><div style="font-size:32px;opacity:.3">📋</div><div style="font-size:14px;color:var(--muted)">No applications tracked yet</div><div style="font-size:12px;color:var(--muted)">Downloads auto-log here</div></div>
+        <table class="tlog" id="trackerTable" style="display:none">
+          <thead><tr><th>#</th><th>Date</th><th>Company</th><th>Role</th><th>Track</th><th>Doc</th><th></th></tr></thead>
+          <tbody id="trackerBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -160,8 +194,10 @@ document.querySelectorAll('.track-btn').forEach(function(b){
 
 function switchTab(n){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===n);});
-  document.getElementById('resumeTab').style.display = n==='resume'?'block':'none';
-  document.getElementById('coverTab').style.display  = n==='cover'?'block':'none';
+  document.getElementById('resumeTab').style.display   = n==='resume'?'block':'none';
+  document.getElementById('coverTab').style.display    = n==='cover'?'block':'none';
+  document.getElementById('trackerTab').style.display  = n==='tracker'?'block':'none';
+  if(n==='tracker') renderTracker();
 }
 function setS(msg,type){var s=document.getElementById('status');s.className='status show '+type;document.getElementById('smsg').innerHTML=msg;}
 function lockBtns(){document.querySelectorAll('.btn').forEach(function(b){b.disabled=true;});}
@@ -801,7 +837,8 @@ async function downloadResume(){
     var xml = buildDocXML(resumeData);
     var co  = document.getElementById('company').value.trim()||'Company';
     await makeDOCX(xml,'Dhruvin_Jhaveri_Resume_'+co.replace(/\s+/g,'_')+'.docx');
-    setS('&#10003; Resume DOCX downloaded','ok');
+    logEntry('resume');
+    setS('&#10003; Resume DOCX downloaded — logged to Tracker','ok');
   }catch(e){ setS('DOCX error: '+e.message,'err'); console.error(e); }
 }
 
@@ -856,9 +893,129 @@ async function downloadCover(){
       +'</w:body></w:document>';
 
     await makeDOCX(docXML,'Dhruvin_Jhaveri_CoverLetter_'+co.replace(/\s+/g,'_')+'.docx');
-    setS('&#10003; Cover Letter DOCX downloaded','ok');
+    logEntry('cover');
+    setS('&#10003; Cover Letter DOCX downloaded — logged to Tracker','ok');
   }catch(e){ setS('DOCX error: '+e.message,'err'); console.error(e); }
 }
+
+// ═══════════════════════════════════════════════════════════
+// JOB APPLICATION TRACKER
+// ═══════════════════════════════════════════════════════════
+var TRACKER_KEY = 'rf_tracker_v1';
+
+function loadLog(){
+  try{
+    var raw = localStorage.getItem(TRACKER_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+
+function saveLog(log){
+  try{ localStorage.setItem(TRACKER_KEY, JSON.stringify(log)); }catch(e){}
+}
+
+function logEntry(type){
+  var co    = document.getElementById('company').value.trim() || 'Unknown';
+  var title = document.getElementById('jobTitle').value.trim() || 'Role';
+  var track = selectedTrack || 'n/a';
+  var now   = new Date();
+  var date  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  var log   = loadLog();
+  log.push({ id: Date.now(), date: date, company: co, title: title, track: track, type: type });
+  saveLog(log);
+  updateTrackerBadge(log);
+}
+
+function updateTrackerBadge(log){
+  var tb = document.getElementById('tb');
+  if(!tb) return;
+  if(!log) log = loadLog();
+  if(log.length > 0){
+    tb.style.display = 'inline-flex';
+    tb.textContent   = log.length;
+  }
+}
+
+function renderTracker(){
+  var log = loadLog();
+  var empty = document.getElementById('trackerEmpty');
+  var table = document.getElementById('trackerTable');
+  var tbody = document.getElementById('trackerBody');
+  if(!log.length){
+    empty.style.display = 'flex';
+    table.style.display = 'none';
+    document.getElementById('stat-total').textContent = '0';
+    document.getElementById('stat-companies').textContent = '0';
+    document.getElementById('stat-resumes').textContent = '0';
+    document.getElementById('stat-covers').textContent = '0';
+    return;
+  }
+  empty.style.display = 'none';
+  table.style.display = 'table';
+
+  // stats
+  var companies = new Set(log.map(function(e){return e.company;})).size;
+  var resumes   = log.filter(function(e){return e.type==='resume';}).length;
+  var covers    = log.filter(function(e){return e.type==='cover';}).length;
+  document.getElementById('stat-total').textContent     = log.length;
+  document.getElementById('stat-companies').textContent = companies;
+  document.getElementById('stat-resumes').textContent   = resumes;
+  document.getElementById('stat-covers').textContent    = covers;
+
+  // rows — newest first
+  var rows = log.slice().reverse();
+  tbody.innerHTML = rows.map(function(e, i){
+    var pillClass = e.type==='resume' ? 'pill-r' : 'pill-c';
+    var pillText  = e.type==='resume' ? 'Resume' : 'Cover';
+    var trackPill = '<span class="pill pill-b">'+e.track+'</span>';
+    return '<tr>'
+      +'<td style="color:var(--muted)">'+(log.length-i)+'</td>'
+      +'<td style="color:var(--muted);white-space:nowrap">'+e.date+'</td>'
+      +'<td><strong>'+esc(e.company)+'</strong></td>'
+      +'<td style="color:var(--muted)">'+esc(e.title)+'</td>'
+      +'<td>'+trackPill+'</td>'
+      +'<td><span class="pill '+pillClass+'">'+pillText+'</span></td>'
+      +'<td><button class="del-btn" onclick="deleteEntry('+e.id+')">✕</button></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function deleteEntry(id){
+  var log = loadLog().filter(function(e){ return e.id !== id; });
+  saveLog(log);
+  updateTrackerBadge(log);
+  renderTracker();
+}
+
+function clearTracker(){
+  if(!confirm('Clear all tracked applications?')) return;
+  saveLog([]);
+  updateTrackerBadge([]);
+  renderTracker();
+}
+
+function exportCSV(){
+  var log = loadLog();
+  if(!log.length){ setS('Nothing to export yet','err'); return; }
+  var rows = [['#','Date','Company','Role','Track','Document']];
+  log.forEach(function(e,i){
+    rows.push([i+1, e.date, e.company, e.title, e.track, e.type==='resume'?'Resume':'Cover Letter']);
+  });
+  var csv = rows.map(function(r){
+    return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(',');
+  }).join('\n');
+  var blob = new Blob([csv],{type:'text/csv'});
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href=url; a.download='ResumeForge_Tracker.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+  setS('&#10003; CSV exported — paste into Google Sheets','ok');
+}
+
+// Init badge on load
+document.addEventListener('DOMContentLoaded', function(){ updateTrackerBadge(); });
+
 </script>
 </body>
 </html>
