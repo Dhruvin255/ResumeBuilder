@@ -25,8 +25,13 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 .track-btn{padding:9px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;}
 .track-btn:hover{border-color:var(--border2);color:var(--text);}
 .track-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.track-btn.ai-on{background:#0f2a1a;border-color:#1d9e75;color:#5febc4;}
-.track-btn.ai-on #aiDot{background:#5febc4;}
+.ai-switch{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:left;width:100%;transition:all .15s;}
+.ai-switch:hover{border-color:var(--border2);color:var(--text);}
+.ai-switch.on{background:#0f2a1a;border-color:#1d9e75;color:#5febc4;}
+.ai-track{width:30px;height:16px;border-radius:10px;background:#2a2a34;position:relative;flex-shrink:0;transition:background .2s;}
+.ai-switch.on .ai-track{background:#1d9e75;}
+.ai-knob{width:12px;height:12px;border-radius:50%;background:#8884a4;position:absolute;top:2px;left:2px;transition:all .2s;}
+.ai-switch.on .ai-knob{background:#fff;left:16px;}
 .divider{height:1px;background:var(--border);margin:2px 0;}
 .main{display:flex;flex-direction:column;min-height:100vh;}
 .toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
@@ -154,11 +159,11 @@ table.tlog tr:hover td{background:var(--surface2);}
 
   <div class="field-group">
     <div class="field-label">AI/ML Emphasis</div>
-    <button class="track-btn" id="aiToggle" onclick="toggleAI()" style="grid-column:span 2;text-align:left;padding:10px 12px;display:flex;align-items:center;gap:8px;">
-      <span id="aiDot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .15s;"></span>
-      <span id="aiLabel" style="font-size:12px;">Off — neutral allocation</span>
+    <button type="button" class="ai-switch" id="aiToggle" onclick="toggleAI()">
+      <div class="ai-track"><div class="ai-knob"></div></div>
+      <span id="aiLabel">Off — neutral allocation</span>
     </button>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-10px;">Signals the allocator to favor Volumetric AI project and inject RAG/vector skills. Turn on for AI/ML/LLM-heavy roles.</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Signals the allocator to favor Volumetric AI project and inject RAG/vector skills. Turn on for AI/ML/LLM-heavy roles.</div>
   </div>
 </div>
 
@@ -231,15 +236,12 @@ var aiMode     = false;  // when true: Volumetric replaces PharmaChain
 function toggleAI(){
   aiMode = !aiMode;
   var btn   = document.getElementById('aiToggle');
-  var dot   = document.getElementById('aiDot');
   var label = document.getElementById('aiLabel');
   if(aiMode){
-    btn.classList.add('ai-on');
-    dot.style.background = '#5febc4';
+    btn.classList.add('on');
     label.textContent = 'ON — prioritize AI/ML content';
   } else {
-    btn.classList.remove('ai-on');
-    dot.style.background = 'var(--muted)';
+    btn.classList.remove('on');
     label.textContent = 'Off — neutral allocation';
   }
 }
