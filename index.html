@@ -120,7 +120,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v16 — Keyword Force</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v17 — AI First</div></div>
   </div>
 
   <div class="field-group">
@@ -514,6 +514,31 @@ function buildTailorPrompt(company, title, loc, jd, track){
       + '- Do NOT add GenAI keywords to roles/projects where they don\'t naturally fit\n\n'
       + 'TARGET OUTCOME: 10-15 point ATS boost for LLM/RAG/GenAI roles while maintaining technical accuracy.\n\n'
       + '===\n\n';
+  }
+
+  // v17: AI MODE INJECTION — FRONT-LOADED FOR VISIBILITY
+  if (aiMode) {
+    basePrompt += '\n════ STEP 0 — AI MODE GENAI VOCABULARY BOOST ════\n'
+      + 'AI MODE IS ENABLED. The following transformations apply to ALL bullets in this resume.\n\n'
+      + 'IMARTICUS LEARNING ROLE (Product Enablement Intern):\n'
+      + 'This role built a BERT+LangChain NLP system. Reframe using GenAI production vocabulary:\n'
+      + '• Bullet 1: Use "retrieval-augmented" + "LangChain orchestration" + "prompt templates" + "92% accuracy"\n'
+      + '  Example: "Engineered retrieval-augmented NLP pipeline with BERT and LangChain orchestration; designed prompt templates for domain-specific event classification achieving 92% accuracy"\n'
+      + '• Bullet 2: Use "agentic microservices" OR "tool orchestration" + "90%" + "4 hours"\n'
+      + '  Example: "Automated 90% of content workflows via agentic microservices; eliminated 4 engineering hours daily"\n'
+      + '• Bullet 3: Use "LLM evaluation" OR "data governance" + "real-time" + "5 product managers"\n\n'
+      + 'TECHNICAL SKILLS:\n'
+      + '• SKILL_FW must START with: "RAG Systems, Vector Databases, Prompt Engineering, LLM Evaluation Frameworks"\n'
+      + '• Then add 3-5 normal track skills. Total 7-9 items.\n\n'
+      + 'PROJECT SELECTION (for GenAI/LLM/RAG roles):\n'
+      + '• PROJ1 = artist (REST APIs → tool execution layer)\n'
+      + '• PROJ2 = volumetric (ML eval frameworks)\n'
+      + '• Add "tool orchestration" OR "API-driven retrieval" to Artist Search App\n\n'
+      + 'Apply these transformations while maintaining:\n'
+      + '• 13-18 words per bullet\n'
+      + '• Unique verbs across all bullets\n'
+      + '• Original metrics (92%, 90%, 4 hours, 5 PMs, etc.)\n'
+      + '• Zero fabrication — all keywords must map to actual work done\n\n';
   }
 
   basePrompt += '════ STEP 1 — KEYWORD EXTRACTION ════\n'
