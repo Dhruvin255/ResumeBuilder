@@ -120,7 +120,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v15 — GenAI Boost</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v16 — Keyword Force</div></div>
   </div>
 
   <div class="field-group">
@@ -512,12 +512,6 @@ function buildTailorPrompt(company, title, loc, jd, track){
       + '- Maintain 13-18 word count per bullet\n'
       + '- Keep all metrics accurate (F1=0.91, not 0.92)\n'
       + '- Do NOT add GenAI keywords to roles/projects where they don\'t naturally fit\n\n'
-      + '⚠️ CRITICAL ALLOCATION OVERRIDE PREVENTION ⚠️\n'
-      + 'AI mode does NOT change allocation rules. You must STILL:\n'
-      + '- Emit EXACTLY the number of bullets specified by ALLOC values (no more, no less)\n'
-      + '- Keep total bullets between 16-18 (one-page constraint)\n'
-      + '- If you write EXP1_B1, EXP1_B2, EXP1_B3, STOP. Do not write EXP1_B4 unless ALLOC_EXP1=4.\n'
-      + '- Writing extra bullets = page overflow = resume rejected by ATS.\n\n'
       + 'TARGET OUTCOME: 10-15 point ATS boost for LLM/RAG/GenAI roles while maintaining technical accuracy.\n\n'
       + '===\n\n';
   }
@@ -1060,17 +1054,9 @@ function parseTailored(text){
 }
 
 function ensureBullets(aiArr, defaults, target){
-  // CRITICAL: Enforce one-page limit by HARD truncation to target count
   var out = (aiArr && aiArr.length >= target) ? aiArr.slice(0, target)
           : (aiArr && aiArr.length > 0)       ? aiArr.concat(defaults).slice(0, target)
           :                                     defaults.slice(0, target);
-  
-  // DEFENSIVE: If AI somehow wrote more, force truncate again
-  if(out.length > target){
-    console.warn('AI wrote '+out.length+' bullets but allocation is '+target+' — force truncating');
-    out = out.slice(0, target);
-  }
-  
   return out.map(clean);
 }
 
@@ -1123,25 +1109,6 @@ async function generate(type){
         proj1: { key:parsed.proj1.key, bullets:ensureBullets(parsed.proj1.bullets, CANDIDATE.projects[parsed.proj1.key].defaultBullets, parsed.alloc.proj1) },
         proj2: { key:parsed.proj2.key, bullets:ensureBullets(parsed.proj2.bullets, CANDIDATE.projects[parsed.proj2.key].defaultBullets, parsed.alloc.proj2) }
       };
-
-      // CRITICAL VALIDATION: Enforce one-page limit
-      var actualBulletCount = 0;
-      resumeData.expBullets.forEach(function(arr){ actualBulletCount += arr.length; });
-      actualBulletCount += resumeData.proj1.bullets.length + resumeData.proj2.bullets.length;
-      
-      if(actualBulletCount > 18){
-        console.error('PAGE OVERFLOW DETECTED: '+actualBulletCount+' bullets (max 18). Force truncating...');
-        // Emergency truncation: demote sections to minimum until we fit
-        while(actualBulletCount > 18){
-          if(resumeData.proj2.bullets.length > 2){ resumeData.proj2.bullets.pop(); actualBulletCount--; }
-          else if(resumeData.proj1.bullets.length > 2){ resumeData.proj1.bullets.pop(); actualBulletCount--; }
-          else if(resumeData.expBullets[2].length > 2){ resumeData.expBullets[2].pop(); actualBulletCount--; }
-          else if(resumeData.expBullets[1].length > 2){ resumeData.expBullets[1].pop(); actualBulletCount--; }
-          else if(resumeData.expBullets[0].length > 3){ resumeData.expBullets[0].pop(); actualBulletCount--; }
-          else break; // Can't truncate further
-        }
-        setS('⚠️ AI wrote too many bullets — emergency truncation applied to fit one page','info');
-      }
 
       var preview = buildPreviewText(resumeData);
       document.getElementById('rPreview').textContent = preview;
