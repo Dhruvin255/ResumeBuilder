@@ -120,12 +120,20 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v17 — AI First</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v18 — Keyword Injector</div></div>
   </div>
 
   <div class="field-group">
     <div class="field-label">Anthropic API Key</div>
     <input type="password" id="apiKey" placeholder="sk-ant-...">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field-group">
+    <div class="field-label">Priority Keywords (comma-separated)</div>
+    <input type="text" id="keywords" placeholder="RAG, Kubernetes, LangChain, Vector DBs">
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;">These will be forced into Skills + bullets for max ATS score</div>
   </div>
 
   <div class="divider"></div>
@@ -169,7 +177,7 @@ table.tlog tr:hover td{background:var(--surface2);}
         <div class="ai-track"><div class="ai-knob"></div></div>
         <div class="ai-label" id="aiLabel"><strong>GenAI Boost</strong> (+10-15 ATS points for LLM/RAG roles)</div>
       </div>
-      <div class="ai-desc">Reframes existing work using RAG, prompt engineering, and agentic workflow vocabulary. Use for GenAI Engineer, LLM Platform, or AI Infrastructure roles.</div>
+      <div class="ai-desc">Reframes work using RAG/agentic vocabulary. Add Priority Keywords above for guaranteed injection (2pts/keyword bonus).</div>
     </button>
   </div>
 </div>
@@ -450,6 +458,11 @@ var ATS_VOCAB = [
 function buildTailorPrompt(company, title, loc, jd, track){
   var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.ds_ml;
   
+  // v18: EXTRACT USER-PROVIDED PRIORITY KEYWORDS
+  var userKeywords = document.getElementById('keywords').value.trim();
+  var keywordList = userKeywords ? userKeywords.split(',').map(k => k.trim()).filter(k => k) : [];
+  var hasUserKeywords = keywordList.length > 0;
+  
   // v15: AI mode prepends GenAI keywords to skills
   if(aiMode){
     pool = JSON.parse(JSON.stringify(pool));
@@ -514,6 +527,38 @@ function buildTailorPrompt(company, title, loc, jd, track){
       + '- Do NOT add GenAI keywords to roles/projects where they don\'t naturally fit\n\n'
       + 'TARGET OUTCOME: 10-15 point ATS boost for LLM/RAG/GenAI roles while maintaining technical accuracy.\n\n'
       + '===\n\n';
+  }
+
+  // v18: KEYWORD FORCING — HIGHEST PRIORITY
+  if (hasUserKeywords) {
+    basePrompt += '\n════ STEP 0 — PRIORITY KEYWORD INJECTION (MANDATORY) ════\n'
+      + 'The user has provided PRIORITY KEYWORDS that MUST appear in the resume for maximum ATS score.\n'
+      + 'These keywords are business-critical and NON-NEGOTIABLE.\n\n'
+      + 'PRIORITY KEYWORDS: ' + keywordList.join(', ') + '\n\n'
+      + 'MANDATORY INJECTION RULES:\n'
+      + '1. TECHNICAL SKILLS SECTION:\n'
+      + '   • SKILL_FW line MUST START with these exact keywords (comma-separated): ' + keywordList.slice(0,4).join(', ') + '\n'
+      + '   • Then append normal track skills. Total items: 7-9.\n'
+      + '   • Example: "' + keywordList.slice(0,4).join(', ') + ', PyTorch, Node.js, PostgreSQL, Docker"\n\n'
+      + '2. EXPERIENCE BULLETS (weave into 2nd/3rd bullets of roles):\n'
+      + '   • IMARTICUS role: Force 2-3 priority keywords into bullets naturally\n'
+      + '   • AWS role: If keywords relate to infrastructure/scale, weave 1-2 into bullets\n'
+      + '   • PAYPOINT role: If keywords relate to data/analytics, weave 1-2 into bullets\n'
+      + '   • Strategy: Replace generic tech mentions with priority keywords where contextually valid\n'
+      + '   • Example: "Built PostgreSQL analytics" → "Built PostgreSQL analytics with ' + (keywordList[0] || 'X') + ' integration"\n\n'
+      + '3. PROJECT BULLETS (2nd bullet of PROJ1):\n'
+      + '   • Weave 1-2 priority keywords into the 2nd bullet of whichever project is PROJ1\n'
+      + '   • Use "integrated with", "leveraging", "via" as connectors\n'
+      + '   • Example: "Implemented JWT authentication leveraging ' + (keywordList[1] || 'Y') + ' for token validation"\n\n'
+      + 'CONSTRAINTS:\n'
+      + '   • Zero fabrication: Only weave keywords where TECHNICALLY PLAUSIBLE given the role context\n'
+      + '   • If a keyword makes NO SENSE for a role (e.g., "Kubernetes" in a pure ML research project), skip that role\n'
+      + '   • Maintain 13-18 words per bullet\n'
+      + '   • Preserve all original metrics (35%, 92%, 94%, etc.)\n\n'
+      + 'VERIFICATION:\n'
+      + '   • Count appearances: Each priority keyword should appear 1-2 times across Skills + Bullets\n'
+      + '   • All ' + keywordList.length + ' priority keywords MUST appear somewhere in the resume\n'
+      + '   • Skills section MUST include ALL priority keywords in SKILL_FW or SKILL_DB lines\n\n';
   }
 
   // v17: AI MODE INJECTION — FRONT-LOADED FOR VISIBILITY
@@ -872,19 +917,32 @@ function computeATS(d, jd){
   var lengths  = atsLengths(allBullets);
   var format   = atsFormatFlags(d, allBullets);
 
+  // v18: USER KEYWORD BONUS
+  var userKeywords = document.getElementById('keywords').value.trim();
+  var keywordList = userKeywords ? userKeywords.split(',').map(k => k.trim().toLowerCase()).filter(k => k) : [];
+  var userKwBonus = 0;
+  if(keywordList.length > 0){
+    var userHits = keywordList.filter(function(kw){
+      return atsContains(corpus, kw);
+    }).length;
+    // Bonus: 2 points per priority keyword found (max 10 keywords = 20 bonus points)
+    userKwBonus = Math.min(20, userHits * 2);
+  }
+
   var sKw = Math.round(kw.pct * 40);
   var sV  = Math.max(0, 15 - verbs.dupes.reduce(function(acc,d){return acc + (d.count-1)*4;}, 0));
   var sM  = Math.round(metrics.pct * 15);
   var sL  = Math.round(lengths.pct * 15);
   var sF  = Math.round(format.pct * 15);
 
-  var total = sKw + sV + sM + sL + sF;
+  var total = sKw + sV + sM + sL + sF + userKwBonus;
   var grade = total >= 85 ? 'A' : total >= 70 ? 'B' : total >= 55 ? 'C' : 'D';
 
   return {
     total: total,
     grade: grade,
     keywords: keywords,
+    userKwBonus: userKwBonus,
     breakdown: {
       kw:    { score:sKw, max:40, data:kw },
       verbs: { score:sV,  max:15, data:verbs },
@@ -905,11 +963,14 @@ function renderATS(ats, d){
               : ats.grade === 'B' ? 'Solid match. Minor tweaks may help.'
               : ats.grade === 'C' ? 'Borderline. Consider regenerating or adjusting the track.'
               : 'Weak match. Review keywords and regenerate.';
+  
+  var bonusText = ats.userKwBonus > 0 ? ' <span style="color:#5febc4">(+'+ats.userKwBonus+' keyword bonus)</span>' : '';
+  
   report += '<div class="ats-hero">'
     + '<div><div class="ats-score-big">'+ats.total+'<span class="den">/100</span></div>'
     + '<div class="ats-grade '+gradeClass+'">Grade '+ats.grade+'</div></div>'
     + '<div class="ats-hero-right">'
-      + '<div class="ats-hero-title">ATS Compatibility Score</div>'
+      + '<div class="ats-hero-title">ATS Compatibility Score'+bonusText+'</div>'
       + '<div class="ats-hero-sub">'+subText+'</div>'
       + '<div class="ats-alloc">'
         + '<div class="ats-alloc-item">AWS <strong>'+d.alloc.exp1+'</strong></div>'
