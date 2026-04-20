@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v19</title>
+<title>ResumeForge v14</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -25,18 +25,13 @@ textarea{min-height:120px;resize:vertical;font-size:13px;line-height:1.5;}
 .track-btn{padding:9px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;}
 .track-btn:hover{border-color:var(--border2);color:var(--text);}
 .track-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.ai-switch{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);transition:all .15s;cursor:pointer;}
-.ai-switch:hover{border-color:var(--border2);}
-.ai-switch.on{background:#0f2a1a;border-color:#1d9e75;}
-.ai-switch-header{display:flex;align-items:center;gap:10px;}
+.ai-switch{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-align:left;width:100%;transition:all .15s;}
+.ai-switch:hover{border-color:var(--border2);color:var(--text);}
+.ai-switch.on{background:#0f2a1a;border-color:#1d9e75;color:#5febc4;}
 .ai-track{width:30px;height:16px;border-radius:10px;background:#2a2a34;position:relative;flex-shrink:0;transition:background .2s;}
 .ai-switch.on .ai-track{background:#1d9e75;}
 .ai-knob{width:12px;height:12px;border-radius:50%;background:#8884a4;position:absolute;top:2px;left:2px;transition:all .2s;}
 .ai-switch.on .ai-knob{background:#fff;left:16px;}
-.ai-label{font-size:12px;font-weight:500;color:var(--text);}
-.ai-label strong{color:#5febc4;}
-.ai-switch.on .ai-label strong{color:#5febc4;}
-.ai-desc{font-size:11px;color:var(--muted);line-height:1.4;font-weight:normal;}
 .divider{height:1px;background:var(--border);margin:2px 0;}
 .main{display:flex;flex-direction:column;min-height:100vh;}
 .toolbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
@@ -120,24 +115,12 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v19 — Nuclear Keyword Boost</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v14 — Smart Allocator</div></div>
   </div>
 
   <div class="field-group">
     <div class="field-label">Anthropic API Key</div>
     <input type="password" id="apiKey" placeholder="sk-ant-...">
-  </div>
-
-  <div class="divider"></div>
-
-  <div class="field-group">
-    <div class="field-label">Priority Keywords (optional)</div>
-    <textarea id="keywords" placeholder="RAG, Kubernetes, Docker
-OR paste bullet list:
-* RAG
-* Kubernetes
-* Docker" style="min-height:80px;font-size:12px;"></textarea>
-    <div style="font-size:10px;color:var(--muted);margin-top:4px;">Auto-extracts from JD. Add niche tech here if needed. Supports comma/newline/bullets.</div>
   </div>
 
   <div class="divider"></div>
@@ -175,14 +158,12 @@ OR paste bullet list:
   </div>
 
   <div class="field-group">
-    <div class="field-label">GenAI Boost</div>
+    <div class="field-label">AI/ML Emphasis</div>
     <button type="button" class="ai-switch" id="aiToggle" onclick="toggleAI()">
-      <div class="ai-switch-header">
-        <div class="ai-track"><div class="ai-knob"></div></div>
-        <div class="ai-label" id="aiLabel"><strong>GenAI Boost</strong> (+10-15 ATS points for LLM/RAG roles)</div>
-      </div>
-      <div class="ai-desc">Reframes work using RAG/agentic vocabulary. Add Priority Keywords above for guaranteed injection (2pts/keyword bonus).</div>
+      <div class="ai-track"><div class="ai-knob"></div></div>
+      <span id="aiLabel">Off — neutral allocation</span>
     </button>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Signals the allocator to favor Volumetric AI project and inject RAG/vector skills. Turn on for AI/ML/LLM-heavy roles.</div>
   </div>
 </div>
 
@@ -192,7 +173,6 @@ OR paste bullet list:
     <button class="btn btn-primary" onclick="generate('resume')"><span>◎</span> Generate Resume</button>
     <button class="btn btn-secondary" onclick="generate('cover')"><span>✉</span> Cover Letter</button>
     <div style="flex:1"></div>
-    <button class="btn btn-secondary" onclick="setS('Test message - if you see this, status bar works!','info')" style="font-size:11px;padding:6px 10px;opacity:0.5">Test Status</button>
     <button class="btn btn-green" id="dlR" onclick="downloadResume()" disabled><span>↓</span> Resume DOCX</button>
     <button class="btn btn-green" id="dlC" onclick="downloadCover()" disabled><span>↓</span> Cover DOCX</button>
   </div>
@@ -249,17 +229,20 @@ OR paste bullet list:
 // STATE
 // ═══════════════════════════════════════════════════════════
 var selectedTrack = null;
-var resumeData = null;
-var coverText  = null;
-var aiMode     = false;
+var resumeData = null;   // parsed structured object
+var coverText  = null;   // raw string
+var aiMode     = false;  // when true: Volumetric replaces PharmaChain
 
 function toggleAI(){
   aiMode = !aiMode;
-  var btn = document.getElementById('aiToggle');
+  var btn   = document.getElementById('aiToggle');
+  var label = document.getElementById('aiLabel');
   if(aiMode){
     btn.classList.add('on');
+    label.textContent = 'ON — prioritize AI/ML content';
   } else {
     btn.classList.remove('on');
+    label.textContent = 'Off — neutral allocation';
   }
 }
 
@@ -290,7 +273,7 @@ function unlockBtns(){
 }
 
 // ═══════════════════════════════════════════════════════════
-// FULL CANDIDATE DATA
+// FULL CANDIDATE DATA — hardcoded, AI only rewrites bullets
 // ═══════════════════════════════════════════════════════════
 var CANDIDATE = {
   name: "DHRUVIN JHAVERI",
@@ -304,6 +287,7 @@ var CANDIDATE = {
     { left: "NMIMS University, Mumbai, India  |  B.Tech. Computer Engineering, GPA: 3.61", date: "May 2023" }
   ],
 
+  // Skills vary by track — AI picks from these pools
   skillPools: {
     sde:      { lang:"Python, C++, Java, SQL, JavaScript, TypeScript", fw:"Node.js, Express, React, Django, Flask, PyTorch, LangChain, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, REST APIs" },
     backend:  { lang:"Python, Java, SQL, JavaScript, TypeScript, C++", fw:"Node.js, Express, Django, Flask, REST APIs, LangChain, BERT, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, Kubernetes" },
@@ -313,11 +297,13 @@ var CANDIDATE = {
     quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" }
   },
 
+  // 4 experience roles — ALWAYS ALL 4, always in this order
+  // AI rewrites bullets to match JD keywords
   experiences: [
     {
       title: "Software Development Engineer Intern",
       company: "AWS (Amazon Web Services), Santa Clara, CA",
-      date: "May \u2013 Aug 2025",
+      date: "May \u2013 Aug 2025",  // DATE FORMAT RULE: Mon – Mon YYYY (en-dash, no comma, no slash)
       tech: "C++, SQL, AWS Redshift, AWS S3, CI/CD, Distributed Systems",
       defaultBullets: [
         "Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production",
@@ -360,6 +346,8 @@ var CANDIDATE = {
     }
   ],
 
+  // 2 projects — track decides order, AI rewrites bullets
+  // aiMode=true swaps in Volumetric Implants instead of PharmaChain
   projects: {
     artist: {
       name: "Full Stack Artist Search Application",
@@ -396,6 +384,7 @@ var CANDIDATE = {
     desc:  "Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4."
   },
 
+  // ALWAYS included — never omit — fills the page and signals depth
   leadership: [
     {
       title: "Study Australia Entrepreneurship Challenge",
@@ -411,23 +400,14 @@ var CANDIDATE = {
     }
   ],
 
-  // v15: EXPANDED STUDIED TECH POOL with GenAI production vocabulary
+  // STUDIED TECH POOL — technologies Dhruvin has genuinely touched through
+  // 6+ years of CS coursework (NMIMS B.Tech + USC MS Data Science), side
+  // projects, and study, even if not the headline tool at a given internship.
+  // The AI may weave these into existing bullets when JD asks for them AND
+  // they fit contextually. Never fabricate — only broaden representation.
   studiedTech: {
     languages: "Python, Java, C++, C, JavaScript, TypeScript, SQL, R, Scala, Go, Kotlin, Swift, Bash, HTML, CSS",
-    ml_ai: [
-      'PyTorch', 'TensorFlow', 'scikit-learn', 'XGBoost', 'LightGBM',
-      'Keras', 'BERT', 'Transformers', 'LangChain', 'Hugging Face',
-      'Neural Networks', 'Deep Learning', 'NLP', 'Computer Vision',
-      'Time Series Analysis', 'Feature Engineering', 'Model Deployment',
-      'MLOps', 'A/B Testing', 'Statistical Modeling',
-      // v15: GenAI production vocabulary
-      'RAG', 'Retrieval-Augmented Generation', 'Agentic Workflows',
-      'Tool Orchestration', 'Prompt Engineering', 'Prompt Templates',
-      'Evaluation Frameworks', 'Hallucination Mitigation',
-      'Answer Faithfulness', 'Retrieval Strategies', 'Vector Databases',
-      'Data Governance', 'Responsible AI', 'LLM Evaluation',
-      'Model Serving', 'Inference Optimization'
-    ],
+    ml_ai:     "PyTorch, TensorFlow, Keras, Scikit-learn, XGBoost, Pandas, NumPy, SciPy, Hugging Face, Transformers, BERT, LangChain, LLM, RAG, AI Agents, Vector Embeddings, ChromaDB, Pinecone, FAISS, Fine-tuning, Prompt Engineering, LLMOps, MLOps, Feature Engineering, Model Evaluation, Hyperparameter Tuning, Cross-validation, Time Series, Statistical Analysis, A/B Testing",
     web:       "Node.js, Express, React, Next.js, Django, Flask, FastAPI, REST APIs, GraphQL, JWT, OAuth, Microservices, WebSockets, gRPC",
     data:      "Spark, Kafka, Airflow, dbt, MLflow, ETL, Data Pipelines, Data Warehousing, Snowflake, Databricks, BigQuery",
     databases: "PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, Elasticsearch, Cassandra, Neo4j",
@@ -439,63 +419,20 @@ var CANDIDATE = {
   }
 };
 
-// v15: EXPANDED ATS VOCAB with GenAI keywords
-var ATS_VOCAB = [
-  'microservices', 'api', 'rest', 'graphql', 'kubernetes', 'docker',
-  'ci/cd', 'jenkins', 'github actions', 'terraform', 'aws', 'azure',
-  'gcp', 'redis', 'postgresql', 'mongodb', 'kafka', 'rabbitmq',
-  'machine learning', 'deep learning', 'nlp', 'computer vision',
-  'data pipeline', 'etl', 'big data', 'spark', 'hadoop',
-  'agile', 'scrum', 'kanban', 'jira', 'git', 'version control',
-  // v15: GenAI keywords
-  'agentic', 'agentic workflows', 'tool execution', 'tool orchestration',
-  'prompt engineering', 'prompt templates', 'evaluation framework',
-  'hallucination mitigation', 'retrieval strategies', 'rag',
-  'retrieval-augmented generation', 'vector databases',
-  'data governance', 'responsible ai', 'compliance',
-  'llm evaluation', 'model serving', 'inference optimization',
-  'latency optimization', 'answer faithfulness'
-];
+// Project selection is now delegated to the AI via the allocator.
+// The aiMode flag becomes a soft signal: "prefer volumetric / inject RAG skills."
+// All 3 projects are offered to the AI; it returns 2 keys.
 
 // ═══════════════════════════════════════════════════════════
-// PROMPTS
+// PROMPTS — AI allocates structure AND rewrites bullets
 // ═══════════════════════════════════════════════════════════
 function buildTailorPrompt(company, title, loc, jd, track){
   var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.ds_ml;
-  
-  // v19: EXTRACT USER-PROVIDED PRIORITY KEYWORDS (supports multiple formats)
-  var userKeywords = document.getElementById('keywords').value.trim();
-  
-  // Handle multiple input formats:
-  // 1. Comma-separated: "RAG, Kubernetes, Docker"
-  // 2. Newline-separated: "RAG\nKubernetes\nDocker"
-  // 3. Bullet points: "* RAG\n* Kubernetes"
-  // 4. Mixed: "RAG, Kubernetes\n* Docker"
-  
-  var keywordList = [];
-  if (userKeywords) {
-    // Remove bullet points and asterisks
-    var cleaned = userKeywords.replace(/^\s*[\*\-\•]\s*/gm, '');
-    
-    // Split by comma OR newline
-    var raw = cleaned.split(/[,\n]+/);
-    
-    // Clean each keyword
-    keywordList = raw.map(function(k){ 
-      return k.trim(); 
-    }).filter(function(k){ 
-      return k && k.length > 0; 
-    });
-    
-    console.log('[v19] Parsed keywords:', keywordList.length, 'keywords →', keywordList);
-  }
-  
-  var hasUserKeywords = keywordList.length > 0;
-  
-  // v15: AI mode prepends GenAI keywords to skills
+  // AI mode: inject RAG/Vector/embedding keywords into framework pool
   if(aiMode){
     pool = JSON.parse(JSON.stringify(pool));
-    if(!pool.fw.includes('RAG')) pool.fw = 'RAG Systems, Vector Databases, Prompt Engineering, LLM Evaluation Frameworks, ' + pool.fw;
+    if(!pool.fw.includes('RAG')) pool.fw = 'RAG, Vector Embeddings, LangChain, BERT, ' + pool.fw;
+    if(!pool.db.includes('Vector')) pool.db = pool.db + ', ChromaDB, Pinecone';
   }
 
   var expLines = CANDIDATE.experiences.map(function(e,i){
@@ -515,126 +452,15 @@ function buildTailorPrompt(company, title, loc, jd, track){
 
   var verbBank = 'Engineered,Architected,Configured,Constructed,Delivered,Deployed,Designed,Established,Evaluated,Founded,Integrated,Launched,Led,Mentored,Migrated,Modeled,Optimized,Orchestrated,Overhauled,Pioneered,Processed,Reduced,Refactored,Shipped,Spearheaded,Streamlined,Structured,Trained,Validated,Wired';
 
-  var mlAiList = Array.isArray(CANDIDATE.studiedTech.ml_ai) 
-    ? CANDIDATE.studiedTech.ml_ai.join(', ')
-    : CANDIDATE.studiedTech.ml_ai;
+  var aiHint = aiMode
+    ? '\n\nAI/ML EMPHASIS IS ON: Strongly prefer the volumetric project. Frame AWS/Paypoint/Imarticus bullets through an AI/ML lens where the facts support it (embeddings, vector search, model pipelines, feature engineering, etc). Inject RAG/vector keywords into skill selection.'
+    : '';
 
-  var basePrompt = 'You are an elite ATS resume writer AND a structural allocator. You make TWO decisions: (1) how to allocate bullets across sections based on JD fit, and (2) how to rewrite each bullet.\n\n'
-    + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+'\n\n'
-    + 'JOB DESCRIPTION:\n'+jd+'\n\n';
+  return 'You are an elite ATS resume writer AND a structural allocator. You make TWO decisions: (1) how to allocate bullets across sections based on JD fit, and (2) how to rewrite each bullet.\n\n'
+    + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+aiHint+'\n\n'
+    + 'JOB DESCRIPTION:\n'+jd+'\n\n'
 
-  // v15: AI MODE MANDATORY REFRAMING
-  if (aiMode) {
-    basePrompt += '\n\n=== CRITICAL AI MODE INSTRUCTIONS (v15 GenAI Boost) ===\n\n'
-      + 'MANDATORY VOCABULARY REFRAMING:\n'
-      + 'When aiMode is ON, you MUST aggressively reframe existing bullets using production GenAI vocabulary.\n\n'
-      + 'IMARTICUS LEARNING ROLE — APPLY ALL OF THESE:\n'
-      + '1. Replace "Built BERT+LangChain NLP pipeline" with:\n'
-      + '   "Engineered retrieval-augmented NLP pipeline with LangChain orchestration and prompt templates"\n\n'
-      + '2. Replace "92% accuracy" with:\n'
-      + '   "evaluated classification via F1 metrics (0.91), precision 0.89, recall 0.93"\n\n'
-      + '3. Add ONE of these concepts to at least TWO Imarticus bullets:\n'
-      + '   - hallucination mitigation through BERT classification\n'
-      + '   - retrieval strategies for external data integration\n'
-      + '   - evaluation frameworks for answer faithfulness\n'
-      + '   - prompt engineering for domain-specific queries\n\n'
-      + '4. Example target bullet:\n'
-      + '   "Engineered retrieval-augmented NLP pipeline integrating BERT classification with LangChain orchestration; implemented prompt templates for domain-specific queries and evaluated answer faithfulness via F1 metrics (0.91, precision 0.89)"\n\n'
-      + 'AWS ROLE (if relevant to JD):\n'
-      + '- If JD mentions LLM serving/inference: add "model serving" or "inference optimization" to one AWS bullet\n'
-      + '- If JD mentions latency: reframe "35% query improvement" as "optimized query latency by 35% through distributed caching"\n\n'
-      + 'TECHNICAL SKILLS SECTION:\n'
-      + '- PREPEND to Libraries/Frameworks: "RAG Systems, Vector Databases, Prompt Engineering, LLM Evaluation Frameworks"\n'
-      + '- Keep all existing skills intact\n\n'
-      + 'PROJECTS:\n'
-      + '- Force Volumetric Uncertainty Quantification as PROJ1 (ignore normal track ordering)\n'
-      + '- If space allows, add "agentic workflow" or "tool orchestration" to Artist Search App API bullets\n\n'
-      + 'CONSTRAINTS:\n'
-      + '- Zero fabrication — all reframings must map to actual work done\n'
-      + '- Maintain 13-18 word count per bullet\n'
-      + '- Keep all metrics accurate (F1=0.91, not 0.92)\n'
-      + '- Do NOT add GenAI keywords to roles/projects where they don\'t naturally fit\n\n'
-      + 'TARGET OUTCOME: 10-15 point ATS boost for LLM/RAG/GenAI roles while maintaining technical accuracy.\n\n'
-      + '===\n\n';
-  }
-
-  // v19: NUCLEAR KEYWORD INJECTION — AUTO-EXTRACT + FORCE
-  var jdKeywords = atsExtractKeywords(jd, company).slice(0, 15); // Top 15 JD keywords
-  console.log('[v19] Auto-extracted from JD:', jdKeywords.length, 'keywords →', jdKeywords);
-  
-  var allKeywords = hasUserKeywords ? keywordList.concat(jdKeywords) : jdKeywords;
-  
-  // Remove duplicates, keep user keywords first
-  var uniqueKeywords = [];
-  var seen = {};
-  allKeywords.forEach(function(kw){
-    var k = kw.toLowerCase();
-    if(!seen[k]){ 
-      uniqueKeywords.push(kw); 
-      seen[k] = true; 
-    }
-  });
-  
-  // Cap at 20 keywords max for prompt clarity
-  var targetKeywords = uniqueKeywords.slice(0, 20);
-  console.log('[v19] Final keyword list:', targetKeywords.length, 'keywords →', targetKeywords);
-  
-  basePrompt += '\n╔════════════════════════════════════════════════════════════════╗\n'
-    + '║ STEP 0 — KEYWORD INJECTION (ABSOLUTE PRIORITY)                ║\n'
-    + '╚════════════════════════════════════════════════════════════════╝\n\n'
-    + '🎯 TARGET: 90+ ATS score requires DENSE keyword matching.\n\n'
-    + '>>> MANDATORY KEYWORDS (MUST ALL APPEAR): <<<\n'
-    + targetKeywords.map(function(kw, i){ return '  '+(i+1)+'. '+kw; }).join('\n') + '\n\n'
-    + '═══ INJECTION PROTOCOL (Execute in order) ═══\n\n'
-    + '1️⃣  TECHNICAL SKILLS (Primary injection point):\n'
-    + '   SKILL_FW = "' + targetKeywords.slice(0,8).join(', ') + ', [add 1-2 track defaults]"\n'
-    + '   SKILL_DB = "' + targetKeywords.slice(8,Math.min(15, targetKeywords.length)).join(', ') + ', PostgreSQL, AWS"\n'
-    + '   ✓ Keywords 1-15 now in Skills section\n\n'
-    + '2️⃣  IMARTICUS LEARNING (Force keywords into bullets 2 & 3):\n'
-    + '   Bullet 2: Must contain keywords: ' + targetKeywords.slice(0,3).join(', ') + '\n'
-    + '   Bullet 3: Must contain keywords: ' + targetKeywords.slice(3,5).join(', ') + '\n'
-    + '   Example: "Engineered retrieval-augmented pipeline with '+targetKeywords[0]+', '+targetKeywords[1]+', and '+targetKeywords[2]+'; achieved 92% accuracy"\n\n'
-    + '3️⃣  AWS REDSHIFT (If cloud/infra keywords in list):\n'
-    + '   Bullet 2: Inject 1-2 infrastructure keywords naturally\n'
-    + '   Example: "Optimized distributed caching with '+targetKeywords.filter(function(k){return /docker|kubernetes|ci.cd|terraform/i.test(k);}).slice(0,1)[0]+'; reduced latency by 35%"\n\n'
-    + '4️⃣  PAYPOINT INDIA (If data/analytics keywords in list):\n'
-    + '   Bullet 2: Inject 1-2 data keywords naturally\n\n'
-    + '5️⃣  PROJECTS (Remaining keywords):\n'
-    + '   PROJ1 bullet 2: Inject 1-2 remaining keywords with "via", "leveraging", "integrated with"\n\n'
-    + '⚠️  VERIFICATION CHECKLIST:\n'
-    + '   □ All '+targetKeywords.length+' keywords appear at least once\n'
-    + '   □ Skills section contains keywords 1-'+ Math.min(15, targetKeywords.length) +'\n'
-    + '   □ Imarticus bullets contain keywords 1-5\n'
-    + '   □ No keyword appears more than 3 times (avoid stuffing)\n'
-    + '   □ Every injection maintains 13-18 word count\n'
-    + '   □ Every bullet still has a metric\n\n';
-
-  // v17: AI MODE INJECTION — FRONT-LOADED FOR VISIBILITY
-  if (aiMode) {
-    basePrompt += '\n════ STEP 0 — AI MODE GENAI VOCABULARY BOOST ════\n'
-      + 'AI MODE IS ENABLED. The following transformations apply to ALL bullets in this resume.\n\n'
-      + 'IMARTICUS LEARNING ROLE (Product Enablement Intern):\n'
-      + 'This role built a BERT+LangChain NLP system. Reframe using GenAI production vocabulary:\n'
-      + '• Bullet 1: Use "retrieval-augmented" + "LangChain orchestration" + "prompt templates" + "92% accuracy"\n'
-      + '  Example: "Engineered retrieval-augmented NLP pipeline with BERT and LangChain orchestration; designed prompt templates for domain-specific event classification achieving 92% accuracy"\n'
-      + '• Bullet 2: Use "agentic microservices" OR "tool orchestration" + "90%" + "4 hours"\n'
-      + '  Example: "Automated 90% of content workflows via agentic microservices; eliminated 4 engineering hours daily"\n'
-      + '• Bullet 3: Use "LLM evaluation" OR "data governance" + "real-time" + "5 product managers"\n\n'
-      + 'TECHNICAL SKILLS:\n'
-      + '• SKILL_FW must START with: "RAG Systems, Vector Databases, Prompt Engineering, LLM Evaluation Frameworks"\n'
-      + '• Then add 3-5 normal track skills. Total 7-9 items.\n\n'
-      + 'PROJECT SELECTION (for GenAI/LLM/RAG roles):\n'
-      + '• PROJ1 = artist (REST APIs → tool execution layer)\n'
-      + '• PROJ2 = volumetric (ML eval frameworks)\n'
-      + '• Add "tool orchestration" OR "API-driven retrieval" to Artist Search App\n\n'
-      + 'Apply these transformations while maintaining:\n'
-      + '• 13-18 words per bullet\n'
-      + '• Unique verbs across all bullets\n'
-      + '• Original metrics (92%, 90%, 4 hours, 5 PMs, etc.)\n'
-      + '• Zero fabrication — all keywords must map to actual work done\n\n';
-  }
-
-  basePrompt += '════ STEP 1 — KEYWORD EXTRACTION ════\n'
+    + '════ STEP 1 — KEYWORD EXTRACTION ════\n'
     + 'Mentally extract from the JD: core tech skills, domain verbs, impact metrics, seniority signals.\n'
     + 'Every bullet must embed at least one JD keyword naturally.\n\n'
 
@@ -658,14 +484,9 @@ function buildTailorPrompt(company, title, loc, jd, track){
     + 'Selection rules:\n'
     + '  - Pick the 2 projects whose stack and domain best match the JD.\n'
     + '  - PROJ1 is the first project shown, so put the MORE JD-relevant one in PROJ1.\n'
-    + '  - Return the project keys exactly as shown (artist, pharma, volumetric).\n\n';
+    + '  - Return the project keys exactly as shown (artist, pharma, volumetric).\n\n'
 
-  // v15: Force Volumetric as PROJ1 when AI mode ON
-  if (aiMode) {
-    basePrompt += 'AI MODE OVERRIDE: Force volumetric as PROJ1 for ML/DS track regardless of JD content.\n\n';
-  }
-
-  basePrompt += '════ STEP 4 — BULLET RULES (NON-NEGOTIABLE) ════\n'
+    + '════ STEP 4 — BULLET RULES (NON-NEGOTIABLE) ════\n'
     + 'Formula: [Strong unique verb] + [what / how] + [semicolon] + [quantified result]\n'
     + 'R1 — VERB DIVERSITY: No action verb used more than ONCE across ALL bullets you produce.\n'
     + '     Verb bank (or similar strong verbs): '+verbBank+'\n'
@@ -682,7 +503,7 @@ function buildTailorPrompt(company, title, loc, jd, track){
 
     + '════ STEP 6 — STUDIED TECH POOL (coursework + side projects, may be woven into bullets) ════\n'
     + 'Languages studied: '+CANDIDATE.studiedTech.languages+'\n'
-    + 'ML/AI studied: '+mlAiList+'\n'
+    + 'ML/AI studied: '+CANDIDATE.studiedTech.ml_ai+'\n'
     + 'Web/Backend studied: '+CANDIDATE.studiedTech.web+'\n'
     + 'Data infra studied: '+CANDIDATE.studiedTech.data+'\n'
     + 'Databases studied: '+CANDIDATE.studiedTech.databases+'\n'
@@ -739,8 +560,6 @@ function buildTailorPrompt(company, title, loc, jd, track){
     + '  □ Number of bullets you emit per section matches the ALLOC value\n'
     + '  □ Every bullet: 13-18 words, unique verb, embedded metric, JD keyword\n'
     + 'Fix any fail before outputting.';
-
-  return basePrompt;
 }
 
 function buildCoverPrompt(company, title, loc, jd){
@@ -823,7 +642,7 @@ async function callAPI(key, prompt){
       'anthropic-dangerous-direct-browser-access':'true'
     },
     body:JSON.stringify({
-      model:'claude-opus-4-20250514',
+      model:'claude-opus-4-7',
       max_tokens:4000,
       messages:[{role:'user',content:prompt}]
     })
@@ -834,25 +653,166 @@ async function callAPI(key, prompt){
 }
 
 // ═══════════════════════════════════════════════════════════
-// ATS SCORING
+// ATS SCORING — vocabulary-matched, client-side, 0 API calls
 // ═══════════════════════════════════════════════════════════
+// Curated ATS vocabulary: every item here is a real keyword an ATS parser
+// would look for. Each entry is [canonical, ...aliases]. When matching, we
+// accept ANY alias in the JD or resume as a hit for the canonical form.
+// Multi-word entries are matched as exact phrases (with word boundaries).
+var ATS_VOCAB = [
+  // Languages
+  ['python'], ['java','java8','java11','java17'], ['c++','cpp'], ['c#','csharp','c-sharp'], ['c '],
+  ['javascript','js','ecmascript'], ['typescript','ts'], ['go','golang'], ['rust'], ['scala'],
+  ['ruby'], ['php'], ['swift'], ['kotlin'], ['r '], ['matlab'], ['sql'], ['nosql'],
+  ['bash','shell','shell scripting'], ['perl'], ['julia'], ['pyspark'],
+  // Web / backend
+  ['node.js','nodejs','node'], ['express','express.js'], ['react','react.js','reactjs'],
+  ['next.js','nextjs','next'], ['vue','vue.js'], ['angular','angularjs'], ['svelte'],
+  ['django'], ['flask'], ['fastapi'], ['spring','spring boot','springboot'],
+  ['rails','ruby on rails'], ['laravel'], ['graphql'], ['rest','rest api','rest apis','restful'],
+  ['grpc'], ['websocket','websockets'], ['jwt'], ['oauth','oauth2'], ['api','apis'],
+  ['microservices','microservice'], ['monolith'], ['serverless'],
+  // Data / ML
+  ['machine learning','ml'], ['deep learning'], ['neural network','neural networks'],
+  ['nlp','natural language processing'], ['computer vision','cv'],
+  ['llm','llms','large language model','large language models'],
+  ['rag','retrieval augmented generation','retrieval-augmented generation'],
+  ['embeddings','embedding','vector embeddings'], ['vector database','vector db','vector search'],
+  ['pytorch','torch'], ['tensorflow','tf'], ['keras'], ['scikit-learn','sklearn','scikit learn'],
+  ['xgboost'], ['lightgbm'], ['catboost'], ['hugging face','huggingface','transformers'],
+  ['bert'], ['gpt'], ['langchain'], ['llamaindex'], ['chromadb','chroma'], ['pinecone'],
+  ['weaviate'], ['faiss'], ['pandas'], ['numpy'], ['scipy'], ['statsmodels'],
+  ['matplotlib'], ['seaborn'], ['plotly'], ['jupyter'],
+  ['spark','apache spark','pyspark'], ['hadoop'], ['kafka','apache kafka'], ['flink'],
+  ['airflow','apache airflow'], ['dagster'], ['dbt'], ['mlflow'], ['kubeflow'],
+  // Analytics / BI
+  ['tableau'], ['power bi','powerbi'], ['looker'], ['qlik','qlik sense','qliksense'],
+  ['google analytics'], ['mixpanel'], ['amplitude'], ['segment'],
+  ['etl','elt'], ['data pipeline','data pipelines'], ['data warehouse','data warehousing'],
+  ['data lake','data lakehouse'], ['data modeling'], ['star schema'], ['olap'], ['oltp'],
+  // Statistics / methods
+  ['a/b testing','ab testing','a/b test','experimentation'],
+  ['regression','linear regression','logistic regression'], ['classification'],
+  ['clustering'], ['time series','time-series','forecasting'],
+  ['hypothesis testing'], ['statistical analysis','statistics'],
+  ['feature engineering'], ['feature selection'], ['model evaluation'],
+  ['cross validation','cross-validation'], ['hyperparameter tuning','hyperparameter optimization'],
+  // Databases
+  ['postgresql','postgres'], ['mysql'], ['sqlite'], ['oracle'], ['sql server','mssql'],
+  ['mongodb','mongo'], ['redis'], ['cassandra'], ['dynamodb'], ['elasticsearch','elastic search'],
+  ['bigquery','big query'], ['snowflake'], ['redshift','amazon redshift','aws redshift'],
+  ['databricks'], ['clickhouse'],
+  // Cloud / infra
+  ['aws','amazon web services'], ['ec2','amazon ec2'], ['s3','amazon s3'],
+  ['lambda','aws lambda'], ['rds','amazon rds'], ['sqs','sns'], ['cloudwatch'],
+  ['gcp','google cloud','google cloud platform'], ['bigquery','big query'],
+  ['azure','microsoft azure'], ['heroku'], ['vercel'], ['netlify'], ['digitalocean'],
+  ['docker','containerization','containers'], ['kubernetes','k8s'], ['helm'], ['istio'],
+  ['terraform','iac','infrastructure as code'], ['ansible'], ['pulumi'],
+  ['ci/cd','cicd','continuous integration','continuous deployment','continuous delivery'],
+  ['jenkins'], ['github actions'], ['gitlab ci'], ['circleci'], ['argocd'],
+  ['observability'], ['monitoring'], ['logging'], ['prometheus'], ['grafana'], ['datadog'],
+  ['splunk'], ['sentry'], ['pagerduty'],
+  // Distributed systems / architecture
+  ['distributed systems','distributed system'], ['system design'], ['scalability','scalable'],
+  ['high availability','ha'], ['fault tolerance','fault tolerant'], ['load balancing','load balancer'],
+  ['caching','cache'], ['message queue','message queues','messaging'],
+  ['event driven','event-driven'], ['pub/sub','pubsub','publish subscribe'],
+  ['concurrency','multithreading','multi-threading','threading'],
+  ['async','asynchronous'], ['real time','real-time','realtime'], ['low latency'],
+  ['throughput'], ['performance optimization','performance tuning'],
+  // Practices
+  ['agile'], ['scrum'], ['kanban'], ['tdd','test driven development','test-driven development'],
+  ['unit testing','unit tests'], ['integration testing','integration tests'],
+  ['code review','code reviews'], ['pair programming'], ['refactoring'],
+  ['design patterns'], ['oop','object oriented','object-oriented'],
+  ['functional programming'], ['clean code'], ['solid principles'],
+  ['version control','git'], ['github'], ['gitlab'], ['bitbucket'],
+  ['jira'], ['confluence'], ['notion'], ['linear'],
+  // Finance / quant
+  ['quantitative analysis','quant analysis','quantitative research'],
+  ['algorithmic trading','algo trading'], ['portfolio optimization'],
+  ['risk management','risk modeling','credit risk','market risk'],
+  ['derivatives'], ['options pricing'], ['monte carlo'], ['black scholes','black-scholes'],
+  ['financial modeling','fin modeling'], ['bloomberg'], ['factset'], ['reuters'],
+  ['backtesting'], ['sharpe ratio'], ['var','value at risk'],
+  // Business / product
+  ['stakeholder management'], ['cross functional','cross-functional'],
+  ['product analytics'], ['user research'], ['kpi','kpis','key performance indicators'],
+  ['okr','okrs'], ['dashboarding','dashboards','dashboard'],
+  ['reporting'], ['business intelligence','bi'],
+  // Blockchain (for Dhruvin's PharmaChain)
+  ['blockchain'], ['ethereum'], ['solidity'], ['smart contract','smart contracts'],
+  ['web3','web3.js'], ['truffle'], ['metamask'], ['defi'], ['dapp','dapps'],
+  // Security
+  ['authentication','auth'], ['authorization'], ['encryption'], ['ssl','tls'],
+  ['security','cybersecurity'], ['penetration testing','pen testing'],
+  // Mobile
+  ['ios','swift'], ['android','kotlin'], ['react native'], ['flutter'],
+  // Misc common tech
+  ['linux'], ['unix'], ['windows'], ['macos'], ['bash'], ['zsh']
+];
+
+// Build lookup: alias -> canonical
+var ATS_LOOKUP = (function(){
+  var m = {};
+  ATS_VOCAB.forEach(function(entry){
+    var canon = entry[0];
+    entry.forEach(function(alias){ m[alias.toLowerCase()] = canon; });
+  });
+  return m;
+})();
+
+// Escape a term for use in a word-boundary regex
 function atsEscape(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
+// Does the text contain this term as a whole word/phrase?
+// Handles special chars like . + / - # that are part of tech names.
 function atsContains(text, term){
+  // For multi-word or tech-punctuated terms, use a regex with non-word
+  // boundaries on both sides (so "c++" matches in "c++ developer" but not
+  // "node.js" matches "node" alone doesn't falsely match).
   var pat = atsEscape(term);
+  // Boundaries: must be preceded/followed by non-alphanumeric (or string edge)
   var re = new RegExp('(^|[^a-z0-9+#.])' + pat + '(?=$|[^a-z0-9+#.])', 'i');
   return re.test(text);
 }
 
+// Industry/domain descriptors — words JDs use to describe the BUSINESS,
+// not technical skills a candidate should have. These get stripped from
+// the JD text before vocab matching (defensive — most aren't in the vocab
+// but some might overlap with tech-adjacent terms).
+var ATS_INDUSTRY_WORDS = [
+  'legal','compliance','regulatory','regulation','regulations',
+  'healthcare','medical','clinical','hospital','patient','patients',
+  'fintech','finance','financial','banking','insurance','wealth',
+  'education','edtech','academic',
+  'retail','ecommerce','e-commerce','marketplace',
+  'gaming','games','esports',
+  'media','publishing','advertising','marketing','ads',
+  'logistics','supply chain','transportation','shipping',
+  'real estate','property','proptech',
+  'hr','recruiting','talent',
+  'nonprofit','government','public sector','defense',
+  'cybersecurity','infosec'
+];
+
 function atsStripContext(jd, company){
   var text = (jd||'').toLowerCase();
+  // Strip company name tokens. Company "Norm AI" becomes ["norm","ai","norm ai"]
   if(company){
     var co = company.toLowerCase();
     var tokens = co.split(/\s+/).filter(function(t){return t.length > 1;});
+    // Remove full name first (longest match)
     text = text.split(co).join(' ');
+    // Then remove individual name parts (but not if they are real tech terms)
     tokens.forEach(function(t){
       if(t.length < 2) return;
-      var isTech = ATS_VOCAB.indexOf(t) >= 0;
+      // Don't strip a token if it IS a known tech term (e.g. "react" or "python")
+      var isTech = false;
+      for(var i=0;i<ATS_VOCAB.length;i++){
+        if(ATS_VOCAB[i][0] === t){ isTech = true; break; }
+      }
       if(!isTech){
         text = text.replace(new RegExp('\\b'+atsEscape(t)+'\\b','gi'),' ');
       }
@@ -861,16 +821,30 @@ function atsStripContext(jd, company){
   return text;
 }
 
+function atsStripIndustry(keywords){
+  // Drop industry-domain keywords that the vocab might have matched
+  // (our vocab mostly doesn't include these, but defensive).
+  var drop = {};
+  ATS_INDUSTRY_WORDS.forEach(function(w){ drop[w.toLowerCase()] = 1; });
+  return keywords.filter(function(k){ return !drop[k]; });
+}
+
+// Extract JD keywords using the curated vocabulary ONLY. Returns canonicals.
 function atsExtractKeywords(jd, company){
   var lc = atsStripContext(jd, company);
   var found = {};
-  ATS_VOCAB.forEach(function(kw){
-    if(atsContains(lc, kw)){
-      found[kw] = (found[kw]||0) + 1;
+  ATS_VOCAB.forEach(function(entry){
+    var canon = entry[0];
+    for(var i=0; i<entry.length; i++){
+      if(atsContains(lc, entry[i])){
+        found[canon] = (found[canon]||0) + 1;
+        break;
+      }
     }
   });
+  // Return canonicals, sorted by appearance count, minus industry words
   var kws = Object.keys(found).sort(function(a,b){return found[b]-found[a];});
-  return kws;
+  return atsStripIndustry(kws);
 }
 
 function atsResumeCorpus(d){
@@ -887,10 +861,19 @@ function atsResumeCorpus(d){
   return parts.join(' ').toLowerCase();
 }
 
+// For each JD canonical, check if ANY of its aliases appear in the resume.
 function atsKeywordMatch(canonicalKeywords, resumeCorpus){
   var hits = [], misses = [];
+  // Build reverse: canonical -> [aliases]
+  var aliasMap = {};
+  ATS_VOCAB.forEach(function(entry){ aliasMap[entry[0]] = entry; });
+
   canonicalKeywords.forEach(function(canon){
-    var found = atsContains(resumeCorpus, canon);
+    var aliases = aliasMap[canon] || [canon];
+    var found = false;
+    for(var i=0; i<aliases.length; i++){
+      if(atsContains(resumeCorpus, aliases[i])){ found = true; break; }
+    }
     (found ? hits : misses).push(canon);
   });
   return { hits:hits, misses:misses, pct: canonicalKeywords.length ? hits.length/canonicalKeywords.length : 0 };
@@ -929,6 +912,7 @@ function atsLengths(allBullets){
 
 function atsFormatFlags(d, allBullets){
   var flags = [];
+  // No brackets
   var bracketHits = 0;
   allBullets.forEach(function(b){ if(/\[|\]/.test(b)) bracketHits++; });
   if(/\[|\]/.test(d.skillLang||'') || /\[|\]/.test(d.skillFw||'') || /\[|\]/.test(d.skillDb||'') || /\[|\]/.test(d.coursework||'')){
@@ -937,13 +921,16 @@ function atsFormatFlags(d, allBullets){
   if(bracketHits) flags.push({ok:false, msg:'Brackets found in '+bracketHits+' place(s)'});
   else flags.push({ok:true, msg:'No brackets'});
 
+  // Allocation in valid range
   var total = d.alloc.exp1 + d.alloc.exp2 + d.alloc.exp3 + d.alloc.exp4 + d.alloc.proj1 + d.alloc.proj2;
   if(total >= 16 && total <= 18) flags.push({ok:true, msg:'Allocation '+total+' bullets (page fit OK)'});
   else flags.push({ok:false, msg:'Allocation '+total+' bullets (out of 16-18 range)'});
 
+  // All skills present
   if(d.skillLang && d.skillFw && d.skillDb) flags.push({ok:true, msg:'All skill categories filled'});
   else flags.push({ok:false, msg:'Missing skill categories'});
 
+  // Coursework 4 items
   var cwCount = (d.coursework||'').split(',').filter(function(x){return x.trim();}).length;
   if(cwCount === 4) flags.push({ok:true, msg:'Coursework has 4 items'});
   else flags.push({ok:false, msg:'Coursework has '+cwCount+' items (need 4)'});
@@ -965,60 +952,44 @@ function computeATS(d, jd){
   var lengths  = atsLengths(allBullets);
   var format   = atsFormatFlags(d, allBullets);
 
-  // v18: USER KEYWORD BONUS
-  var userKeywords = document.getElementById('keywords').value.trim();
-  var keywordList = userKeywords ? userKeywords.split(',').map(k => k.trim().toLowerCase()).filter(k => k) : [];
-  var userKwBonus = 0;
-  if(keywordList.length > 0){
-    var userHits = keywordList.filter(function(kw){
-      return atsContains(corpus, kw);
-    }).length;
-    // Bonus: 2 points per priority keyword found (max 10 keywords = 20 bonus points)
-    userKwBonus = Math.min(20, userHits * 2);
-  }
-
-  var sKw = Math.round(kw.pct * 50);  // v19: Increased from 40 to 50
+  // Scoring weights: keywords 40, verbs 15, metrics 15, length 15, format 15 = 100
+  var sKw = Math.round(kw.pct * 40);
   var sV  = Math.max(0, 15 - verbs.dupes.reduce(function(acc,d){return acc + (d.count-1)*4;}, 0));
-  var sM  = Math.round(metrics.pct * 20); // v19: Increased from 15 to 20
-  var sL  = Math.round(lengths.pct * 10); // v19: Decreased from 15 to 10
-  var sF  = Math.round(format.pct * 5);   // v19: Decreased from 15 to 5
+  var sM  = Math.round(metrics.pct * 15);
+  var sL  = Math.round(lengths.pct * 15);
+  var sF  = Math.round(format.pct * 15);
 
-  var total = sKw + sV + sM + sL + sF + userKwBonus;
+  var total = sKw + sV + sM + sL + sF;
   var grade = total >= 85 ? 'A' : total >= 70 ? 'B' : total >= 55 ? 'C' : 'D';
 
   return {
     total: total,
     grade: grade,
     keywords: keywords,
-    userKwBonus: userKwBonus,
     breakdown: {
-      kw:    { score:sKw, max:50, data:kw },     // v19: 40→50
+      kw:    { score:sKw, max:40, data:kw },
       verbs: { score:sV,  max:15, data:verbs },
-      metrics:{score:sM,  max:20, data:metrics }, // v19: 15→20
-      length:{ score:sL,  max:10, data:lengths }, // v19: 15→10
-      format:{ score:sF,  max:5,  data:format }   // v19: 15→5
+      metrics:{score:sM,  max:15, data:metrics },
+      length:{ score:sL,  max:15, data:lengths },
+      format:{ score:sF,  max:15, data:format }
     }
   };
 }
-
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 function renderATS(ats, d){
   var gradeClass = 'ats-grade-' + ats.grade.toLowerCase();
   var report = '<div class="ats-wrap">';
 
+  // Hero
   var subText = ats.grade === 'A' ? 'Strong match. Ready to submit.'
               : ats.grade === 'B' ? 'Solid match. Minor tweaks may help.'
               : ats.grade === 'C' ? 'Borderline. Consider regenerating or adjusting the track.'
               : 'Weak match. Review keywords and regenerate.';
-  
-  var bonusText = ats.userKwBonus > 0 ? ' <span style="color:#5febc4">(+'+ats.userKwBonus+' keyword bonus)</span>' : '';
-  
   report += '<div class="ats-hero">'
     + '<div><div class="ats-score-big">'+ats.total+'<span class="den">/100</span></div>'
     + '<div class="ats-grade '+gradeClass+'">Grade '+ats.grade+'</div></div>'
     + '<div class="ats-hero-right">'
-      + '<div class="ats-hero-title">ATS Compatibility Score'+bonusText+'</div>'
+      + '<div class="ats-hero-title">ATS Compatibility Score</div>'
       + '<div class="ats-hero-sub">'+subText+'</div>'
       + '<div class="ats-alloc">'
         + '<div class="ats-alloc-item">AWS <strong>'+d.alloc.exp1+'</strong></div>'
@@ -1032,8 +1003,10 @@ function renderATS(ats, d){
     + '</div>'
   + '</div>';
 
+  // Cards grid
   report += '<div class="ats-grid">';
 
+  // Keywords card
   var kw = ats.breakdown.kw.data;
   var kwBar = Math.round(ats.breakdown.kw.score / ats.breakdown.kw.max * 100);
   var kwColor = kwBar >= 70 ? '#5febc4' : kwBar >= 50 ? '#ffb54d' : '#f06b6b';
@@ -1048,6 +1021,7 @@ function renderATS(ats, d){
     + (missHTML ? '<div class="ats-kw-chips" style="margin-top:8px">'+missHTML+'</div>' : '')
   + '</div>';
 
+  // Verbs
   var vb = ats.breakdown.verbs;
   var vBar = Math.round(vb.score / vb.max * 100);
   var vColor = vBar >= 80 ? '#5febc4' : vBar >= 50 ? '#ffb54d' : '#f06b6b';
@@ -1061,6 +1035,7 @@ function renderATS(ats, d){
     + '<div class="ats-card-body">'+vb.data.unique+' unique verbs across '+vb.data.total+' bullets. '+esc(dupText)+'.</div>'
   + '</div>';
 
+  // Metrics
   var mt = ats.breakdown.metrics;
   var mBar = Math.round(mt.score / mt.max * 100);
   var mColor = mBar >= 80 ? '#5febc4' : mBar >= 50 ? '#ffb54d' : '#f06b6b';
@@ -1071,6 +1046,7 @@ function renderATS(ats, d){
     + '<div class="ats-card-body">'+mt.data.withMetric+' of '+mt.data.total+' bullets contain a number.</div>'
   + '</div>';
 
+  // Length
   var ln = ats.breakdown.length;
   var lBar = Math.round(ln.score / ln.max * 100);
   var lColor = lBar >= 80 ? '#5febc4' : lBar >= 50 ? '#ffb54d' : '#f06b6b';
@@ -1085,6 +1061,7 @@ function renderATS(ats, d){
     + '<div class="ats-card-body">'+esc(badMsg)+'.</div>'
   + '</div>';
 
+  // Format flags
   var ft = ats.breakdown.format;
   var fBar = Math.round(ft.score / ft.max * 100);
   var fColor = fBar >= 80 ? '#5febc4' : fBar >= 50 ? '#ffb54d' : '#f06b6b';
@@ -1106,7 +1083,7 @@ function renderATS(ats, d){
 }
 
 // ═══════════════════════════════════════════════════════════
-// PARSE AI RESPONSE
+// PARSE AI RESPONSE — reads allocation, then extracts N bullets per section
 // ═══════════════════════════════════════════════════════════
 function parseTailored(text){
   var m = text.match(/OUTPUT_START([\s\S]*?)OUTPUT_END/);
@@ -1116,6 +1093,7 @@ function parseTailored(text){
     var r = block.match(new RegExp('^'+key+':\\s*(.+)$','m'));
     if(!r) return '';
     var v = r[1].trim();
+    // Strip wrapping [ ], { }, or quotes the AI may echo from the spec
     v = v.replace(/^[\[\{"']+|[\]\}"']+$/g, '').trim();
     return v;
   }
@@ -1124,16 +1102,19 @@ function parseTailored(text){
     return isNaN(v) ? def : v;
   }
 
+  // Read allocation with clamped defaults
   var a1 = gi('ALLOC_EXP1', 3); if(a1<3) a1=3; if(a1>4) a1=4;
   var a2 = gi('ALLOC_EXP2', 3); if(a2<2) a2=2; if(a2>3) a2=3;
   var a3 = gi('ALLOC_EXP3', 3); if(a3<2) a3=2; if(a3>3) a3=3;
-  var a4 = 2;
+  var a4 = 2; // locked
   var ap1 = gi('ALLOC_PROJ1', 3); if(ap1<2) ap1=2; if(ap1>3) ap1=3;
   var ap2 = gi('ALLOC_PROJ2', 3); if(ap2<2) ap2=2; if(ap2>3) ap2=3;
 
+  // Enforce total in [16,18] — demote most-generous sections if over
   var total = a1+a2+a3+a4+ap1+ap2;
   var guard = 0;
   while(total > 18 && guard++ < 6){
+    // Demote in preference order: PROJ2 -> PROJ1 -> EXP3 -> EXP2 -> EXP1(4->3)
     if(ap2 === 3){ ap2 = 2; }
     else if(ap1 === 3){ ap1 = 2; }
     else if(a3 === 3){ a3 = 2; }
@@ -1142,6 +1123,7 @@ function parseTailored(text){
     else break;
     total = a1+a2+a3+a4+ap1+ap2;
   }
+  // If under 16, promote in reverse preference
   guard = 0;
   while(total < 16 && guard++ < 6){
     if(a1 === 3){ a1 = 4; }
@@ -1153,11 +1135,13 @@ function parseTailored(text){
     total = a1+a2+a3+a4+ap1+ap2;
   }
 
+  // Project keys
   var validKeys = {artist:1, pharma:1, volumetric:1};
   var pk1 = (g('PROJ1_KEY')||'').toLowerCase();
   var pk2 = (g('PROJ2_KEY')||'').toLowerCase();
   if(!validKeys[pk1]) pk1 = 'artist';
   if(!validKeys[pk2] || pk2===pk1){
+    // Fallback: pick a valid 2nd key different from pk1
     var remaining = ['artist','pharma','volumetric'].filter(function(k){return k!==pk1;});
     pk2 = remaining[0];
   }
@@ -1187,6 +1171,7 @@ function parseTailored(text){
   };
 }
 
+// Fallback to defaults if AI parsing failed, truncated to target count
 function ensureBullets(aiArr, defaults, target){
   var out = (aiArr && aiArr.length >= target) ? aiArr.slice(0, target)
           : (aiArr && aiArr.length > 0)       ? aiArr.concat(defaults).slice(0, target)
@@ -1194,10 +1179,16 @@ function ensureBullets(aiArr, defaults, target){
   return out.map(clean);
 }
 
+// Aggressive bracket + quote cleanup. Strips [ ] { } around comma-separated
+// lists and anywhere the AI might echo template scaffolding.
 function clean(s){
   if(!s) return s;
   var v = String(s);
+  // Strip wrapping [] {} and quotes
   v = v.replace(/^[\[\{"']+|[\]\}"']+$/g, '');
+  // Remove any remaining brackets/braces anywhere in the string — these
+  // never belong in resume content and appearing inline means AI leaked
+  // template syntax. Keep parens because "(S3, EC2, Lambda)" is legit.
   v = v.replace(/[\[\]\{\}]/g, '');
   return v.trim();
 }
@@ -1216,31 +1207,10 @@ async function generate(type){
   if(!jd)            return setS('Paste a job description first','err');
   if(!selectedTrack) return setS('Select a track','err');
 
-  console.log('[v19] Starting generation, type:', type);
-  
   lockBtns();
 
   if(type==='resume'){
-    try {
-      // v19: Extract keywords BEFORE building prompt so we can show count in status
-      var userKw = document.getElementById('keywords').value.trim();
-      var userKwList = [];
-      if (userKw) {
-        var cleaned = userKw.replace(/^\s*[\*\-\•]\s*/gm, '');
-        var raw = cleaned.split(/[,\n]+/);
-        userKwList = raw.map(function(k){ return k.trim(); }).filter(function(k){ return k && k.length > 0; });
-      }
-      var jdKw = atsExtractKeywords(jd, company).slice(0, 15);
-      var totalKw = userKwList.length + jdKw.length;
-      
-      // Update status message to show keyword count
-      setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON, ' : 'Generating resume (')+totalKw+' keywords targeted)...', 'info');
-      console.log('[v19 Generate] Starting with', totalKw, 'keywords:', userKwList.length, 'manual +', jdKw.length, 'auto-extracted');
-    } catch(err) {
-      console.error('[v19] Keyword extraction failed:', err);
-      setS('<span class="spin"></span>&nbsp; Generating resume...', 'info');
-    }
-    
+    setS('<span class="spin"></span>&nbsp; Allocating structure + tailoring bullets...','info');
     try{
       var raw = await callAPI(key, buildTailorPrompt(company,title,loc,jd,selectedTrack));
       var parsed = parseTailored(raw);
@@ -1264,6 +1234,7 @@ async function generate(type){
         proj2: { key:parsed.proj2.key, bullets:ensureBullets(parsed.proj2.bullets, CANDIDATE.projects[parsed.proj2.key].defaultBullets, parsed.alloc.proj2) }
       };
 
+      // Show preview text
       var preview = buildPreviewText(resumeData);
       document.getElementById('rPreview').textContent = preview;
       document.getElementById('rPreview').style.display = 'block';
@@ -1272,17 +1243,17 @@ async function generate(type){
       document.getElementById('dlR').disabled = false;
       switchTab('resume');
 
+      // Compute + render ATS score
       var ats = computeATS(resumeData, jd);
       renderATS(ats, resumeData);
       document.getElementById('ab').style.display = 'inline-flex';
 
+      // Client-side verb audit
       var allBullets = [];
       resumeData.expBullets.forEach(function(arr){allBullets=allBullets.concat(arr);});
       allBullets=allBullets.concat(resumeData.proj1.bullets).concat(resumeData.proj2.bullets);
       var allocStr = 'AWS:'+parsed.alloc.exp1+' Pay:'+parsed.alloc.exp2+' Ima:'+parsed.alloc.exp3+' GDSC:'+parsed.alloc.exp4+' P1:'+parsed.alloc.proj1+' P2:'+parsed.alloc.proj2;
-      
-      // v19: Update completion status message with keyword info
-      setS('&#10003; '+(aiMode ? 'Resume generated with GenAI boost!' : 'Ready')+' — '+allBullets.length+' bullets ['+allocStr+'] — '+totalKw+' keywords targeted — ATS '+ats.total+'/100','ok');
+      setS('&#10003; Ready — '+allBullets.length+' bullets ['+allocStr+'] — ATS '+ats.total+'/100','ok');
     }catch(e){
       setS('Error: '+e.message,'err');
       console.error(e);
@@ -1347,8 +1318,10 @@ function buildPreviewText(d){
 }
 
 // ═══════════════════════════════════════════════════════════
-// DOCX BUILDER
+// DOCX BUILDER — pure JSZip + validated XML
 // ═══════════════════════════════════════════════════════════
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 var F='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:eastAsia="Calibri" w:hAnsi="Calibri"/>';
 function mkR(t,o){
   o=o||{};var sz=o.sz||19;
@@ -1381,19 +1354,23 @@ function buildDocXML(d){
   p.push('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
   p.push('<w:document '+NS+'><w:body>');
 
+  // Header
   p.push(pN(CANDIDATE.name));
   p.push(pC(CANDIDATE.phone+'  |  '+CANDIDATE.email+'  |  '+CANDIDATE.linkedin+'  |  '+CANDIDATE.github+'  |  '+d.loc));
 
+  // Education
   p.push(pS('EDUCATION'));
   p.push(pE(CANDIDATE.edu[0].left, CANDIDATE.edu[0].date));
   p.push(pCr(d.coursework));
   p.push(pE(CANDIDATE.edu[1].left, CANDIDATE.edu[1].date));
 
+  // Skills
   p.push(pS('TECHNICAL SKILLS'));
   p.push(pSk('Languages', d.skillLang));
   p.push(pSk('Frameworks & Libraries', d.skillFw));
   p.push(pSk('Databases & Cloud', d.skillDb));
 
+  // Experience — always all 4
   p.push(pS('EXPERIENCE'));
   CANDIDATE.experiences.forEach(function(e,i){
     p.push(pXH(e.title, e.company, e.date));
@@ -1401,6 +1378,7 @@ function buildDocXML(d){
     d.expBullets[i].forEach(function(b){ p.push(pB(b)); });
   });
 
+  // Projects — 2, track-ordered
   p.push(pS('PROJECTS'));
   [d.proj1, d.proj2].forEach(function(pr){
     var proj = CANDIDATE.projects[pr.key];
@@ -1408,15 +1386,24 @@ function buildDocXML(d){
     pr.bullets.forEach(function(b){ p.push(pB(b)); });
   });
 
+  // Publication
   p.push(pS('PUBLICATION'));
   p.push(pMx(CANDIDATE.pub.title, '  \u2014  '+CANDIDATE.pub.venue));
   p.push(pPl(CANDIDATE.pub.desc));
 
+  // Leadership & Recognition — ALWAYS LAST, ALWAYS PRESENT (R1 rule)
   p.push(pS('LEADERSHIP \u0026 RECOGNITION'));
   CANDIDATE.leadership.forEach(function(l){
     p.push(pMx(l.title, '  \u2014  '+l.desc));
   });
 
+  // ── QUALITY GATE ── paragraph count must fit variable allocation (16-18 body bullets)
+  var paraCount = (p.join('').match(/<w:p[ >]/g)||[]).length;
+  if(paraCount < 43 || paraCount > 52){
+    console.warn('QC FAIL: paragraph count='+paraCount+' (expected 43-52 for 16-18 bullets). Check all 7 sections.');
+  }
+
+  // Page setup — R6: margins 720, R7: tab 10800
   p.push('<w:sectPr>'
     +'<w:pgSz w:w="12240" w:h="15840"/>'
     +'<w:pgMar w:top="432" w:right="720" w:bottom="432" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>'
@@ -1506,6 +1493,7 @@ async function downloadResume(){
   }catch(e){ setS('DOCX error: '+e.message,'err'); console.error(e); }
 }
 
+// ─── COVER LETTER DOCX ─────────────────────────────────────
 async function downloadCover(){
   if(!coverText) return;
   setS('<span class="spin"></span>&nbsp; Building DOCX...','info');
@@ -1517,20 +1505,25 @@ async function downloadCover(){
     var loc  = document.getElementById('location').value.trim()||'New York, NY';
     var co   = document.getElementById('company').value.trim()||'Company';
 
+    // Header block — bold name, contact line
     var header =
       '<w:p><w:pPr>'+sp2(0,40)+'<w:jc w:val="center"/></w:pPr>'+rn('DHRUVIN JHAVERI',{b:true,sz:28})+'</w:p>'
      +'<w:p><w:pPr>'+sp2(0,200)+'<w:jc w:val="center"/></w:pPr>'+rn(loc+'  |  (602) 793-6561  |  dhruvinj@usc.edu  |  linkedin.com/in/dhruvinjhaveri',{sz:19,c:'444444'})+'</w:p>';
 
+    // Body — parse letter lines
     var lines = coverText.split('\n');
     var body = lines.map(function(line){
       var t = line.trim();
       if(!t) return '<w:p><w:pPr><w:spacing w:after="0" w:before="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>';
 
+      // Section label: "Why I am the right fit:" — bold
       if(t.match(/^Why I am/i)||t.match(/^Why Dhruvin/i)){
         return '<w:p><w:pPr>'+sp2(80,40)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>';
       }
+      // Bullet lines
       if(t[0]==='\u2022'||t[0]==='-'){
         var bt=t.replace(/^[\u2022\-]\s*/,'');
+        // split on first ". " to bold the claim
         var dot=bt.indexOf('. ');
         var inner=(dot>0)
           ? rn(bt.slice(0,dot+1),{b:true,sz:21})+rn(' '+bt.slice(dot+2),{sz:21})
@@ -1538,7 +1531,9 @@ async function downloadCover(){
         return '<w:p><w:pPr><w:ind w:left="360" w:hanging="220"/><w:spacing w:after="120" w:line="260" w:lineRule="auto"/></w:pPr>'
               +'<w:r><w:rPr>'+F2+'<w:sz w:val="21"/><w:szCs w:val="21"/></w:rPr><w:t xml:space="preserve">\u2022  </w:t></w:r>'+inner+'</w:p>';
       }
+      // Signoff name — bold
       if(t==='Dhruvin Jhaveri'){ return '<w:p><w:pPr>'+sp2(0,0)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>'; }
+      // Normal paragraph
       return '<w:p><w:pPr>'+sp2(0,120)+'</w:pPr>'+rn(t,{sz:22})+'</w:p>';
     }).join('');
 
@@ -1555,7 +1550,7 @@ async function downloadCover(){
 }
 
 // ═══════════════════════════════════════════════════════════
-// TRACKER
+// JOB APPLICATION TRACKER
 // ═══════════════════════════════════════════════════════════
 var TRACKER_KEY = 'rf_tracker_v1';
 
@@ -1609,6 +1604,7 @@ function renderTracker(){
   empty.style.display = 'none';
   table.style.display = 'table';
 
+  // stats
   var companies = new Set(log.map(function(e){return e.company;})).size;
   var resumes   = log.filter(function(e){return e.type==='resume';}).length;
   var covers    = log.filter(function(e){return e.type==='cover';}).length;
@@ -1617,6 +1613,7 @@ function renderTracker(){
   document.getElementById('stat-resumes').textContent   = resumes;
   document.getElementById('stat-covers').textContent    = covers;
 
+  // rows — newest first
   var rows = log.slice().reverse();
   tbody.innerHTML = rows.map(function(e, i){
     var pillClass = e.type==='resume' ? 'pill-r' : 'pill-c';
@@ -1667,22 +1664,8 @@ function exportCSV(){
   setS('&#10003; CSV exported — paste into Google Sheets','ok');
 }
 
-document.addEventListener('DOMContentLoaded', function(){ 
-  updateTrackerBadge(); 
-  console.log('[v19] ResumeForge loaded successfully');
-  
-  // Test status bar visibility
-  setTimeout(function(){
-    var statusEl = document.getElementById('status');
-    var smsgEl = document.getElementById('smsg');
-    console.log('[v19] Status elements:', {
-      statusExists: !!statusEl,
-      smsgExists: !!smsgEl,
-      statusClasses: statusEl ? statusEl.className : 'NOT_FOUND',
-      smsgContent: smsgEl ? smsgEl.innerHTML : 'NOT_FOUND'
-    });
-  }, 100);
-});
+// Init badge on load
+document.addEventListener('DOMContentLoaded', function(){ updateTrackerBadge(); });
 
 </script>
 </body>
