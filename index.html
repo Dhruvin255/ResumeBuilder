@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v15</title>
+<title>ResumeForge v19</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -120,7 +120,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v18 — Keyword Injector</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v19 — Nuclear Keyword Boost</div></div>
   </div>
 
   <div class="field-group">
@@ -133,7 +133,7 @@ table.tlog tr:hover td{background:var(--surface2);}
   <div class="field-group">
     <div class="field-label">Priority Keywords (comma-separated)</div>
     <input type="text" id="keywords" placeholder="RAG, Kubernetes, LangChain, Vector DBs">
-    <div style="font-size:10px;color:var(--muted);margin-top:4px;">These will be forced into Skills + bullets for max ATS score</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;">Optional. System auto-extracts JD keywords. Add extras here to guarantee inclusion.</div>
   </div>
 
   <div class="divider"></div>
@@ -529,37 +529,53 @@ function buildTailorPrompt(company, title, loc, jd, track){
       + '===\n\n';
   }
 
-  // v18: KEYWORD FORCING — HIGHEST PRIORITY
-  if (hasUserKeywords) {
-    basePrompt += '\n════ STEP 0 — PRIORITY KEYWORD INJECTION (MANDATORY) ════\n'
-      + 'The user has provided PRIORITY KEYWORDS that MUST appear in the resume for maximum ATS score.\n'
-      + 'These keywords are business-critical and NON-NEGOTIABLE.\n\n'
-      + 'PRIORITY KEYWORDS: ' + keywordList.join(', ') + '\n\n'
-      + 'MANDATORY INJECTION RULES:\n'
-      + '1. TECHNICAL SKILLS SECTION:\n'
-      + '   • SKILL_FW line MUST START with these exact keywords (comma-separated): ' + keywordList.slice(0,4).join(', ') + '\n'
-      + '   • Then append normal track skills. Total items: 7-9.\n'
-      + '   • Example: "' + keywordList.slice(0,4).join(', ') + ', PyTorch, Node.js, PostgreSQL, Docker"\n\n'
-      + '2. EXPERIENCE BULLETS (weave into 2nd/3rd bullets of roles):\n'
-      + '   • IMARTICUS role: Force 2-3 priority keywords into bullets naturally\n'
-      + '   • AWS role: If keywords relate to infrastructure/scale, weave 1-2 into bullets\n'
-      + '   • PAYPOINT role: If keywords relate to data/analytics, weave 1-2 into bullets\n'
-      + '   • Strategy: Replace generic tech mentions with priority keywords where contextually valid\n'
-      + '   • Example: "Built PostgreSQL analytics" → "Built PostgreSQL analytics with ' + (keywordList[0] || 'X') + ' integration"\n\n'
-      + '3. PROJECT BULLETS (2nd bullet of PROJ1):\n'
-      + '   • Weave 1-2 priority keywords into the 2nd bullet of whichever project is PROJ1\n'
-      + '   • Use "integrated with", "leveraging", "via" as connectors\n'
-      + '   • Example: "Implemented JWT authentication leveraging ' + (keywordList[1] || 'Y') + ' for token validation"\n\n'
-      + 'CONSTRAINTS:\n'
-      + '   • Zero fabrication: Only weave keywords where TECHNICALLY PLAUSIBLE given the role context\n'
-      + '   • If a keyword makes NO SENSE for a role (e.g., "Kubernetes" in a pure ML research project), skip that role\n'
-      + '   • Maintain 13-18 words per bullet\n'
-      + '   • Preserve all original metrics (35%, 92%, 94%, etc.)\n\n'
-      + 'VERIFICATION:\n'
-      + '   • Count appearances: Each priority keyword should appear 1-2 times across Skills + Bullets\n'
-      + '   • All ' + keywordList.length + ' priority keywords MUST appear somewhere in the resume\n'
-      + '   • Skills section MUST include ALL priority keywords in SKILL_FW or SKILL_DB lines\n\n';
-  }
+  // v19: NUCLEAR KEYWORD INJECTION — AUTO-EXTRACT + FORCE
+  var jdKeywords = atsExtractKeywords(jd, company).slice(0, 15); // Top 15 JD keywords
+  var allKeywords = hasUserKeywords ? keywordList.concat(jdKeywords) : jdKeywords;
+  
+  // Remove duplicates, keep user keywords first
+  var uniqueKeywords = [];
+  var seen = {};
+  allKeywords.forEach(function(kw){
+    var k = kw.toLowerCase();
+    if(!seen[k]){ 
+      uniqueKeywords.push(kw); 
+      seen[k] = true; 
+    }
+  });
+  
+  // Cap at 20 keywords max for prompt clarity
+  var targetKeywords = uniqueKeywords.slice(0, 20);
+  
+  basePrompt += '\n╔════════════════════════════════════════════════════════════════╗\n'
+    + '║ STEP 0 — KEYWORD INJECTION (ABSOLUTE PRIORITY)                ║\n'
+    + '╚════════════════════════════════════════════════════════════════╝\n\n'
+    + '🎯 TARGET: 90+ ATS score requires DENSE keyword matching.\n\n'
+    + '>>> MANDATORY KEYWORDS (MUST ALL APPEAR): <<<\n'
+    + targetKeywords.map(function(kw, i){ return '  '+(i+1)+'. '+kw; }).join('\n') + '\n\n'
+    + '═══ INJECTION PROTOCOL (Execute in order) ═══\n\n'
+    + '1️⃣  TECHNICAL SKILLS (Primary injection point):\n'
+    + '   SKILL_FW = "' + targetKeywords.slice(0,8).join(', ') + ', [add 1-2 track defaults]"\n'
+    + '   SKILL_DB = "' + targetKeywords.slice(8,Math.min(15, targetKeywords.length)).join(', ') + ', PostgreSQL, AWS"\n'
+    + '   ✓ Keywords 1-15 now in Skills section\n\n'
+    + '2️⃣  IMARTICUS LEARNING (Force keywords into bullets 2 & 3):\n'
+    + '   Bullet 2: Must contain keywords: ' + targetKeywords.slice(0,3).join(', ') + '\n'
+    + '   Bullet 3: Must contain keywords: ' + targetKeywords.slice(3,5).join(', ') + '\n'
+    + '   Example: "Engineered retrieval-augmented pipeline with '+targetKeywords[0]+', '+targetKeywords[1]+', and '+targetKeywords[2]+'; achieved 92% accuracy"\n\n'
+    + '3️⃣  AWS REDSHIFT (If cloud/infra keywords in list):\n'
+    + '   Bullet 2: Inject 1-2 infrastructure keywords naturally\n'
+    + '   Example: "Optimized distributed caching with '+targetKeywords.filter(function(k){return /docker|kubernetes|ci.cd|terraform/i.test(k);}).slice(0,1)[0]+'; reduced latency by 35%"\n\n'
+    + '4️⃣  PAYPOINT INDIA (If data/analytics keywords in list):\n'
+    + '   Bullet 2: Inject 1-2 data keywords naturally\n\n'
+    + '5️⃣  PROJECTS (Remaining keywords):\n'
+    + '   PROJ1 bullet 2: Inject 1-2 remaining keywords with "via", "leveraging", "integrated with"\n\n'
+    + '⚠️  VERIFICATION CHECKLIST:\n'
+    + '   □ All '+targetKeywords.length+' keywords appear at least once\n'
+    + '   □ Skills section contains keywords 1-'+ Math.min(15, targetKeywords.length) +'\n'
+    + '   □ Imarticus bullets contain keywords 1-5\n'
+    + '   □ No keyword appears more than 3 times (avoid stuffing)\n'
+    + '   □ Every injection maintains 13-18 word count\n'
+    + '   □ Every bullet still has a metric\n\n';
 
   // v17: AI MODE INJECTION — FRONT-LOADED FOR VISIBILITY
   if (aiMode) {
@@ -929,11 +945,11 @@ function computeATS(d, jd){
     userKwBonus = Math.min(20, userHits * 2);
   }
 
-  var sKw = Math.round(kw.pct * 40);
+  var sKw = Math.round(kw.pct * 50);  // v19: Increased from 40 to 50
   var sV  = Math.max(0, 15 - verbs.dupes.reduce(function(acc,d){return acc + (d.count-1)*4;}, 0));
-  var sM  = Math.round(metrics.pct * 15);
-  var sL  = Math.round(lengths.pct * 15);
-  var sF  = Math.round(format.pct * 15);
+  var sM  = Math.round(metrics.pct * 20); // v19: Increased from 15 to 20
+  var sL  = Math.round(lengths.pct * 10); // v19: Decreased from 15 to 10
+  var sF  = Math.round(format.pct * 5);   // v19: Decreased from 15 to 5
 
   var total = sKw + sV + sM + sL + sF + userKwBonus;
   var grade = total >= 85 ? 'A' : total >= 70 ? 'B' : total >= 55 ? 'C' : 'D';
@@ -944,11 +960,11 @@ function computeATS(d, jd){
     keywords: keywords,
     userKwBonus: userKwBonus,
     breakdown: {
-      kw:    { score:sKw, max:40, data:kw },
+      kw:    { score:sKw, max:50, data:kw },     // v19: 40→50
       verbs: { score:sV,  max:15, data:verbs },
-      metrics:{score:sM,  max:15, data:metrics },
-      length:{ score:sL,  max:15, data:lengths },
-      format:{ score:sF,  max:15, data:format }
+      metrics:{score:sM,  max:20, data:metrics }, // v19: 15→20
+      length:{ score:sL,  max:10, data:lengths }, // v19: 15→10
+      format:{ score:sF,  max:5,  data:format }   // v19: 15→5
     }
   };
 }
@@ -1171,8 +1187,9 @@ async function generate(type){
   lockBtns();
 
   if(type==='resume'){
-    // v15: Update status message to show AI boost
-    setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON)...' : 'Generating resume...'), 'info');
+    // v19: Update status message to show keyword count
+    var kwCount = jdKeywords.length + (hasUserKeywords ? keywordList.length : 0);
+    setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON, ' : 'Generating resume (')+kwCount+' keywords targeted)...', 'info');
     try{
       var raw = await callAPI(key, buildTailorPrompt(company,title,loc,jd,selectedTrack));
       var parsed = parseTailored(raw);
@@ -1213,8 +1230,9 @@ async function generate(type){
       allBullets=allBullets.concat(resumeData.proj1.bullets).concat(resumeData.proj2.bullets);
       var allocStr = 'AWS:'+parsed.alloc.exp1+' Pay:'+parsed.alloc.exp2+' Ima:'+parsed.alloc.exp3+' GDSC:'+parsed.alloc.exp4+' P1:'+parsed.alloc.proj1+' P2:'+parsed.alloc.proj2;
       
-      // v15: Update completion status message
-      setS('&#10003; '+(aiMode ? 'Resume generated with GenAI boost!' : 'Ready')+' — '+allBullets.length+' bullets ['+allocStr+'] — ATS '+ats.total+'/100','ok');
+      // v19: Update completion status message with keyword info
+      var kwInjected = targetKeywords.length;
+      setS('&#10003; '+(aiMode ? 'Resume generated with GenAI boost!' : 'Ready')+' — '+allBullets.length+' bullets ['+allocStr+'] — '+kwInjected+' keywords injected — ATS '+ats.total+'/100','ok');
     }catch(e){
       setS('Error: '+e.message,'err');
       console.error(e);
