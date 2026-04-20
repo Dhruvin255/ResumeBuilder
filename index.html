@@ -192,6 +192,7 @@ OR paste bullet list:
     <button class="btn btn-primary" onclick="generate('resume')"><span>◎</span> Generate Resume</button>
     <button class="btn btn-secondary" onclick="generate('cover')"><span>✉</span> Cover Letter</button>
     <div style="flex:1"></div>
+    <button class="btn btn-secondary" onclick="setS('Test message - if you see this, status bar works!','info')" style="font-size:11px;padding:6px 10px;opacity:0.5">Test Status</button>
     <button class="btn btn-green" id="dlR" onclick="downloadResume()" disabled><span>↓</span> Resume DOCX</button>
     <button class="btn btn-green" id="dlC" onclick="downloadCover()" disabled><span>↓</span> Cover DOCX</button>
   </div>
@@ -1215,23 +1216,30 @@ async function generate(type){
   if(!jd)            return setS('Paste a job description first','err');
   if(!selectedTrack) return setS('Select a track','err');
 
+  console.log('[v19] Starting generation, type:', type);
+  
   lockBtns();
 
   if(type==='resume'){
-    // v19: Extract keywords BEFORE building prompt so we can show count in status
-    var userKw = document.getElementById('keywords').value.trim();
-    var userKwList = [];
-    if (userKw) {
-      var cleaned = userKw.replace(/^\s*[\*\-\•]\s*/gm, '');
-      var raw = cleaned.split(/[,\n]+/);
-      userKwList = raw.map(function(k){ return k.trim(); }).filter(function(k){ return k && k.length > 0; });
+    try {
+      // v19: Extract keywords BEFORE building prompt so we can show count in status
+      var userKw = document.getElementById('keywords').value.trim();
+      var userKwList = [];
+      if (userKw) {
+        var cleaned = userKw.replace(/^\s*[\*\-\•]\s*/gm, '');
+        var raw = cleaned.split(/[,\n]+/);
+        userKwList = raw.map(function(k){ return k.trim(); }).filter(function(k){ return k && k.length > 0; });
+      }
+      var jdKw = atsExtractKeywords(jd, company).slice(0, 15);
+      var totalKw = userKwList.length + jdKw.length;
+      
+      // Update status message to show keyword count
+      setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON, ' : 'Generating resume (')+totalKw+' keywords targeted)...', 'info');
+      console.log('[v19 Generate] Starting with', totalKw, 'keywords:', userKwList.length, 'manual +', jdKw.length, 'auto-extracted');
+    } catch(err) {
+      console.error('[v19] Keyword extraction failed:', err);
+      setS('<span class="spin"></span>&nbsp; Generating resume...', 'info');
     }
-    var jdKw = atsExtractKeywords(jd, company).slice(0, 15);
-    var totalKw = userKwList.length + jdKw.length;
-    
-    // Update status message to show keyword count
-    setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON, ' : 'Generating resume (')+totalKw+' keywords targeted)...', 'info');
-    console.log('[v19 Generate] Starting with', totalKw, 'keywords:', userKwList.length, 'manual +', jdKw.length, 'auto-extracted');
     
     try{
       var raw = await callAPI(key, buildTailorPrompt(company,title,loc,jd,selectedTrack));
@@ -1660,7 +1668,22 @@ function exportCSV(){
   setS('&#10003; CSV exported — paste into Google Sheets','ok');
 }
 
-document.addEventListener('DOMContentLoaded', function(){ updateTrackerBadge(); });
+document.addEventListener('DOMContentLoaded', function(){ 
+  updateTrackerBadge(); 
+  console.log('[v19] ResumeForge loaded successfully');
+  
+  // Test status bar visibility
+  setTimeout(function(){
+    var statusEl = document.getElementById('status');
+    var smsgEl = document.getElementById('smsg');
+    console.log('[v19] Status elements:', {
+      statusExists: !!statusEl,
+      smsgExists: !!smsgEl,
+      statusClasses: statusEl ? statusEl.className : 'NOT_FOUND',
+      smsgContent: smsgEl ? smsgEl.innerHTML : 'NOT_FOUND'
+    });
+  }, 100);
+});
 
 </script>
 </body>
