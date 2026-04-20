@@ -131,9 +131,13 @@ table.tlog tr:hover td{background:var(--surface2);}
   <div class="divider"></div>
 
   <div class="field-group">
-    <div class="field-label">Priority Keywords (comma-separated)</div>
-    <input type="text" id="keywords" placeholder="RAG, Kubernetes, LangChain, Vector DBs">
-    <div style="font-size:10px;color:var(--muted);margin-top:4px;">Optional. System auto-extracts JD keywords. Add extras here to guarantee inclusion.</div>
+    <div class="field-label">Priority Keywords (optional)</div>
+    <textarea id="keywords" placeholder="RAG, Kubernetes, Docker
+OR paste bullet list:
+* RAG
+* Kubernetes
+* Docker" style="min-height:80px;font-size:12px;"></textarea>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;">Auto-extracts from JD. Add niche tech here if needed. Supports comma/newline/bullets.</div>
   </div>
 
   <div class="divider"></div>
@@ -458,9 +462,33 @@ var ATS_VOCAB = [
 function buildTailorPrompt(company, title, loc, jd, track){
   var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.ds_ml;
   
-  // v18: EXTRACT USER-PROVIDED PRIORITY KEYWORDS
+  // v19: EXTRACT USER-PROVIDED PRIORITY KEYWORDS (supports multiple formats)
   var userKeywords = document.getElementById('keywords').value.trim();
-  var keywordList = userKeywords ? userKeywords.split(',').map(k => k.trim()).filter(k => k) : [];
+  
+  // Handle multiple input formats:
+  // 1. Comma-separated: "RAG, Kubernetes, Docker"
+  // 2. Newline-separated: "RAG\nKubernetes\nDocker"
+  // 3. Bullet points: "* RAG\n* Kubernetes"
+  // 4. Mixed: "RAG, Kubernetes\n* Docker"
+  
+  var keywordList = [];
+  if (userKeywords) {
+    // Remove bullet points and asterisks
+    var cleaned = userKeywords.replace(/^\s*[\*\-\•]\s*/gm, '');
+    
+    // Split by comma OR newline
+    var raw = cleaned.split(/[,\n]+/);
+    
+    // Clean each keyword
+    keywordList = raw.map(function(k){ 
+      return k.trim(); 
+    }).filter(function(k){ 
+      return k && k.length > 0; 
+    });
+    
+    console.log('[v19] Parsed keywords:', keywordList.length, 'keywords →', keywordList);
+  }
+  
   var hasUserKeywords = keywordList.length > 0;
   
   // v15: AI mode prepends GenAI keywords to skills
@@ -531,6 +559,8 @@ function buildTailorPrompt(company, title, loc, jd, track){
 
   // v19: NUCLEAR KEYWORD INJECTION — AUTO-EXTRACT + FORCE
   var jdKeywords = atsExtractKeywords(jd, company).slice(0, 15); // Top 15 JD keywords
+  console.log('[v19] Auto-extracted from JD:', jdKeywords.length, 'keywords →', jdKeywords);
+  
   var allKeywords = hasUserKeywords ? keywordList.concat(jdKeywords) : jdKeywords;
   
   // Remove duplicates, keep user keywords first
@@ -546,6 +576,7 @@ function buildTailorPrompt(company, title, loc, jd, track){
   
   // Cap at 20 keywords max for prompt clarity
   var targetKeywords = uniqueKeywords.slice(0, 20);
+  console.log('[v19] Final keyword list:', targetKeywords.length, 'keywords →', targetKeywords);
   
   basePrompt += '\n╔════════════════════════════════════════════════════════════════╗\n'
     + '║ STEP 0 — KEYWORD INJECTION (ABSOLUTE PRIORITY)                ║\n'
@@ -1187,9 +1218,21 @@ async function generate(type){
   lockBtns();
 
   if(type==='resume'){
-    // v19: Update status message to show keyword count
-    var kwCount = jdKeywords.length + (hasUserKeywords ? keywordList.length : 0);
-    setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON, ' : 'Generating resume (')+kwCount+' keywords targeted)...', 'info');
+    // v19: Extract keywords BEFORE building prompt so we can show count in status
+    var userKw = document.getElementById('keywords').value.trim();
+    var userKwList = [];
+    if (userKw) {
+      var cleaned = userKw.replace(/^\s*[\*\-\•]\s*/gm, '');
+      var raw = cleaned.split(/[,\n]+/);
+      userKwList = raw.map(function(k){ return k.trim(); }).filter(function(k){ return k && k.length > 0; });
+    }
+    var jdKw = atsExtractKeywords(jd, company).slice(0, 15);
+    var totalKw = userKwList.length + jdKw.length;
+    
+    // Update status message to show keyword count
+    setS('<span class="spin"></span>&nbsp; '+(aiMode ? 'Generating resume (AI boost ON, ' : 'Generating resume (')+totalKw+' keywords targeted)...', 'info');
+    console.log('[v19 Generate] Starting with', totalKw, 'keywords:', userKwList.length, 'manual +', jdKw.length, 'auto-extracted');
+    
     try{
       var raw = await callAPI(key, buildTailorPrompt(company,title,loc,jd,selectedTrack));
       var parsed = parseTailored(raw);
