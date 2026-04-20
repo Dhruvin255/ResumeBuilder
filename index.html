@@ -1282,8 +1282,7 @@ async function generate(type){
       var allocStr = 'AWS:'+parsed.alloc.exp1+' Pay:'+parsed.alloc.exp2+' Ima:'+parsed.alloc.exp3+' GDSC:'+parsed.alloc.exp4+' P1:'+parsed.alloc.proj1+' P2:'+parsed.alloc.proj2;
       
       // v19: Update completion status message with keyword info
-      var kwInjected = targetKeywords.length;
-      setS('&#10003; '+(aiMode ? 'Resume generated with GenAI boost!' : 'Ready')+' — '+allBullets.length+' bullets ['+allocStr+'] — '+kwInjected+' keywords injected — ATS '+ats.total+'/100','ok');
+      setS('&#10003; '+(aiMode ? 'Resume generated with GenAI boost!' : 'Ready')+' — '+allBullets.length+' bullets ['+allocStr+'] — '+totalKw+' keywords targeted — ATS '+ats.total+'/100','ok');
     }catch(e){
       setS('Error: '+e.message,'err');
       console.error(e);
