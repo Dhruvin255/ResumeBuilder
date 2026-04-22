@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ResumeForge v14</title>
+<title>ResumeForge v15</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 :root{--bg:#0e0e11;--surface:#17171c;--surface2:#1e1e26;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--accent:#7c6af7;--accent2:#5febc4;--text:#f0eff8;--muted:#8884a4;--danger:#f06b6b;--success:#5febc4;}
@@ -108,7 +108,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v14 — Smart Allocator</div></div>
+    <div><div class="logo-text">ResumeForge</div><div class="logo-sub">v15 — Data Engineer Track</div></div>
   </div>
 
   <div class="field-group">
@@ -120,12 +120,12 @@ table.tlog tr:hover td{background:var(--surface2);}
 
   <div class="field-group">
     <div class="field-label">Company</div>
-    <input type="text" id="company" placeholder="Quantifind">
+    <input type="text" id="company" placeholder="Bombas">
   </div>
 
   <div class="field-group">
     <div class="field-label">Job Title</div>
-    <input type="text" id="jobTitle" placeholder="Data Scientist">
+    <input type="text" id="jobTitle" placeholder="Junior Data Engineer">
   </div>
 
   <div class="field-group">
@@ -145,6 +145,7 @@ table.tlog tr:hover td{background:var(--surface2);}
       <button class="track-btn" data-track="backend">Backend</button>
       <button class="track-btn" data-track="ds_ml">ML / DS</button>
       <button class="track-btn" data-track="analytics">Analytics</button>
+      <button class="track-btn" data-track="dataeng">Data Eng</button>
       <button class="track-btn" data-track="business">Business</button>
       <button class="track-btn" data-track="quant">Quant</button>
     </div>
@@ -152,7 +153,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 
   <div class="field-group">
     <div class="field-label">Must-Use Keywords (Optional)</div>
-    <textarea id="keywords" placeholder="e.g., Kafka, Redis, Kubernetes, RAG, LangChain..." style="min-height:80px;"></textarea>
+    <textarea id="keywords" placeholder="e.g., dbt, BigQuery, Airflow, Kafka, Spark..." style="min-height:80px;"></textarea>
     <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Comma-separated keywords that MUST appear in the resume. These will be woven into Tech lines and skills naturally.</div>
   </div>
 </div>
@@ -269,6 +270,7 @@ var CANDIDATE = {
     backend:  { lang:"Python, Java, SQL, JavaScript, TypeScript, C++", fw:"Node.js, Express, Django, Flask, REST APIs, LangChain, BERT, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, Kubernetes" },
     ds_ml:    { lang:"Python, SQL, R, Scala, Java, C++, PySpark", fw:"PyTorch, TensorFlow, BERT, LangChain, Scikit-learn, XGBoost, Spark MLlib, Pandas, NumPy", db:"AWS Redshift, PostgreSQL, MongoDB, S3, Tableau, Qlik Sense, Docker, EC2, Snowflake" },
     analytics:{ lang:"Python, SQL, R, Java, Scala, C++", fw:"Scikit-learn, XGBoost, Pandas, NumPy, Tableau, Power BI, Spark, ETL pipelines", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Qlik Sense" },
+    dataeng:  { lang:"Python, SQL, Scala, Java, Bash, R, PySpark", fw:"dbt, Airflow, Spark, Kafka, Pandas, NumPy, ETL pipelines, Data modeling, LangChain, Scikit-learn", db:"BigQuery, Snowflake, Redshift, PostgreSQL, MongoDB, S3, AWS (Lambda, Glue, EC2), Docker, Kubernetes, GCS" },
     business: { lang:"Python, SQL, R, JavaScript, Java", fw:"Tableau, Power BI, Scikit-learn, Pandas, XGBoost, ETL, REST APIs, LangChain", db:"PostgreSQL, MongoDB, Redshift, Snowflake, AWS (S3, EC2), Docker, Google Analytics" },
     quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" }
   },
