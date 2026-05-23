@@ -98,6 +98,22 @@ table.tlog tr:hover td{background:var(--surface2);}
 .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;}
 .del-btn:hover{color:var(--danger);background:rgba(240,107,107,.12);}
 .empty-tracker{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:8px;color:var(--muted);}
+/* ─── LINKEDIN ADDITION (new styles, isolated) ─── */
+.li-wrap{display:flex;flex-direction:column;gap:18px;}
+.li-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;}
+.li-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.li-card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.li-tag{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.7px;padding:3px 8px;border-radius:5px;}
+.li-tag-rec{background:rgba(91,168,245,.16);color:#5ba8f5;}
+.li-tag-alum{background:rgba(124,106,247,.18);color:#a88af7;}
+.li-sub{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;}
+.li-msg{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;font-size:13.5px;line-height:1.65;color:#d6d3ee;white-space:pre-wrap;min-height:60px;}
+.li-meta{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.li-count{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+.li-count.over{color:var(--danger);}
+.li-copy{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:500;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.li-copy:hover{background:#26263a;}
+.li-copy.done{background:#1a3a32;color:var(--success);border-color:#2a5a4a;}
 @media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{position:static;height:auto;}}
 </style>
 </head>
@@ -108,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v16 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v17 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -156,6 +172,18 @@ table.tlog tr:hover td{background:var(--surface2);}
     <textarea id="keywords" placeholder="e.g., dbt, BigQuery, Airflow, Kafka, Spark..." style="min-height:80px;"></textarea>
     <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Comma-separated keywords that MUST appear in the resume. Woven into Tech lines and skills naturally.</div>
   </div>
+
+  <!-- ─── LINKEDIN ADDITION (sidebar inputs, optional) ─── -->
+  <div class="divider"></div>
+  <div class="field-group">
+    <div class="field-label">Recruiter First Name (Optional)</div>
+    <input type="text" id="recName" placeholder="e.g., Priya">
+  </div>
+  <div class="field-group">
+    <div class="field-label">Alum First Name (Optional)</div>
+    <input type="text" id="alumName" placeholder="e.g., Kristine">
+  </div>
+  <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Used only for the LinkedIn tab. Leave blank for a generic greeting.</div>
 </div>
 
 <!-- ─── MAIN ─── -->
@@ -163,6 +191,7 @@ table.tlog tr:hover td{background:var(--surface2);}
   <div class="toolbar">
     <button class="btn btn-primary" onclick="generate('resume')"><span>◎</span> Generate Resume</button>
     <button class="btn btn-secondary" onclick="generate('cover')"><span>✉</span> Cover Letter</button>
+    <button class="btn btn-secondary" onclick="generateLinkedIn()"><span>in</span> LinkedIn DMs</button>
     <div style="flex:1"></div>
     <button class="btn btn-green" id="dlR" onclick="downloadResume()" disabled><span>↓</span> Resume DOCX</button>
     <button class="btn btn-green" id="dlC" onclick="downloadCover()" disabled><span>↓</span> Cover DOCX</button>
@@ -174,6 +203,7 @@ table.tlog tr:hover td{background:var(--surface2);}
     <div class="tab active" data-tab="resume" onclick="switchTab('resume')">Resume <span class="badge" id="rb" style="display:none">✓</span></div>
     <div class="tab" data-tab="cover" onclick="switchTab('cover')">Cover Letter <span class="badge" id="cb" style="display:none">✓</span></div>
     <div class="tab" data-tab="ats" onclick="switchTab('ats')">ATS Score <span class="badge" id="ab" style="display:none">✓</span></div>
+    <div class="tab" data-tab="linkedin" onclick="switchTab('linkedin')">LinkedIn <span class="badge" id="lb" style="display:none">✓</span></div>
     <div class="tab" data-tab="tracker" onclick="switchTab('tracker')">Tracker <span class="badge" id="tb" style="display:none" id="tcnt">0</span></div>
   </div>
 
@@ -189,6 +219,11 @@ table.tlog tr:hover td{background:var(--surface2);}
     <div id="atsTab" style="display:none">
       <div class="empty" id="aEmpty"><div class="empty-icon">◉</div><div class="empty-title">No ATS analysis yet</div><div class="empty-sub">Generate a resume first — the score will appear here automatically</div></div>
       <div id="aReport" style="display:none"></div>
+    </div>
+    <!-- ─── LINKEDIN ADDITION (new tab panel) ─── -->
+    <div id="linkedinTab" style="display:none">
+      <div class="empty" id="lEmpty"><div class="empty-icon">in</div><div class="empty-title">No LinkedIn messages yet</div><div class="empty-sub">Fill in Company and Job Title, then click LinkedIn DMs</div></div>
+      <div id="lReport" class="li-wrap" style="display:none"></div>
     </div>
     <div id="trackerTab" style="display:none">
       <div class="tracker-wrap">
@@ -222,6 +257,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 var selectedTrack = null;
 var resumeData = null;
 var coverText  = null;
+var linkedInData = null; // ─── LINKEDIN ADDITION ───
 
 document.querySelectorAll('.track-btn').forEach(function(b){
   b.onclick = function(){
@@ -236,6 +272,7 @@ function switchTab(n){
   document.getElementById('resumeTab').style.display   = n==='resume'?'block':'none';
   document.getElementById('coverTab').style.display    = n==='cover'?'block':'none';
   document.getElementById('atsTab').style.display      = n==='ats'?'block':'none';
+  document.getElementById('linkedinTab').style.display = n==='linkedin'?'block':'none'; // ─── LINKEDIN ADDITION ───
   document.getElementById('trackerTab').style.display  = n==='tracker'?'block':'none';
   if(n==='tracker') renderTracker();
 }
@@ -570,6 +607,44 @@ function buildCoverPrompt(company, title, loc, jd){
     + 'OUTPUT: Letter text only. No preamble, no explanation.';
 }
 
+// ─── LINKEDIN ADDITION: prompt builder for the two DMs ───
+function buildLinkedInPrompt(company, title, recName, alumName){
+  var rec = recName && recName.trim() ? recName.trim() : '';
+  var alum = alumName && alumName.trim() ? alumName.trim() : '';
+  return 'Write TWO short LinkedIn messages for Dhruvin Jhaveri, a graduating USC Computer Science Master\u2019s student (May 2026) targeting tech roles. He interned as an SDE at AWS Redshift last summer.\n\n'
+    + 'TARGET COMPANY: '+company+'\n'
+    + 'TARGET ROLE: '+title+'\n'
+    + (rec ? 'RECRUITER FIRST NAME: '+rec+'\n' : 'RECRUITER FIRST NAME: (unknown, use a generic professional greeting like "Hi there")\n')
+    + (alum ? 'ALUM FIRST NAME: '+alum+'\n' : 'ALUM FIRST NAME: (unknown, use a generic professional greeting like "Hi there")\n')
+    + '\n'
+    + '\u2550\u2550\u2550\u2550 MESSAGE 1 \u2014 RECRUITER \u2550\u2550\u2550\u2550\n'
+    + 'Audience: a recruiter at '+company+'. Goal: open a conversation about the '+title+' role and get on their radar.\n'
+    + 'Tone: professional, direct, warm but not stiff. He is reaching out cold.\n'
+    + 'Must include: a one-line credibility hook (USC CS Master\u2019s grad + AWS Redshift SDE intern), a clear mention of the '+title+' role, and a low-friction ask (open to connecting / a quick chat).\n'
+    + 'LENGTH: 45-65 words. Fits a LinkedIn connection-request note comfortably.\n\n'
+    + '\u2550\u2550\u2550\u2550 MESSAGE 2 \u2014 ALUM AT THE COMPANY \u2550\u2550\u2550\u2550\n'
+    + 'Audience: a fellow USC Trojan alum currently working at '+company+'. Goal: make a genuine Trojan-network connection and ask about a referral OR an intro to a recruiter.\n'
+    + 'Tone: friendly peer-to-peer, shared-USC warmth, confident not needy. This is the vibe to match:\n'
+    + '  "Hi [name], fellow Trojan here, graduating CS Master\u2019s in May. I saw you\u2019re at '+company+'. I interned at AWS Redshift last summer and am now targeting tech roles. Would you be open to a quick chat, or to pointing me toward the right recruiter? Fight on!"\n'
+    + 'Must include: the Trojan connection, a one-line credibility hook, and a soft ask for either a referral or a recruiter intro. End with "Fight on!".\n'
+    + 'LENGTH: 45-65 words.\n\n'
+    + '\u2550\u2550\u2550\u2550 VOICE RULES (BOTH MESSAGES) \u2550\u2550\u2550\u2550\n'
+    + '  - Short, crisp, precise. No filler. Every sentence earns its place.\n'
+    + '  - BANNED: "I am excited to", "I would love the opportunity", "leverage", "passion for", "I hope this message finds you well", "reach out".\n'
+    + '  - NEVER use " -- " or " \u2014 " (em-dash) anywhere. Use commas or periods.\n'
+    + '  - Sound like a real person texting, not a form letter. Authentic, not AI-polished.\n'
+    + '  - No visa or OPT language.\n'
+    + '  - Do not invent facts beyond what is given here.\n\n'
+    + '\u2550\u2550\u2550\u2550 OUTPUT FORMAT \u2014 STRICT \u2550\u2550\u2550\u2550\n'
+    + 'Output EXACTLY this structure, nothing else, no preamble, no explanation:\n'
+    + 'RECRUITER_START\n'
+    + '<the recruiter message text>\n'
+    + 'RECRUITER_END\n'
+    + 'ALUM_START\n'
+    + '<the alum message text>\n'
+    + 'ALUM_END';
+}
+
 // ═══════════════════════════════════════════════════════════
 // API CALL
 // ═══════════════════════════════════════════════════════════
@@ -723,6 +798,91 @@ function renderATS(ats,d){
   document.getElementById('aReport').innerHTML=report;
   document.getElementById('aReport').style.display='block';
   document.getElementById('aEmpty').style.display='none';
+}
+
+// ─── LINKEDIN ADDITION: parser + renderer ───
+function parseLinkedIn(text){
+  function grab(a,b){var m=text.match(new RegExp(a+'([\\s\\S]*?)'+b));return m?m[1].trim():'';}
+  var rec=grab('RECRUITER_START','RECRUITER_END');
+  var alum=grab('ALUM_START','ALUM_END');
+  if(!rec||!alum){
+    // Fallback: split on the markers loosely, else dump whole text into both
+    var parts=text.split(/ALUM_START/i);
+    if(parts.length===2){
+      rec=parts[0].replace(/RECRUITER_(START|END)/gi,'').trim();
+      alum=parts[1].replace(/ALUM_END/gi,'').trim();
+    }
+  }
+  rec=rec.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g,'').trim();
+  alum=alum.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g,'').trim();
+  return {recruiter:rec||text.trim(),alum:alum||text.trim()};
+}
+
+function wordCount(s){return (s||'').trim().split(/\s+/).filter(Boolean).length;}
+
+function renderLinkedIn(data){
+  var rWc=wordCount(data.recruiter);
+  var aWc=wordCount(data.alum);
+  var rOver=rWc>75;
+  var aOver=aWc>75;
+  var html='';
+  html+='<div class="li-card">'
+    + '<div class="li-card-head"><div class="li-card-title">Recruiter message <span class="li-tag li-tag-rec">Recruiter</span></div></div>'
+    + '<div class="li-sub">Cold outreach to a recruiter at '+esc(data.company)+'. Short enough for a connection-request note.</div>'
+    + '<div class="li-msg" id="liMsgRec">'+esc(data.recruiter)+'</div>'
+    + '<div class="li-meta"><div class="li-count'+(rOver?' over':'')+'">'+rWc+' words</div>'
+    + '<button class="li-copy" id="liCopyRec" onclick="copyLinkedIn(\'rec\')">Copy</button></div>'
+    + '</div>';
+  html+='<div class="li-card">'
+    + '<div class="li-card-head"><div class="li-card-title">Alum message <span class="li-tag li-tag-alum">USC Alum</span></div></div>'
+    + '<div class="li-sub">Trojan-to-Trojan note asking for a referral or a recruiter intro at '+esc(data.company)+'.</div>'
+    + '<div class="li-msg" id="liMsgAlum">'+esc(data.alum)+'</div>'
+    + '<div class="li-meta"><div class="li-count'+(aOver?' over':'')+'">'+aWc+' words</div>'
+    + '<button class="li-copy" id="liCopyAlum" onclick="copyLinkedIn(\'alum\')">Copy</button></div>'
+    + '</div>';
+  document.getElementById('lReport').innerHTML=html;
+  document.getElementById('lReport').style.display='flex';
+  document.getElementById('lEmpty').style.display='none';
+  document.getElementById('lb').style.display='inline-flex';
+}
+
+function copyLinkedIn(which){
+  if(!linkedInData)return;
+  var txt=which==='rec'?linkedInData.recruiter:linkedInData.alum;
+  var btnId=which==='rec'?'liCopyRec':'liCopyAlum';
+  var btn=document.getElementById(btnId);
+  function done(){if(btn){btn.textContent='Copied';btn.classList.add('done');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('done');},1600);}}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done,function(){fallbackCopy(txt);done();});
+  }else{fallbackCopy(txt);done();}
+}
+function fallbackCopy(txt){
+  var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);
+}
+
+// ─── LINKEDIN ADDITION: generator (separate from generate()) ───
+async function generateLinkedIn(){
+  var key=document.getElementById('apiKey').value.trim();
+  var company=document.getElementById('company').value.trim()||'Company';
+  var title=document.getElementById('jobTitle').value.trim()||'Role';
+  var recName=document.getElementById('recName').value.trim();
+  var alumName=document.getElementById('alumName').value.trim();
+  if(!key)return setS('API key required','err');
+  if(document.getElementById('company').value.trim()===''&&document.getElementById('jobTitle').value.trim()===''){
+    return setS('Enter a Company and Job Title first','err');
+  }
+  lockBtns();
+  setS('<span class="spin"></span>&nbsp; Writing LinkedIn messages...','info');
+  try{
+    var raw=await callAPI(key,buildLinkedInPrompt(company,title,recName,alumName));
+    var parsed=parseLinkedIn(raw);
+    linkedInData={recruiter:parsed.recruiter,alum:parsed.alum,company:company,title:title};
+    renderLinkedIn(linkedInData);
+    switchTab('linkedin');
+    setS('&#10003; LinkedIn messages ready \u2014 recruiter + alum. Click Copy on either card.','ok');
+  }catch(e){setS('Error: '+e.message,'err');console.error(e);}
+  unlockBtns();
 }
 
 // ═══════════════════════════════════════════════════════════
