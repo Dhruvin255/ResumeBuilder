@@ -608,35 +608,67 @@ function buildCoverPrompt(company, title, loc, jd){
 }
 
 // ─── LINKEDIN ADDITION: prompt builder for the two DMs ───
-function buildLinkedInPrompt(company, title, recName, alumName){
+function buildLinkedInPrompt(company, title, recName, alumName, jd){
   var rec = recName && recName.trim() ? recName.trim() : '';
   var alum = alumName && alumName.trim() ? alumName.trim() : '';
-  return 'Write TWO short LinkedIn messages for Dhruvin Jhaveri, a graduating USC Computer Science Master\u2019s student (May 2026) targeting tech roles. He interned as an SDE at AWS Redshift last summer.\n\n'
+  var jdText = (jd && jd.trim()) ? jd.trim() : '';
+
+  return 'You are writing two cold LinkedIn messages whose ONLY job is to get a reply. Not to impress, not to summarize a resume. Get a reply. A reply happens when the reader thinks "this person is worth 30 seconds, and answering is easy."\n\n'
+
+    + 'CANDIDATE: Dhruvin Jhaveri. Graduating USC M.S. Computer Science (Data Science), May 2026. Last summer: SDE intern at AWS Redshift, where he built a C++ auto-scaling framework for a serverless database. Before that: an XGBoost credit-risk model at a fintech, and a BERT/LangChain NLP pipeline. He co-founded a competitive-coding org and grew it from nothing to 200+ members. He plays chess and tends to think a few moves ahead.\n\n'
+
     + 'TARGET COMPANY: '+company+'\n'
     + 'TARGET ROLE: '+title+'\n'
-    + (rec ? 'RECRUITER FIRST NAME: '+rec+'\n' : 'RECRUITER FIRST NAME: (unknown, use a generic professional greeting like "Hi there")\n')
-    + (alum ? 'ALUM FIRST NAME: '+alum+'\n' : 'ALUM FIRST NAME: (unknown, use a generic professional greeting like "Hi there")\n')
+    + (rec ? 'RECRUITER FIRST NAME: '+rec+'\n' : 'RECRUITER FIRST NAME: unknown. Open with "Hi there" or "Hi" with no name.\n')
+    + (alum ? 'ALUM FIRST NAME: '+alum+'\n' : 'ALUM FIRST NAME: unknown. Open with "Hey fellow Trojan" or similar, no name.\n')
     + '\n'
-    + '\u2550\u2550\u2550\u2550 MESSAGE 1 \u2014 RECRUITER \u2550\u2550\u2550\u2550\n'
-    + 'Audience: a recruiter at '+company+'. Goal: open a conversation about the '+title+' role and get on their radar.\n'
-    + 'Tone: professional, direct, warm but not stiff. He is reaching out cold.\n'
-    + 'Must include: a one-line credibility hook (USC CS Master\u2019s grad + AWS Redshift SDE intern), a clear mention of the '+title+' role, and a low-friction ask (open to connecting / a quick chat).\n'
-    + 'LENGTH: 45-65 words. Fits a LinkedIn connection-request note comfortably.\n\n'
-    + '\u2550\u2550\u2550\u2550 MESSAGE 2 \u2014 ALUM AT THE COMPANY \u2550\u2550\u2550\u2550\n'
-    + 'Audience: a fellow USC Trojan alum currently working at '+company+'. Goal: make a genuine Trojan-network connection and ask about a referral OR an intro to a recruiter.\n'
-    + 'Tone: friendly peer-to-peer, shared-USC warmth, confident not needy. This is the vibe to match:\n'
-    + '  "Hi [name], fellow Trojan here, graduating CS Master\u2019s in May. I saw you\u2019re at '+company+'. I interned at AWS Redshift last summer and am now targeting tech roles. Would you be open to a quick chat, or to pointing me toward the right recruiter? Fight on!"\n'
-    + 'Must include: the Trojan connection, a one-line credibility hook, and a soft ask for either a referral or a recruiter intro. End with "Fight on!".\n'
-    + 'LENGTH: 45-65 words.\n\n'
-    + '\u2550\u2550\u2550\u2550 VOICE RULES (BOTH MESSAGES) \u2550\u2550\u2550\u2550\n'
-    + '  - Short, crisp, precise. No filler. Every sentence earns its place.\n'
-    + '  - BANNED: "I am excited to", "I would love the opportunity", "leverage", "passion for", "I hope this message finds you well", "reach out".\n'
-    + '  - NEVER use " -- " or " \u2014 " (em-dash) anywhere. Use commas or periods.\n'
-    + '  - Sound like a real person texting, not a form letter. Authentic, not AI-polished.\n'
-    + '  - No visa or OPT language.\n'
-    + '  - Do not invent facts beyond what is given here.\n\n'
+
+    + '\u2550\u2550\u2550\u2550 JOB DESCRIPTION \u2014 READ IT, THEN MINE IT \u2550\u2550\u2550\u2550\n'
+    + (jdText
+        ? jdText + '\n\n'
+          + 'BEFORE writing, silently pull from the JD above:\n'
+          + '  1. The single most concrete thing this team builds or the hardest problem they own.\n'
+          + '  2. One specific technology, domain, or scope detail that a generic applicant would NOT mention.\n'
+          + '  3. The honest overlap with what Dhruvin has actually done (Redshift / distributed systems / ML / data pipelines / scaling). Pick the STRONGEST genuine link, even if it is partial.\n'
+          + 'Use that overlap as the spine of each message. The reader should feel you understood THEIR work, not pasted a template. If the JD is thin or vague, anchor on the company and role name instead and do not fake specificity.\n\n'
+        : 'No job description was provided. Anchor on the company and role name. Keep the hook honest and do not invent specifics about their team.\n\n')
+
+    + '\u2550\u2550\u2550\u2550 WHAT ACTUALLY EARNS A REPLY \u2014 PRINCIPLES, NOT A CHECKLIST \u2550\u2550\u2550\u2550\n'
+    + 'P1 RELEVANCE OVER RESUME. One sentence that connects what THEY do to one thing Dhruvin has genuinely built beats three sentences of accomplishments. Name the link, not the trophy case.\n'
+    + 'P2 MAKE THE YES CHEAP. The ask must be answerable in one breath. "Open to connecting?" or "worth a quick chat?" gets a reply; "would you refer me?" or "can you forward my resume?" makes a stranger do unpaid work, so save the big ask for after they respond.\n'
+    + 'P3 ONE HOOK, EARNED, THEN MOVE ON. Mention the AWS Redshift / USC credential exactly once, woven into the relevance sentence. Never stack credentials.\n'
+    + 'P4 RHYTHM IS THE PERSONALITY. "Fun" here is NOT jokes, emojis, or exclamation pile-ups. It is a light, human cadence: a short punchy sentence next to a longer one, a small concrete detail, a warm sign-off. Read it aloud, it should sound like a sharp person being briefly friendly, not a press release.\n'
+    + 'P5 RESPECT THEIR TIME ON THE PAGE. A short message signals confidence and consideration. A dense paragraph signals need. Keep it skimmable in one glance.\n'
+    + 'P6 CURIOSITY READS AS GENUINE. A specific thing Dhruvin finds interesting about their problem is more magnetic than a statement that he is interested. Show the interest through the detail you chose to mention.\n'
+    + 'P7 CONFIDENT, NEVER NEEDY. He is a strong candidate exploring a fit, not someone asking for a favor. No apologizing for the message, no "I know you are busy", no "I would be grateful".\n\n'
+
+    + '\u2550\u2550\u2550\u2550 MESSAGE 1 \u2014 RECRUITER AT '+company.toUpperCase()+' \u2550\u2550\u2550\u2550\n'
+    + 'Goal: get on the radar and earn a "happy to chat" reply about the '+title+' role.\n'
+    + 'Shape: a warm one-line opener that shows you know what the team works on, one sentence linking that to something Dhruvin built, then a low-friction ask. The '+title+' role should be named naturally.\n'
+    + 'LENGTH: 50-75 words. Must fit inside a LinkedIn connection-request note.\n\n'
+
+    + '\u2550\u2550\u2550\u2550 MESSAGE 2 \u2014 USC ALUM WORKING AT '+company.toUpperCase()+' \u2550\u2550\u2550\u2550\n'
+    + 'Goal: a warm Trojan-to-Trojan note that earns either a quick chat OR a pointer to the right recruiter. The shared USC tie is the door-opener, so lead with it naturally and let the warmth be real.\n'
+    + 'Shape: open on the Trojan connection, one honest line on why their work at '+company+' caught his eye (use the JD link if available), one line of credibility folded in, then a soft either-or ask (a quick chat, or a nudge toward the right person). Close warmly. Ending on "Fight on" is encouraged but should feel earned, not tacked on.\n'
+    + 'LENGTH: 50-75 words.\n\n'
+
+    + '\u2550\u2550\u2550\u2550 HARD CONSTRAINTS \u2550\u2550\u2550\u2550\n'
+    + '  - NO hyphens or dashes used as punctuation: never " - ", never " -- ", never the em-dash or en-dash. Use commas, periods, or restructure the sentence. Hyphens INSIDE a real compound word (auto-scaling, fast-paced) are fine; dashes joining clauses are not.\n'
+    + '  - BANNED phrases: "I am excited to", "I would love the opportunity", "leverage", "passion for", "passionate about", "I hope this message finds you well", "reach out", "pick your brain", "synergy", "rockstar", "circle back".\n'
+    + '  - At most ONE exclamation mark per message. Zero emojis.\n'
+    + '  - No visa, OPT, or sponsorship language.\n'
+    + '  - Invent nothing. Every claim must trace to the candidate facts or the JD above. If unsure, leave it out.\n'
+    + '  - Each message stands alone and reads like one specific person wrote it for one specific reader.\n\n'
+
+    + '\u2550\u2550\u2550\u2550 SELF-CHECK BEFORE OUTPUT \u2550\u2550\u2550\u2550\n'
+    + '  \u25a1 Could this message have been sent to any other company? If yes, it failed P1, rewrite it.\n'
+    + '  \u25a1 Is the ask answerable in one breath? If no, soften it.\n'
+    + '  \u25a1 Any dash used as punctuation? Remove it.\n'
+    + '  \u25a1 Read it aloud: does it sound like a sharp, warm human or a template? Fix until it is the former.\n'
+    + '  \u25a1 Each message within 50-75 words.\n\n'
+
     + '\u2550\u2550\u2550\u2550 OUTPUT FORMAT \u2014 STRICT \u2550\u2550\u2550\u2550\n'
-    + 'Output EXACTLY this structure, nothing else, no preamble, no explanation:\n'
+    + 'Output EXACTLY this structure, nothing else, no preamble, no commentary:\n'
     + 'RECRUITER_START\n'
     + '<the recruiter message text>\n'
     + 'RECRUITER_END\n'
@@ -868,6 +900,7 @@ async function generateLinkedIn(){
   var title=document.getElementById('jobTitle').value.trim()||'Role';
   var recName=document.getElementById('recName').value.trim();
   var alumName=document.getElementById('alumName').value.trim();
+  var jd=document.getElementById('jd').value.trim();
   if(!key)return setS('API key required','err');
   if(document.getElementById('company').value.trim()===''&&document.getElementById('jobTitle').value.trim()===''){
     return setS('Enter a Company and Job Title first','err');
@@ -875,7 +908,7 @@ async function generateLinkedIn(){
   lockBtns();
   setS('<span class="spin"></span>&nbsp; Writing LinkedIn messages...','info');
   try{
-    var raw=await callAPI(key,buildLinkedInPrompt(company,title,recName,alumName));
+    var raw=await callAPI(key,buildLinkedInPrompt(company,title,recName,alumName,jd));
     var parsed=parseLinkedIn(raw);
     linkedInData={recruiter:parsed.recruiter,alum:parsed.alum,company:company,title:title};
     renderLinkedIn(linkedInData);
