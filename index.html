@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v17 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v20 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -160,6 +160,7 @@ table.tlog tr:hover td{background:var(--surface2);}
       <button class="track-btn" data-track="sde">SDE</button>
       <button class="track-btn" data-track="backend">Backend</button>
       <button class="track-btn" data-track="ds_ml">ML / DS</button>
+      <button class="track-btn" data-track="ai_eng">AI / LLM</button>
       <button class="track-btn" data-track="analytics">Analytics</button>
       <button class="track-btn" data-track="dataeng">Data Eng</button>
       <button class="track-btn" data-track="business">Business</button>
@@ -308,7 +309,8 @@ var CANDIDATE = {
     analytics:{ lang:"Python, SQL, R, Java, Scala, C++", fw:"Scikit-learn, XGBoost, Pandas, NumPy, Tableau, Power BI, Spark, ETL pipelines", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Qlik Sense" },
     dataeng:  { lang:"Python, SQL, Scala, Java, Bash, R, PySpark", fw:"dbt, Airflow, Spark, Kafka, Pandas, NumPy, ETL pipelines, Data modeling, LangChain, Scikit-learn", db:"BigQuery, Snowflake, Redshift, PostgreSQL, MongoDB, S3, AWS (Lambda, Glue, EC2), Docker, Kubernetes, GCS" },
     business: { lang:"Python, SQL, R, JavaScript, Java", fw:"Tableau, Power BI, Scikit-learn, Pandas, XGBoost, ETL, REST APIs, LangChain", db:"PostgreSQL, MongoDB, Redshift, Snowflake, AWS (S3, EC2), Docker, Google Analytics" },
-    quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" }
+    quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" },
+    ai_eng:   { lang:"Python, SQL, C++, JavaScript, Bash", fw:"PyTorch, LangChain, Hugging Face Transformers, BERT, RAG, LLM fine-tuning, FastAPI, Scikit-learn", db:"Pinecone, ChromaDB, FAISS, PostgreSQL, AWS (S3, EC2, Lambda), Docker, MLflow" }
   },
 
   experiences: [
@@ -320,7 +322,8 @@ var CANDIDATE = {
       defaultBullets: [
         "Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production",
         "Designed auto-resizing mechanism with GUC config logic; built S3 workload history for persistent SQL scaling analytics",
-        "Built CI/CD regression pipelines across 12 distributed nodes; achieved 99.8% uptime with zero-downtime deploys"
+        "Built CI/CD regression pipelines across 12 distributed nodes; achieved 99.8% uptime with zero-downtime deploys",
+        "Reduced p99 query latency 23% under bursty load by tuning lock-free ring buffers in the C++ scaling path"
       ]
     },
     {
@@ -368,11 +371,11 @@ var CANDIDATE = {
       ]
     },
     pharma: {
-      name: "PharmaChain \u2014 Blockchain Supply Chain Platform",
+      name: "PharmaChain \u2014 Blockchain Supply Chain Platform (Live Demo)",
       stack: "Ethereum, Solidity, Node.js, Web3.js",
       defaultBullets: [
         "Architected Ethereum smart contracts with off-chain aggregation layer; improved traceability 95% across 4 supplier tiers",
-        "Cut on-chain gas costs 25% via test-driven contract optimization; 2nd place Study Australia Challenge, AUD 4,000 funding",
+        "Cut on-chain gas costs 25% via test-driven contract optimization; team won 2nd at Study Australia Challenge, AUD 10,000",
         "Integrated MetaMask wallet auth and Web3.js event listeners; deployed via Truffle with automated smart contract tests"
       ]
     },
@@ -443,7 +446,7 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
       + p.defaultBullets.map(function(b){return '    - '+b;}).join('\n');
   }).join('\n\n');
 
-  var verbBank = 'Engineered,Architected,Configured,Constructed,Delivered,Deployed,Designed,Established,Evaluated,Founded,Integrated,Launched,Led,Mentored,Migrated,Modeled,Optimized,Orchestrated,Overhauled,Pioneered,Processed,Reduced,Refactored,Shipped,Spearheaded,Streamlined,Structured,Trained,Validated,Wired';
+  var verbBank = 'Built,Led,Designed,Trained,Shipped,Cut,Wrote,Ran,Tuned,Reduced,Migrated,Modeled,Processed,Validated,Refactored,Configured,Mentored,Founded,Integrated,Delivered';
 
   var keywordsHint = '';
   if(mustUseKeywords && mustUseKeywords.trim()){
@@ -458,27 +461,27 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
       + '  \u2022 Prioritize Tech lines and skills section over forcing them into bullets\n';
   }
 
-  return 'You are an elite ATS resume writer AND a structural allocator. You make TWO decisions: (1) how to allocate bullets across sections based on JD fit, and (2) how to rewrite each bullet.\n\n'
+  return 'You are an elite resume writer AND a structural allocator writing in the candidate\u2019s real, human voice. You make TWO decisions: (1) how to allocate bullets across sections based on JD fit, and (2) how to rewrite each bullet so it reads like a specific person describing specific work, NOT like an AI-optimized template.\n\n'
     + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+keywordsHint+'\n\n'
     + 'JOB DESCRIPTION:\n'+jd+'\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 1 \u2014 KEYWORD EXTRACTION \u2550\u2550\u2550\u2550\n'
     + 'Mentally extract from the JD: core tech skills, domain verbs, impact metrics, seniority signals.\n'
-    + 'Every bullet must embed at least one JD keyword naturally.\n\n'
+    + 'Where a JD keyword genuinely fits real work, use it naturally. Do NOT force or jam keywords; modern semantic ATS penalizes phrases that do not read naturally in context.\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 2 \u2014 STRUCTURAL ALLOCATION (CRITICAL) \u2550\u2550\u2550\u2550\n'
     + 'You decide the bullet count for each section subject to STRICT constraints:\n'
-    + '  \u2022 EXP1 (AWS): 3 OR 4 bullets. Choose 4 ONLY when the JD is heavy on: distributed systems, cloud infra, C++, SDE, backend scale, low-level performance. Otherwise 3.\n'
+    + '  \u2022 EXP1 (AWS): 3 OR 4 bullets. AWS is the FLAGSHIP role and should be the most prominent block. DEFAULT to 4 bullets. Only drop to 3 if the JD is almost entirely non-technical (pure business/analytics with no engineering at all).\n'
     + '  \u2022 EXP2 (Paypoint): 2 OR 3 bullets.\n'
     + '  \u2022 EXP3 (Imarticus): 2 OR 3 bullets.\n'
-    + '  \u2022 EXP4 (GDSC): ALWAYS 2 bullets. Non-negotiable.\n'
+    + '  \u2022 EXP4 (GDSC): ALWAYS 2 bullets. Frame these around INITIATIVE and OWNERSHIP: founded the department from nothing, drove change, took action and led. This block exists to prove he builds and leads, not just executes.\n'
     + '  \u2022 PROJ1 (first project slot): 2 OR 3 bullets.\n'
     + '  \u2022 PROJ2 (second project slot): 2 OR 3 bullets.\n\n'
     + 'TOTAL BULLET COUNT must land between 16 and 18 (inclusive). This is a hard page-fit constraint.\n\n'
     + 'Allocation principles:\n'
-    + '  - More bullets = more emphasis. Give 3 to roles/projects whose tech and scope match the JD.\n'
+    + '  - More bullets = more emphasis. AWS leads. Give 3 to roles/projects whose tech and scope match the JD.\n'
     + '  - Demote a role/project to 2 if its content is less relevant to THIS JD.\n'
-    + '  - If all four flex-2 sections are equally relevant, default to 3/3/3/3 (total 17 with AWS at 3).\n\n'
+    + '  - With AWS at 4, a clean default is 4/3/3/2/3/3 (total 18) or 4/3/2/2/3/3 (total 17).\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 3 \u2014 PROJECT SELECTION \u2550\u2550\u2550\u2550\n'
     + 'Three projects are available. You must pick EXACTLY 2 and assign them to PROJ1 and PROJ2 slots:\n\n'
@@ -486,24 +489,23 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + 'Selection rules:\n'
     + '  - Pick the 2 projects whose stack and domain best match the JD.\n'
     + '  - PROJ1 is the first project shown, so put the MORE JD-relevant one in PROJ1.\n'
+    + '  - PharmaChain (pharma) is a LIVE, interactable deployed project and the candidate\u2019s strongest showcase. Prefer including it unless the JD is a clear poor fit (e.g. pure data-analytics with zero engineering). When the JD touches backend, full-stack, blockchain, systems, or product engineering, favor pharma as PROJ1.\n'
     + '  - Return the project keys exactly as shown (artist, pharma, volumetric).\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 4 \u2014 BULLET RULES (NON-NEGOTIABLE) \u2550\u2550\u2550\u2550\n'
-    + 'Formula: [Strong unique verb] + [what / how] + [semicolon] + [quantified result]\n'
-    + 'R1 \u2014 VERB DIVERSITY: No action verb used more than ONCE across ALL bullets you produce.\n'
-    + '     Verb bank (or similar strong verbs): '+verbBank+'\n'
-    + '     FORBIDDEN repeats: Built, Developed, Implemented, Automated, Achieved, Integrated.\n'
-    + 'R2 \u2014 LENGTH: 13\u201318 words per bullet. Count carefully.\n'
-    + 'R3 \u2014 METRICS: Every bullet must contain a number. Preserve existing metrics (35%, 99.8%, 94%, 18%, 500k+, 50k+, 90%, 92%, 172ms P95, 10k, 50%, 95%, 25%, 45+, 200+, 40+, 5x, 961, 33x, 29). Do not invent.\n'
+    + 'Formula: [accurate verb] + [what / how] + [semicolon or comma] + [quantified result]\n'
+    + 'R1 \u2014 NATURAL VERBS: Vary your opening verbs, but PREFER plain, accurate ones (Built, Led, Designed, Trained, Shipped, Cut, Wrote, Ran, Tuned, Reduced). Repeating a plain verb once or twice across the resume reads human and is completely fine. Do NOT cluster showy power-verbs (Spearheaded, Orchestrated, Architected, Pioneered, Engineered, Leveraged, Overhauled); overusing them is the single most detectable sign of an AI-written resume and modern screeners downgrade it. Cap "engineered/architected"-class verbs at ONE in the entire resume. Mild reference bank only if stuck: '+verbBank+'\n'
+    + 'R2 \u2014 LENGTH: 13\u201318 words per bullet, but vary it; not every bullet should be the same length.\n'
+    + 'R3 \u2014 METRICS: Most bullets should contain a number, but a strong qualitative bullet without one is acceptable. Preserve existing metrics (35%, 99.8%, 23%, 94%, 18%, 500k+, 50k+, 90%, 92%, 172ms P95, 10k, 50%, 95%, 25%, 45+, 200+, 40+, 961, 33x, 29). Do not invent.\n'
     + 'R4 \u2014 ACTIVE VOICE: Past-tense verb first. Never "Worked on", "Helped", "Assisted".\n'
     + 'R5 \u2014 NO REPETITION: No phrase/noun/concept repeated across bullets in the same role.\n'
     + 'R6 \u2014 FACTS ONLY: Never invent tech, titles, dates, or metrics.\n'
-    + 'R7 \u2014 LEGITIMATE BREADTH: The candidate has 6+ years of CS study (NMIMS B.Tech + USC MS Data Science). You MAY weave technologies from the STUDIED TECH POOL below into existing bullets when the JD asks for them AND they fit contextually. Never claim production deployment of something only studied.\n\n'
+    + 'R7 \u2014 NO SKILL INFLATION: Mention a technology in a BULLET only if Dhruvin actually used it in that role. Do NOT pad bullets with studied-but-unused tech; modern ATS scores each skill by how convincingly it is supported, so a long tail of weakly-supported skills LOWERS the match and reads as inflated. Studied-but-unused tech may appear in the skills section ONLY if it is genuinely defensible in an interview, kept to a tight credible set. Favor depth he can speak to over breadth.\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 5 \u2014 EXPERIENCE CONTEXT \u2550\u2550\u2550\u2550\n'
     + expLines + '\n\n'
 
-    + '\u2550\u2550\u2550\u2550 STEP 6 \u2014 STUDIED TECH POOL \u2550\u2550\u2550\u2550\n'
+    + '\u2550\u2550\u2550\u2550 STEP 6 \u2014 STUDIED TECH POOL (skills section only, if defensible) \u2550\u2550\u2550\u2550\n'
     + 'Languages studied: '+CANDIDATE.studiedTech.languages+'\n'
     + 'ML/AI studied: '+CANDIDATE.studiedTech.ml_ai+'\n'
     + 'Web/Backend studied: '+CANDIDATE.studiedTech.web+'\n'
@@ -516,10 +518,11 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + 'Analytics studied: '+CANDIDATE.studiedTech.analytics+'\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 7 \u2014 SKILLS & COURSEWORK SELECTION \u2550\u2550\u2550\u2550\n'
-    + 'You may select skills from BOTH the track pool AND the studied tech pool above, prioritizing items that match the JD.\n'
-    + 'SKILL_LANG: 6-7 languages best matching JD: '+pool.lang+'\n'
-    + 'SKILL_FW: 7-9 frameworks best matching JD: '+pool.fw+'\n'
-    + 'SKILL_DB: 7-9 databases/cloud best matching JD: '+pool.db+'\n'
+    + 'Select skills from BOTH the track pool AND the studied tech pool, prioritizing items that match the JD AND that he can defend in an interview.\n'
+    + 'SKILL_LANG: 5-6 languages best matching JD (only ones he can defend): '+pool.lang+'\n'
+    + 'SKILL_FW: 6-7 frameworks best matching JD (only ones he can defend): '+pool.fw+'\n'
+    + 'SKILL_DB: 6-7 databases/cloud best matching JD (only ones he can defend): '+pool.db+'\n'
+    + 'Favor a short defensible list over a long padded one. A long tail of weak skills hurts the semantic match.\n'
     + 'COURSEWORK: 4 courses from: Distributed Systems, Database Systems, Machine Learning, Statistical Learning, Data Mining, NLP, Algorithms, Computer Vision, Big Data Analytics\n\n'
 
     + '\u2550\u2550\u2550\u2550 OUTPUT FORMAT \u2014 STRICT \u2550\u2550\u2550\u2550\n'
@@ -553,11 +556,12 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + 'WRONG: COURSEWORK: [Machine Learning, NLP, Algorithms, Data Mining]\n'
     + 'RIGHT:  COURSEWORK: Machine Learning, NLP, Algorithms, Data Mining\n\n'
     + 'FINAL SELF-CHECK before outputting:\n'
-    + '  \u25a1 ALLOC_EXP1 \u2208 {3,4}, ALLOC_EXP4 = 2, all other ALLOC \u2208 {2,3}\n'
+    + '  \u25a1 ALLOC_EXP1 \u2208 {3,4} and defaults to 4, ALLOC_EXP4 = 2, all other ALLOC \u2208 {2,3}\n'
     + '  \u25a1 Sum of all ALLOC values is between 16 and 18\n'
     + '  \u25a1 PROJ1_KEY and PROJ2_KEY are different\n'
     + '  \u25a1 Number of bullets you emit per section matches the ALLOC value\n'
-    + '  \u25a1 Every bullet: 13-18 words, unique verb, embedded metric, JD keyword\n'
+    + '  \u25a1 Verbs read human: at most ONE engineered/architected-class verb, no power-verb clustering\n'
+    + '  \u25a1 No skill inflation: every tech in a bullet was actually used in that role\n'
     + (mustUseKeywords && mustUseKeywords.trim() ? '  \u25a1 All mandatory keywords appear somewhere in the resume\n' : '')
     + 'Fix any fail before outputting.';
 }
@@ -925,7 +929,7 @@ function parseTailored(text){
   var m=text.match(/OUTPUT_START([\s\S]*?)OUTPUT_END/);var block=m?m[1]:text;
   function g(key){var r=block.match(new RegExp('^'+key+':\\s*(.+)$','m'));if(!r)return '';var v=r[1].trim();v=v.replace(/^[\[\{"']+|[\]\}"']+$/g,'').trim();return v;}
   function gi(key,def){var v=parseInt(g(key),10);return isNaN(v)?def:v;}
-  var a1=gi('ALLOC_EXP1',3);if(a1<3)a1=3;if(a1>4)a1=4;
+  var a1=gi('ALLOC_EXP1',4);if(a1<3)a1=3;if(a1>4)a1=4;
   var a2=gi('ALLOC_EXP2',3);if(a2<2)a2=2;if(a2>3)a2=3;
   var a3=gi('ALLOC_EXP3',3);if(a3<2)a3=2;if(a3>3)a3=3;
   var a4=2;
@@ -936,7 +940,7 @@ function parseTailored(text){
   guard=0;while(total<16&&guard++<6){if(a1===3){a1=4;}else if(a2===2){a2=3;}else if(a3===2){a3=3;}else if(ap1===2){ap1=3;}else if(ap2===2){ap2=3;}else break;total=a1+a2+a3+a4+ap1+ap2;}
   var validKeys={artist:1,pharma:1,volumetric:1};
   var pk1=(g('PROJ1_KEY')||'').toLowerCase();var pk2=(g('PROJ2_KEY')||'').toLowerCase();
-  if(!validKeys[pk1])pk1='artist';if(!validKeys[pk2]||pk2===pk1){var remaining=['artist','pharma','volumetric'].filter(function(k){return k!==pk1;});pk2=remaining[0];}
+  if(!validKeys[pk1])pk1='pharma';if(!validKeys[pk2]||pk2===pk1){var remaining=['pharma','artist','volumetric'].filter(function(k){return k!==pk1;});pk2=remaining[0];}
   function collect(prefix,n){var out=[];for(var i=1;i<=n;i++){var v=g(prefix+'_B'+i);if(v)out.push(v);}return out;}
   return{alloc:{exp1:a1,exp2:a2,exp3:a3,exp4:a4,proj1:ap1,proj2:ap2,total:total},reason:g('ALLOC_REASON'),coursework:g('COURSEWORK'),skillLang:g('SKILL_LANG'),skillFw:g('SKILL_FW'),skillDb:g('SKILL_DB'),exp1:collect('EXP1',a1),exp2:collect('EXP2',a2),exp3:collect('EXP3',a3),exp4:collect('EXP4',a4),proj1:{key:pk1,bullets:collect('PROJ1',ap1)},proj2:{key:pk2,bullets:collect('PROJ2',ap2)}};
 }
