@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v24 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v25 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -475,7 +475,7 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
       + p.defaultBullets.map(function(b){return '    - '+b;}).join('\n');
   }).join('\n\n');
 
-  var verbBank = 'Built,Led,Designed,Trained,Shipped,Cut,Wrote,Ran,Tuned,Reduced,Migrated,Modeled,Processed,Validated,Refactored,Configured,Mentored,Founded,Integrated,Delivered';
+  var verbBank = 'Built,Led,Designed,Trained,Shipped,Cut,Wrote,Ran,Tuned,Reduced,Migrated,Modeled,Processed,Validated,Refactored,Configured,Mentored,Founded,Integrated,Delivered,Automated,Launched,Scaled,Deployed,Rewrote,Prototyped,Standardized,Measured,Optimized,Analyzed,Tested,Debugged,Created,Developed,Implemented';
 
   var keywordsHint = '';
   if(mustUseKeywords && mustUseKeywords.trim()){
@@ -531,8 +531,8 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
 
     + '\u2550\u2550\u2550\u2550 STEP 4 \u2014 BULLET RULES (NON-NEGOTIABLE) \u2550\u2550\u2550\u2550\n'
     + 'Formula: [accurate verb] + [what / how] + [semicolon or comma] + [quantified result]\n'
-    + 'R1 \u2014 NATURAL VERBS: Vary your opening verbs, but PREFER plain, accurate ones (Built, Led, Designed, Trained, Shipped, Cut, Wrote, Ran, Tuned, Reduced). Repeating a plain verb once or twice across the resume reads human and is completely fine. Do NOT cluster showy power-verbs (Spearheaded, Orchestrated, Architected, Pioneered, Engineered, Leveraged, Overhauled); overusing them is the single most detectable sign of an AI-written resume and modern screeners downgrade it. Cap "engineered/architected"-class verbs at ONE in the entire resume. Mild reference bank only if stuck: '+verbBank+'\n'
-    + 'R2 \u2014 LENGTH: 13\u201318 words per bullet, but vary it; not every bullet should be the same length.\n'
+    + 'R1 \u2014 UNIQUE PLAIN VERBS (SCORED): Every bullet must OPEN with a different verb. No opening verb may repeat anywhere in the resume, not even twice. With 16 to 18 bullets you need 16 to 18 distinct opening verbs, and there are plenty of plain ones, so you never need to reuse "Built" or reach for showy ones. PREFER plain accurate verbs (Built, Designed, Cut, Ran, Tuned, Trained, Wrote, Shipped, Delivered, Launched, Automated, Integrated, Reduced, Scaled, Deployed, Rewrote, Prototyped, Standardized, Measured, Mentored, Founded, Configured, Migrated, Modeled, Processed, Optimized, Analyzed, Tested). Do NOT cluster showy power-verbs (Spearheaded, Orchestrated, Pioneered, Leveraged, Overhauled) and cap "Engineered/Architected"-class verbs at ONE in the entire resume. Reference bank: '+verbBank+'\n'
+    + 'R2 \u2014 LENGTH (HARD, ONE-PAGE CRITICAL): Every bullet is 13 to 18 words. Aim for 13 to 17 and treat 18 as the absolute ceiling. A bullet of 19+ words is a failure: it wraps to an extra line, pushes the resume onto a second page, and loses ATS points. COUNT the words in each bullet before finalizing. Vary length only WITHIN the 13 to 18 range; never exceed 18.\n'
     + 'R3 \u2014 METRICS: Most bullets should contain a number, but a strong qualitative bullet without one is acceptable. Preserve existing metrics (35%, 99.8%, 23%, 94%, 18%, 500k+, 50k+, 90%, 92%, 172ms P95, 10k, 50%, 95%, 25%, 45+, 200+, 40+, 961, 33x, 29). Do not invent.\n'
     + 'R4 \u2014 ACTIVE VOICE: Past-tense verb first. Never "Worked on", "Helped", "Assisted".\n'
     + 'R5 \u2014 NO REPETITION: No phrase/noun/concept repeated across bullets in the same role.\n'
@@ -545,7 +545,7 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + 'H1 \u2014 NO DASHES AS PUNCTUATION: Never use an em dash (\u2014), an en dash (\u2013), or " - " to join, interrupt, or append a clause. This is the single biggest visual AI tell on a resume. Hyphens INSIDE a compound word (auto-scaling, lock-free, real-time, full-stack) are fine. If tempted to write "... \u2014 extra clause", delete the clause or make it a clean separate phrase. Zero dashes as connectors.\n'
     + 'H2 \u2014 NO SOFT TAILS: End every bullet on the concrete result. Delete the mood or explanation tails a generator adds, e.g. "for the first time", "that they actually used", "throughout the internship", "end to end", "across sessions", "in the supply chain", "taking home the prize", "with minimal manual review", "to catch upstream discrepancies". If a trailing phrase is not load-bearing, cut it.\n'
     + 'H3 \u2014 BANNED WORDS (never use): leverage, utilize, seamless, seamlessly, robust, cutting-edge, state-of-the-art, spearheaded, orchestrated, pioneered, holistic, comprehensive, meticulous, significantly, successfully, dramatically, various, numerous, empower. Use plain verbs and specific nouns.\n'
-    + 'H4 \u2014 BREAK THE SKELETON: Do NOT make every bullet "Verb thing; metric result". Vary the structure. Some bullets end on a noun or outcome with no semicolon and no percentage. Identical skeletons across bullets ARE the tell.\n'
+    + 'H4 \u2014 BREAK THE SKELETON: Do NOT make every bullet "Verb thing; metric result". Vary the structure. Some bullets end on a noun or outcome with no semicolon and no percentage. Identical skeletons across bullets ARE the tell. Varying structure does NOT mean longer: every bullet still stays within 13 to 18 words.\n'
     + 'H5 \u2014 NO HYPE ADVERBS OR FILLER: cut successfully, effectively, efficiently, carefully unless truly load-bearing.\n'
     + 'H6 \u2014 ENGINEER VOICE: if a phrase sounds like marketing copy, rewrite it the way Dhruvin would describe the work to a teammate. Plain and specific beats polished.\n\n'
 
@@ -607,7 +607,9 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + '  \u25a1 Sum of all ALLOC values is between 16 and 18\n'
     + '  \u25a1 PROJ1_KEY and PROJ2_KEY are different\n'
     + '  \u25a1 Number of bullets you emit per section matches the ALLOC value\n'
-    + '  \u25a1 Verbs read human: at most ONE engineered/architected-class verb, no power-verb clustering\n'
+    + '  \u25a1 EVERY opening verb is unique across all bullets (no verb repeated, not even twice)\n'
+    + '  \u25a1 EVERY bullet is 13-18 words and NONE exceed 18 (count them) so the resume stays one page\n'
+    + '  \u25a1 Verbs are plain, not showy: at most ONE engineered/architected-class verb, no power-verb clustering\n'
     + '  \u25a1 No skill inflation: every tech in a bullet was actually used in that role\n'
     + '  \u25a1 Bullet shape varies: not every bullet is metric-first; 2-3 are ownership/scope bullets\n'
     + '  \u25a1 Zero em dashes, en dashes, or " - " used as punctuation anywhere in any bullet\n'
