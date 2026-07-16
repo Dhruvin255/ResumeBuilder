@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v25 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v26 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -1045,6 +1045,98 @@ function ensureBullets(aiArr,defaults,target){var out=(aiArr&&aiArr.length>=targ
 function clean(s){if(!s)return s;var v=String(s);v=v.replace(/^[\[\{"']+|[\]\}"']+$/g,'');v=v.replace(/[\[\]\{\}]/g,'');return v.trim();}
 
 // ═══════════════════════════════════════════════════════════
+// DETERMINISTIC NORMALIZATION (guarantees verb + length scores)
+// ═══════════════════════════════════════════════════════════
+var VERB_SYN={
+  built:['Built','Created','Developed','Assembled','Constructed'],
+  created:['Created','Built','Developed','Assembled'],
+  developed:['Developed','Built','Created','Produced'],
+  designed:['Designed','Structured','Modeled','Devised','Formulated','Shaped'],
+  integrated:['Integrated','Connected','Wired','Linked','Embedded','Bridged'],
+  cut:['Cut','Reduced','Trimmed','Lowered','Slashed','Shaved'],
+  reduced:['Reduced','Cut','Lowered','Trimmed','Decreased','Shrank'],
+  ran:['Ran','Operated','Executed','Drove'],
+  trained:['Trained','Fitted','Tuned','Calibrated'],
+  automated:['Automated','Scripted','Mechanized','Systematized'],
+  launched:['Launched','Shipped','Released','Debuted'],
+  delivered:['Delivered','Produced','Provided','Supplied'],
+  shipped:['Shipped','Released','Launched','Delivered'],
+  founded:['Founded','Started','Established','Created'],
+  mentored:['Mentored','Coached','Guided','Advised'],
+  wrote:['Wrote','Authored','Coded','Composed'],
+  tuned:['Tuned','Optimized','Refined','Adjusted'],
+  improved:['Improved','Boosted','Raised','Increased','Lifted'],
+  processed:['Processed','Handled','Parsed','Crunched'],
+  deployed:['Deployed','Shipped','Released','Provisioned'],
+  scaled:['Scaled','Grew','Expanded','Extended'],
+  measured:['Measured','Recorded','Benchmarked','Clocked'],
+  implemented:['Implemented','Built','Added','Wrote'],
+  modeled:['Modeled','Designed','Formulated'],
+  configured:['Configured','Tuned','Provisioned'],
+  migrated:['Migrated','Moved','Ported','Shifted'],
+  analyzed:['Analyzed','Examined','Assessed','Studied'],
+  engineered:['Engineered','Built','Developed','Designed'],
+  architected:['Architected','Designed','Structured','Modeled']
+};
+var VERB_FALLBACK=['Delivered','Produced','Handled','Managed','Drove','Created','Developed','Established','Operated','Provided','Directed','Oversaw','Launched','Rebuilt'];
+function normKey(w){return (w||'').toLowerCase().replace(/[^a-z]/g,'');}
+function firstWord(b){return (b.trim().split(/\s+/)[0]||'');}
+function replaceFirstWord(b,w){var parts=b.trim().split(/\s+/);parts[0]=w;return parts.join(' ');}
+function dedupeVerbs(flat){
+  var used={};
+  return flat.map(function(b){
+    var v=firstWord(b);var lv=normKey(v);
+    if(lv&&!used[lv]){used[lv]=1;return b;}
+    var pick='';var syns=VERB_SYN[lv]||[];
+    for(var i=0;i<syns.length;i++){if(!used[normKey(syns[i])]){pick=syns[i];break;}}
+    if(!pick){for(var j=0;j<VERB_FALLBACK.length;j++){if(!used[normKey(VERB_FALLBACK[j])]){pick=VERB_FALLBACK[j];break;}}}
+    if(!pick)pick=v;
+    used[normKey(pick)]=1;
+    return replaceFirstWord(b,pick);
+  });
+}
+var FILLER={a:1,an:1,the:1,that:1,which:1,really:1,just:1,very:1,successfully:1,effectively:1,efficiently:1,carefully:1,various:1,numerous:1,thereby:1,overall:1,actually:1,basically:1,simply:1,entirely:1,fully:1,completely:1,significantly:1,dramatically:1,seamlessly:1,robustly:1};
+function hasDigit(w){return /\d/.test(w);}
+var PREPS={for:1,in:1,on:1,at:1,with:1,as:1,by:1,of:1,to:1,and:1,or:1,using:1,across:1,per:1,throughout:1,within:1,into:1,from:1,under:1,over:1,through:1,via:1};
+function endsClause(tok){return /[;,]$/.test(tok);}
+// Trim to <=maxW by removing whole trailing prepositional phrases that contain no number,
+// protecting the opening verb and every metric. Falls back to word removal only if nothing else works.
+function trimBullet(b,maxW){
+  var w=b.trim().split(/\s+/);
+  if(w.length<=maxW)return b;
+  var kept=[];
+  for(var i=0;i<w.length;i++){var lw=normKey(w[i]);if(i>0&&FILLER[lw]&&!hasDigit(w[i]))continue;kept.push(w[i]);}
+  var guard=0;
+  while(kept.length>maxW && guard++<30){
+    var bestP=-1,bestE=-1;
+    for(var p=kept.length-1;p>=1;p--){
+      if(!PREPS[normKey(kept[p])])continue;
+      var e=p+1;
+      while(e<kept.length){if(PREPS[normKey(kept[e])])break;if(endsClause(kept[e])){e++;break;}e++;}
+      var seg=kept.slice(p,e);
+      var noDigit=seg.every(function(t){return !hasDigit(t);});
+      if(noDigit&&seg.length>0){bestP=p;bestE=e;break;}
+    }
+    if(bestP>=0){
+      var segLast=kept[bestE-1];var carry=(endsClause(segLast)&&bestE<kept.length)?segLast.slice(-1):'';
+      kept=kept.slice(0,bestP).concat(kept.slice(bestE));
+      if(carry&&bestP-1>=0&&!/[;,]$/.test(kept[bestP-1])){kept[bestP-1]=kept[bestP-1]+carry;}
+    }
+    else{var idx=-1;for(var k=kept.length-1;k>=1;k--){if(!hasDigit(kept[k])){idx=k;break;}}if(idx===-1)break;kept.splice(idx,1);}
+  }
+  while(kept.length>1){var last=normKey(kept[kept.length-1]);if(PREPS[last]||FILLER[last]){kept.pop();}else break;}
+  return kept.join(' ').replace(/\s+([;,:.])/g,'$1').replace(/[ ,;:]+$/,'');
+}
+// Trim every bullet to <=18 words, then force unique opening verbs. Both scored dimensions become deterministic.
+function normalizeResumeBullets(d){
+  var groups=[];d.expBullets.forEach(function(arr){groups.push(arr);});groups.push(d.proj1.bullets);groups.push(d.proj2.bullets);
+  var flat=[];groups.forEach(function(g){g.forEach(function(b){flat.push(b);});});
+  flat=flat.map(function(b){return trimBullet(clean(b),18);});
+  flat=dedupeVerbs(flat);
+  var idx=0;groups.forEach(function(g){for(var i=0;i<g.length;i++){g[i]=flat[idx++];}});
+}
+
+// ═══════════════════════════════════════════════════════════
 // GENERATE
 // ═══════════════════════════════════════════════════════════
 async function suggestTrack(){
@@ -1091,6 +1183,7 @@ async function generate(type){
       var raw=await callAPI(key,buildTailorPrompt(company,title,loc,jd,selectedTrack,keywords,autoKw));
       var parsed=parseTailored(raw);
       resumeData={loc:loc,company:company,alloc:parsed.alloc,reason:parsed.reason,coursework:clean(parsed.coursework)||'Distributed Systems, Database Systems, Machine Learning, Algorithms',skillLang:clean(parsed.skillLang)||CANDIDATE.skillPools[selectedTrack].lang,skillFw:clean(parsed.skillFw)||CANDIDATE.skillPools[selectedTrack].fw,skillDb:clean(parsed.skillDb)||CANDIDATE.skillPools[selectedTrack].db,expBullets:[ensureBullets(parsed.exp1,CANDIDATE.experiences[0].defaultBullets,parsed.alloc.exp1),ensureBullets(parsed.exp2,CANDIDATE.experiences[1].defaultBullets,parsed.alloc.exp2),ensureBullets(parsed.exp3,CANDIDATE.experiences[2].defaultBullets,parsed.alloc.exp3),ensureBullets(parsed.exp4,CANDIDATE.experiences[3].defaultBullets,parsed.alloc.exp4)],proj1:{key:parsed.proj1.key,bullets:ensureBullets(parsed.proj1.bullets,CANDIDATE.projects[parsed.proj1.key].defaultBullets,parsed.alloc.proj1)},proj2:{key:parsed.proj2.key,bullets:ensureBullets(parsed.proj2.bullets,CANDIDATE.projects[parsed.proj2.key].defaultBullets,parsed.alloc.proj2)}};
+      normalizeResumeBullets(resumeData);
       var preview=buildPreviewText(resumeData);
       document.getElementById('rPreview').textContent=preview;document.getElementById('rPreview').style.display='block';document.getElementById('rEmpty').style.display='none';document.getElementById('rb').style.display='inline-flex';document.getElementById('dlR').disabled=false;switchTab('resume');
       var ats=computeATS(resumeData,jd);renderATS(ats,resumeData);document.getElementById('ab').style.display='inline-flex';
