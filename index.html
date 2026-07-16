@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v21 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v22 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -176,6 +176,8 @@ table.tlog tr:hover td{background:var(--surface2);}
       <button class="track-btn" data-track="applied_sci">Applied Sci</button>
       <button class="track-btn" data-track="fullstack">Full-Stack</button>
     </div>
+    <button class="btn btn-secondary" onclick="suggestTrack()" style="margin-top:8px;font-size:12px;padding:8px 12px;justify-content:center;width:100%;">✨ Suggest track from JD</button>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;">Reads the JD and auto-selects the best-fit track. Reserve AI / LLM for roles that actually build LLM systems.</div>
   </div>
 
   <div class="field-group">
@@ -270,13 +272,27 @@ var resumeData = null;
 var coverText  = null;
 var linkedInData = null; // ─── LINKEDIN ADDITION ───
 
+function selectTrack(key){
+  document.querySelectorAll('.track-btn').forEach(function(x){x.classList.toggle('active',x.dataset.track===key);});
+  selectedTrack = key;
+}
 document.querySelectorAll('.track-btn').forEach(function(b){
-  b.onclick = function(){
-    document.querySelectorAll('.track-btn').forEach(function(x){x.classList.remove('active');});
-    b.classList.add('active');
-    selectedTrack = b.dataset.track;
-  };
+  b.onclick = function(){ selectTrack(b.dataset.track); };
 });
+
+var TRACK_META = {
+  sde:"General software engineering across the stack, CS fundamentals, backend-leaning",
+  backend:"Server-side services, APIs, databases, distributed backends",
+  ds_ml:"Data science and ML modeling, analysis, experimentation",
+  ai_eng:"Building LLM/GenAI products: RAG, fine-tuning, vector DBs, agents",
+  analytics:"Analytics and BI, dashboards, SQL-heavy insight work",
+  dataeng:"Data engineering: pipelines, ETL, warehouses, Spark/Kafka/dbt/Airflow",
+  business:"Business and product-facing analytical roles, stakeholder work",
+  quant:"Quantitative finance, risk, trading, statistical modeling",
+  platform:"Platform, infra, SRE, DevOps: cloud, Kubernetes, reliability, distributed systems",
+  applied_sci:"Applied scientist, research-leaning ML with publications and experimentation",
+  fullstack:"Full-stack product engineering (React/Node/TS front-to-back), client-facing, forward-deployed, 0-1 products"
+};
 
 function switchTab(n){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===n);});
@@ -579,6 +595,24 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + '  \u25a1 Bullet shape varies: not every bullet is metric-first; 2-3 are ownership/scope bullets\n'
     + (mustUseKeywords && mustUseKeywords.trim() ? '  \u25a1 All mandatory keywords appear somewhere in the resume\n' : '')
     + 'Fix any fail before outputting.';
+}
+
+function buildTrackSuggestPrompt(title, jd){
+  var meta = Object.keys(TRACK_META).map(function(k){return '  '+k+': '+TRACK_META[k];}).join('\n');
+  return 'You are a pragmatic technical recruiter choosing which resume angle best fits a job posting. '
+    + 'Pick the SINGLE best track based on what the role actually rewards day to day, not on buzzwords or the company mission.\n\n'
+    + 'ROLE TITLE: '+title+'\n\n'
+    + 'JOB DESCRIPTION:\n'+jd+'\n\n'
+    + 'AVAILABLE TRACKS (key: what the track foregrounds on the resume):\n'+meta+'\n\n'
+    + 'RULES:\n'
+    + '  - Choose the track whose skill emphasis matches the CORE work described in the JD.\n'
+    + '  - Reserve ai_eng ONLY for roles whose actual job is building LLM/GenAI systems (RAG, fine-tuning, agents, vector search, prompt/eval pipelines named in the requirements). A company merely being an "AI company" does NOT make it an ai_eng role.\n'
+    + '  - Forward-deployed, client-facing, solutions, or "0-1 product" engineering roles that list React/JavaScript/SQL are fullstack, not ai_eng.\n'
+    + '  - Prefer the most specific fitting track over a generic one (e.g. platform over sde for infra/SRE work).\n\n'
+    + 'OUTPUT EXACTLY this and nothing else:\n'
+    + 'TRACK: <one key from the list above>\n'
+    + 'ALT: <one different key, the runner-up>\n'
+    + 'WHY: <one sentence under 25 words on why TRACK fits the core of this JD>';
 }
 
 function buildCoverPrompt(company, title, loc, jd){
@@ -966,6 +1000,31 @@ function clean(s){if(!s)return s;var v=String(s);v=v.replace(/^[\[\{"']+|[\]\}"'
 // ═══════════════════════════════════════════════════════════
 // GENERATE
 // ═══════════════════════════════════════════════════════════
+async function suggestTrack(){
+  var key=document.getElementById('apiKey').value.trim();
+  var title=document.getElementById('jobTitle').value.trim()||'Role';
+  var jd=document.getElementById('jd').value.trim();
+  if(!key)return setS('API key required','err');
+  if(!jd)return setS('Paste a job description first','err');
+  lockBtns();
+  setS('<span class="spin"></span>&nbsp; Reading the JD and picking a track...','info');
+  try{
+    var raw=await callAPI(key,buildTrackSuggestPrompt(title,jd));
+    function grabKey(k){var m=raw.match(new RegExp('^'+k+':\\s*(.+)$','m'));return m?m[1].trim().toLowerCase().replace(/[^a-z_]/g,''):'';}
+    function grabRaw(k){var m=raw.match(new RegExp('^'+k+':\\s*(.+)$','m'));return m?m[1].trim():'';}
+    var t=grabKey('TRACK');var alt=grabKey('ALT');var why=grabRaw('WHY');
+    if(!TRACK_META[t]){var found='';Object.keys(TRACK_META).forEach(function(k){if(!found&&raw.toLowerCase().indexOf(k)>=0)found=k;});t=found;}
+    if(TRACK_META[t]){
+      selectTrack(t);
+      var altTxt=(TRACK_META[alt]&&alt!==t)?' &nbsp;(alt: '+alt+')':'';
+      setS('&#10003; Track set to <strong>'+t+'</strong>. '+esc(why)+altTxt,'ok');
+    }else{
+      setS('Could not parse a suggestion, pick a track manually','err');
+    }
+  }catch(e){setS('Error: '+e.message,'err');console.error(e);}
+  unlockBtns();
+}
+
 async function generate(type){
   var key=document.getElementById('apiKey').value.trim();
   var company=document.getElementById('company').value.trim()||'Company';
