@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v22 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v24 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -400,7 +400,7 @@ var CANDIDATE = {
       ]
     },
     pharma: {
-      name: "PharmaChain \u2014 Blockchain Supply Chain Platform (Live Demo)",
+      name: "PharmaChain: Blockchain Supply Chain Platform (Live Demo)",
       stack: "Ethereum, Solidity, Node.js, Web3.js",
       defaultBullets: [
         "Architected Ethereum smart contracts with off-chain aggregation layer; improved traceability 95% across 4 supplier tiers",
@@ -409,7 +409,7 @@ var CANDIDATE = {
       ]
     },
     volumetric: {
-      name: "Volumetric Implants \u2014 AI Training Dataset for Cranial Reconstruction",
+      name: "Volumetric Implants: AI Training Dataset for Cranial Reconstruction",
       stack: "Python, 3D Mesh Processing, Affine Registration, Medical Imaging, Mendeley Data",
       defaultBullets: [
         "Engineered Mesh-to-Volume voxelization pipeline; generated 961 skull-implant training pairs from 29 CT scans for generative AI models",
@@ -457,7 +457,7 @@ var CANDIDATE = {
 // ═══════════════════════════════════════════════════════════
 // PROMPTS
 // ═══════════════════════════════════════════════════════════
-function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
+function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, autoKeywords){
   var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.ds_ml;
 
   var expLines = CANDIDATE.experiences.map(function(e,i){
@@ -490,8 +490,16 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
       + '  \u2022 Prioritize Tech lines and skills section over forcing them into bullets\n';
   }
 
+  var autoKwHint='';
+  if(autoKeywords && autoKeywords.trim()){
+    autoKwHint = '\n\n\u2550\u2550\u2550\u2550 JD-MATCHED DEFENSIBLE SKILLS (prioritize within caps) \u2550\u2550\u2550\u2550\n'
+      + 'These skills appear in the JD AND are genuinely in Dhruvin\u2019s background, so he can defend them in an interview:\n'
+      + autoKeywords + '\n'
+      + 'Within the normal skill caps (5-6 languages, 6-7 frameworks, 6-7 databases/cloud), PRIORITIZE these JD-matched skills over generic pool items, swapping out less-relevant skills to make room. Every one of these that fits a category should appear in the skills section. Do NOT exceed the caps, do NOT invent tools he lacks, and keep the list tight and defensible.\n';
+  }
+
   return 'You are an elite resume writer AND a structural allocator writing in the candidate\u2019s real, human voice. You make TWO decisions: (1) how to allocate bullets across sections based on JD fit, and (2) how to rewrite each bullet so it reads like a specific person describing specific work, NOT like an AI-optimized template.\n\n'
-    + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+keywordsHint+'\n\n'
+    + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+keywordsHint+autoKwHint+'\n\n'
     + 'JOB DESCRIPTION:\n'+jd+'\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 1 \u2014 KEYWORD EXTRACTION \u2550\u2550\u2550\u2550\n'
@@ -531,6 +539,15 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + 'R6 \u2014 FACTS ONLY: Never invent tech, titles, dates, or metrics.\n'
     + 'R7 \u2014 NO SKILL INFLATION: Mention a technology in a BULLET only if Dhruvin actually used it in that role. Do NOT pad bullets with studied-but-unused tech; modern ATS scores each skill by how convincingly it is supported, so a long tail of weakly-supported skills LOWERS the match and reads as inflated. Studied-but-unused tech may appear in the skills section ONLY if it is genuinely defensible in an interview, kept to a tight credible set. Favor depth he can speak to over breadth.\n'
     + 'R8 \u2014 VARY THE SHAPE (anti-monotony): Not every bullet is verb+metric. Across the whole resume, 2 to 3 bullets should be ownership/scope bullets that lead with what Dhruvin owned, built, or decided and land on scope (systems, users, nodes, teams, tiers) instead of a percentage. A uniform metric-first rhythm where every bullet looks structurally identical is a top AI-writing tell and reads as generated; break it on purpose. The GDSC bullets especially should read as initiative and ownership, not statistics. KEEP every defensible metric already present; do NOT strip numbers and do NOT force a number into every single line.\n\n'
+
+    + '\u2550\u2550\u2550\u2550 STEP 4B \u2014 SOUND HUMAN, NOT GENERATED (HARD FILTER) \u2550\u2550\u2550\u2550\n'
+    + 'A recruiter spots an AI-written resume in seconds. These are the exact tells. Eliminate ALL of them.\n'
+    + 'H1 \u2014 NO DASHES AS PUNCTUATION: Never use an em dash (\u2014), an en dash (\u2013), or " - " to join, interrupt, or append a clause. This is the single biggest visual AI tell on a resume. Hyphens INSIDE a compound word (auto-scaling, lock-free, real-time, full-stack) are fine. If tempted to write "... \u2014 extra clause", delete the clause or make it a clean separate phrase. Zero dashes as connectors.\n'
+    + 'H2 \u2014 NO SOFT TAILS: End every bullet on the concrete result. Delete the mood or explanation tails a generator adds, e.g. "for the first time", "that they actually used", "throughout the internship", "end to end", "across sessions", "in the supply chain", "taking home the prize", "with minimal manual review", "to catch upstream discrepancies". If a trailing phrase is not load-bearing, cut it.\n'
+    + 'H3 \u2014 BANNED WORDS (never use): leverage, utilize, seamless, seamlessly, robust, cutting-edge, state-of-the-art, spearheaded, orchestrated, pioneered, holistic, comprehensive, meticulous, significantly, successfully, dramatically, various, numerous, empower. Use plain verbs and specific nouns.\n'
+    + 'H4 \u2014 BREAK THE SKELETON: Do NOT make every bullet "Verb thing; metric result". Vary the structure. Some bullets end on a noun or outcome with no semicolon and no percentage. Identical skeletons across bullets ARE the tell.\n'
+    + 'H5 \u2014 NO HYPE ADVERBS OR FILLER: cut successfully, effectively, efficiently, carefully unless truly load-bearing.\n'
+    + 'H6 \u2014 ENGINEER VOICE: if a phrase sounds like marketing copy, rewrite it the way Dhruvin would describe the work to a teammate. Plain and specific beats polished.\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 5 \u2014 EXPERIENCE CONTEXT \u2550\u2550\u2550\u2550\n'
     + expLines + '\n\n'
@@ -593,6 +610,8 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + '  \u25a1 Verbs read human: at most ONE engineered/architected-class verb, no power-verb clustering\n'
     + '  \u25a1 No skill inflation: every tech in a bullet was actually used in that role\n'
     + '  \u25a1 Bullet shape varies: not every bullet is metric-first; 2-3 are ownership/scope bullets\n'
+    + '  \u25a1 Zero em dashes, en dashes, or " - " used as punctuation anywhere in any bullet\n'
+    + '  \u25a1 No soft trailing clauses and none of the banned AI words (leverage, seamless, robust, spearheaded, etc.)\n'
     + (mustUseKeywords && mustUseKeywords.trim() ? '  \u25a1 All mandatory keywords appear somewhere in the resume\n' : '')
     + 'Fix any fail before outputting.';
 }
@@ -608,7 +627,8 @@ function buildTrackSuggestPrompt(title, jd){
     + '  - Choose the track whose skill emphasis matches the CORE work described in the JD.\n'
     + '  - Reserve ai_eng ONLY for roles whose actual job is building LLM/GenAI systems (RAG, fine-tuning, agents, vector search, prompt/eval pipelines named in the requirements). A company merely being an "AI company" does NOT make it an ai_eng role.\n'
     + '  - Forward-deployed, client-facing, solutions, or "0-1 product" engineering roles that list React/JavaScript/SQL are fullstack, not ai_eng.\n'
-    + '  - Prefer the most specific fitting track over a generic one (e.g. platform over sde for infra/SRE work).\n\n'
+    + '  - Prefer the most specific fitting track over a generic one (e.g. platform over sde for infra/SRE work).\n'
+    + '  - Weigh the concrete tools named in the JD (languages, libraries, cloud, data tools) and pick the track whose default skill emphasis best covers them.\n\n'
     + 'OUTPUT EXACTLY this and nothing else:\n'
     + 'TRACK: <one key from the list above>\n'
     + 'ALT: <one different key, the runner-up>\n'
@@ -628,15 +648,15 @@ function buildCoverPrompt(company, title, loc, jd){
     + 'Relocating to Bay Area / NYC mid-June 2026\n\n'
     + 'PERSONALITY:\n'
     + '- Chess player. Thinks in patterns and long sequences. Naturally looks 3 moves ahead on any problem.\n'
-    + '- Has a problem-solving itch \u2014 cannot leave a broken system alone.\n'
-    + '- Founded GDSC competitive coding dept from zero members. Not a joiner \u2014 a builder.\n'
-    + '- From Mumbai, studying in LA, moving to a new city \u2014 comfortable being the new person, figuring things out.\n'
-    + '- Genuinely curious about how systems work at the edges \u2014 what breaks, what scales, what does not.\n\n'
+    + '- Has a problem-solving itch, cannot leave a broken system alone.\n'
+    + '- Founded GDSC competitive coding dept from zero members. Not a joiner, a builder.\n'
+    + '- From Mumbai, studying in LA, moving to a new city, comfortable being the new person and figuring things out.\n'
+    + '- Genuinely curious about how systems work at the edges: what breaks, what scales, what does not.\n\n'
     + '\u2550\u2550\u2550\u2550 JOB DESCRIPTION \u2550\u2550\u2550\u2550\n'
     + jd+'\n\n'
     + '\u2550\u2550\u2550\u2550 EXAMPLE COVER LETTER (match this voice) \u2550\u2550\u2550\u2550\n'
     + '---\nDear Hiring Team,\n\n'
-    + 'Tinder works on a problem that sounds simple but is actually one of the hardest in technology: using behavioral data to create conditions for genuine human connection. The matching logic, the network economics, the psychology of how people present themselves and respond to others \u2014 it is all fascinating. I am finishing my MS in Computer Science at USC this May and moving to New York, and the Rotation Program Analyst role is exactly the kind of start I am looking for.\n\n'
+    + 'Tinder works on a problem that sounds simple but is actually one of the hardest in technology: using behavioral data to create conditions for genuine human connection. The matching logic, the network economics, the psychology of how people present themselves and respond to others. All of it is fascinating. I am finishing my MS in Computer Science at USC this May and moving to New York, and the Rotation Program Analyst role is exactly the kind of start I am looking for.\n\n'
     + 'Why I am the right fit:\n\n'
     + '- I analyze complex problems and build models that drive decisions. At Amazon I developed analytical models evaluating system performance and forecasting scaling behavior to inform product and roadmap priorities. At Paypoint I built financial analytics pipelines and dashboards that directly influenced risk strategy and executive decision-making.\n\n'
     + '- I present findings to senior stakeholders and drive alignment. Across every internship I presented data-driven recommendations to product, risk, and engineering leadership, adapting the depth and framing to the audience.\n\n'
@@ -651,9 +671,13 @@ function buildCoverPrompt(company, title, loc, jd){
     + '  [Closing: 1-2 sentences. NYC relocation mention. Confident not desperate.]\n'
     + '  Sincerely,\n  Dhruvin Jhaveri\n\n'
     + 'VOICE RULES:\n'
-    + '  - BANNED: "I am excited to", "I would love to", "leverage my skills", "passion for", "team player"\n'
-    + '  - NEVER use " -- " or " \u2014 " anywhere. Use comma or colon instead.\n'
-    + '  - DO NOT repeat exact metrics from resume. Reference the STORY not the number.\n'
+    + '  - NO DASHES AS PUNCTUATION: never an em dash (\u2014), en dash (\u2013), " -- ", or " - " to join or interrupt a clause. Use a comma, colon, period, or restructure. Hyphens inside compounds (fast-paced, full-stack) are fine.\n'
+    + '  - BANNED PHRASES: "I am excited to", "I am thrilled", "I would love the opportunity", "I am confident that", "I hope this message finds you well", "leverage", "passion for", "passionate about", "team player", "hit the ground running", "wear many hats", "in today\u2019s fast-paced", "as a dedicated", "detail-oriented".\n'
+    + '  - BANNED WORDS: seamless, robust, cutting-edge, state-of-the-art, holistic, synergy, spearheaded, utilize.\n'
+    + '  - Contractions are welcome (I\u2019m, it\u2019s, that\u2019s); they read human.\n'
+    + '  - End sentences on substance, not sentiment. No gushing in the sign-off.\n'
+    + '  - Do NOT stack a three-item list in every sentence; vary sentence length.\n'
+    + '  - DO NOT repeat exact metrics from the resume. Reference the STORY, not the number.\n'
     + '  - Each bullet: one CLAIM about who he is, then brief proof.\n'
     + '  - No visa/OPT language.\n\n'
     + 'LENGTH: 280-340 words.\n'
@@ -851,6 +875,27 @@ function atsMetrics(allBullets){var withMetric=allBullets.filter(function(b){ret
 function atsLengths(allBullets){var inRange=0,details=[];allBullets.forEach(function(b){var wc=b.trim().split(/\s+/).filter(Boolean).length;var ok=wc>=13&&wc<=18;if(ok)inRange++;details.push({bullet:b,wc:wc,ok:ok});});return{inRange:inRange,total:allBullets.length,pct:allBullets.length?inRange/allBullets.length:0,details:details};}
 function atsFormatFlags(d,allBullets){var flags=[];var bracketHits=0;allBullets.forEach(function(b){if(/\[|\]/.test(b))bracketHits++;});if(/\[|\]/.test(d.skillLang||'')||/\[|\]/.test(d.skillFw||'')||/\[|\]/.test(d.skillDb||'')||/\[|\]/.test(d.coursework||'')){bracketHits++;}if(bracketHits)flags.push({ok:false,msg:'Brackets found in '+bracketHits+' place(s)'});else flags.push({ok:true,msg:'No brackets'});var total=d.alloc.exp1+d.alloc.exp2+d.alloc.exp3+d.alloc.exp4+d.alloc.proj1+d.alloc.proj2;if(total>=16&&total<=18)flags.push({ok:true,msg:'Allocation '+total+' bullets (page fit OK)'});else flags.push({ok:false,msg:'Allocation '+total+' bullets (out of 16-18 range)'});if(d.skillLang&&d.skillFw&&d.skillDb)flags.push({ok:true,msg:'All skill categories filled'});else flags.push({ok:false,msg:'Missing skill categories'});var cwCount=(d.coursework||'').split(',').filter(function(x){return x.trim();}).length;if(cwCount===4)flags.push({ok:true,msg:'Coursework has 4 items'});else flags.push({ok:false,msg:'Coursework has '+cwCount+' items (need 4)'});var okCount=flags.filter(function(f){return f.ok;}).length;return{flags:flags,pct:flags.length?okCount/flags.length:0};}
 
+function candidateSkillTokens(){
+  var all=[];
+  Object.keys(CANDIDATE.studiedTech).forEach(function(k){
+    CANDIDATE.studiedTech[k].split(',').forEach(function(t){t=t.trim();if(t)all.push(t);});
+  });
+  return all;
+}
+// JD keywords that Dhruvin can genuinely defend (present in his studied tech). Used to auto-fill must-use skills.
+function deriveDefensibleJDKeywords(jd,company){
+  var jdCanon=atsExtractKeywords(jd,company);
+  var corpus=candidateSkillTokens().join(' , ').toLowerCase();
+  var out=[];
+  jdCanon.forEach(function(canon){
+    var aliases=null;
+    for(var i=0;i<ATS_VOCAB.length;i++){if(ATS_VOCAB[i][0]===canon){aliases=ATS_VOCAB[i];break;}}
+    aliases=aliases||[canon];
+    for(var a=0;a<aliases.length;a++){if(atsContains(corpus,aliases[a])){out.push(canon);break;}}
+  });
+  return out;
+}
+
 function computeATS(d,jd){
   var allBullets=[];d.expBullets.forEach(function(arr){allBullets=allBullets.concat(arr);});allBullets=allBullets.concat(d.proj1.bullets).concat(d.proj2.bullets);
   var keywords=atsExtractKeywords(jd,d.company);var corpus=atsResumeCorpus(d);var kw=atsKeywordMatch(keywords,corpus);var verbs=atsVerbDiversity(allBullets);var metrics=atsMetrics(allBullets);var lengths=atsLengths(allBullets);var format=atsFormatFlags(d,allBullets);
@@ -1039,7 +1084,9 @@ async function generate(type){
   if(type==='resume'){
     setS('<span class="spin"></span>&nbsp; Allocating structure + tailoring bullets...','info');
     try{
-      var raw=await callAPI(key,buildTailorPrompt(company,title,loc,jd,selectedTrack,keywords));
+      var autoKwList=deriveDefensibleJDKeywords(jd,company).slice(0,12);
+      var autoKw=autoKwList.join(', ');
+      var raw=await callAPI(key,buildTailorPrompt(company,title,loc,jd,selectedTrack,keywords,autoKw));
       var parsed=parseTailored(raw);
       resumeData={loc:loc,company:company,alloc:parsed.alloc,reason:parsed.reason,coursework:clean(parsed.coursework)||'Distributed Systems, Database Systems, Machine Learning, Algorithms',skillLang:clean(parsed.skillLang)||CANDIDATE.skillPools[selectedTrack].lang,skillFw:clean(parsed.skillFw)||CANDIDATE.skillPools[selectedTrack].fw,skillDb:clean(parsed.skillDb)||CANDIDATE.skillPools[selectedTrack].db,expBullets:[ensureBullets(parsed.exp1,CANDIDATE.experiences[0].defaultBullets,parsed.alloc.exp1),ensureBullets(parsed.exp2,CANDIDATE.experiences[1].defaultBullets,parsed.alloc.exp2),ensureBullets(parsed.exp3,CANDIDATE.experiences[2].defaultBullets,parsed.alloc.exp3),ensureBullets(parsed.exp4,CANDIDATE.experiences[3].defaultBullets,parsed.alloc.exp4)],proj1:{key:parsed.proj1.key,bullets:ensureBullets(parsed.proj1.bullets,CANDIDATE.projects[parsed.proj1.key].defaultBullets,parsed.alloc.proj1)},proj2:{key:parsed.proj2.key,bullets:ensureBullets(parsed.proj2.bullets,CANDIDATE.projects[parsed.proj2.key].defaultBullets,parsed.alloc.proj2)}};
       var preview=buildPreviewText(resumeData);
@@ -1047,7 +1094,7 @@ async function generate(type){
       var ats=computeATS(resumeData,jd);renderATS(ats,resumeData);document.getElementById('ab').style.display='inline-flex';
       var allBullets=[];resumeData.expBullets.forEach(function(arr){allBullets=allBullets.concat(arr);});allBullets=allBullets.concat(resumeData.proj1.bullets).concat(resumeData.proj2.bullets);
       var allocStr='AWS:'+parsed.alloc.exp1+' Pay:'+parsed.alloc.exp2+' Ima:'+parsed.alloc.exp3+' GDSC:'+parsed.alloc.exp4+' P1:'+parsed.alloc.proj1+' P2:'+parsed.alloc.proj2;
-      setS('&#10003; Ready \u2014 '+allBullets.length+' bullets ['+allocStr+'] \u2014 ATS '+ats.total+'/100','ok');
+      setS('&#10003; Ready \u2014 '+allBullets.length+' bullets ['+allocStr+'] \u2014 ATS '+ats.total+'/100 \u2014 auto-added '+autoKwList.length+' JD-matched skills','ok');
     }catch(e){setS('Error: '+e.message,'err');console.error(e);}
   }else{
     setS('<span class="spin"></span>&nbsp; Writing cover letter...','info');
@@ -1078,9 +1125,9 @@ function buildPreviewText(d){
   CANDIDATE.experiences.forEach(function(e,i){lines.push(e.title+' | '+e.company+' | '+e.date);lines.push('Tech: '+e.tech);d.expBullets[i].forEach(function(b){lines.push('\u2022 '+b);});lines.push('');});
   lines.push('PROJECTS');
   [d.proj1,d.proj2].forEach(function(p){var pr=CANDIDATE.projects[p.key];lines.push(pr.name+' | '+pr.stack);p.bullets.forEach(function(b){lines.push('\u2022 '+b);});lines.push('');});
-  lines.push('PUBLICATION');lines.push(CANDIDATE.pub.title+' \u2014 '+CANDIDATE.pub.venue);lines.push(CANDIDATE.pub.desc);
+  lines.push('PUBLICATION');lines.push(CANDIDATE.pub.title+'  |  '+CANDIDATE.pub.venue);lines.push(CANDIDATE.pub.desc);
   lines.push('');lines.push('LEADERSHIP & RECOGNITION');
-  CANDIDATE.leadership.forEach(function(l){lines.push(l.title+' \u2014 '+l.desc);});
+  CANDIDATE.leadership.forEach(function(l){lines.push(l.title+'  |  '+l.desc);});
   return lines.join('\n');
 }
 
@@ -1139,10 +1186,10 @@ function buildDocXML(d){
   p.push(pS('PROJECTS'));
   [d.proj1,d.proj2].forEach(function(pr){var proj=CANDIDATE.projects[pr.key];p.push(pPH(proj.name,proj.stack));pr.bullets.forEach(function(b){p.push(pB(b));});});
   p.push(pS('PUBLICATION'));
-  p.push(pMx(CANDIDATE.pub.title,'  \u2014  '+CANDIDATE.pub.venue));
+  p.push(pMx(CANDIDATE.pub.title,'  |  '+CANDIDATE.pub.venue));
   p.push(pPl(CANDIDATE.pub.desc));
   p.push(pS('LEADERSHIP \u0026 RECOGNITION'));
-  CANDIDATE.leadership.forEach(function(l){p.push(pMx(l.title,'  \u2014  '+l.desc));});
+  CANDIDATE.leadership.forEach(function(l){p.push(pMx(l.title,'  |  '+l.desc));});
   p.push('<w:sectPr>'
     +'<w:pgSz w:w="12240" w:h="15840"/>'
     +'<w:pgMar w:top="432" w:right="720" w:bottom="432" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>'
