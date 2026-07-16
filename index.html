@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v20 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v21 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -150,6 +150,13 @@ table.tlog tr:hover td{background:var(--surface2);}
   </div>
 
   <div class="field-group">
+    <div class="field-label">GPA Display</div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);cursor:pointer;"><input type="checkbox" id="showUscGpa"> Show USC GPA (3.40)</label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);cursor:pointer;margin-top:4px;"><input type="checkbox" id="showBtechGpa" checked> Show B.Tech GPA (3.61)</label>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;">USC GPA is off by default; a sub-3.5 grad GPA is rarely a selling point on a new-grad resume.</div>
+  </div>
+
+  <div class="field-group">
     <div class="field-label">Job Description</div>
     <textarea id="jd" placeholder="Paste full JD here..."></textarea>
   </div>
@@ -165,6 +172,9 @@ table.tlog tr:hover td{background:var(--surface2);}
       <button class="track-btn" data-track="dataeng">Data Eng</button>
       <button class="track-btn" data-track="business">Business</button>
       <button class="track-btn" data-track="quant">Quant</button>
+      <button class="track-btn" data-track="platform">Platform / Infra</button>
+      <button class="track-btn" data-track="applied_sci">Applied Sci</button>
+      <button class="track-btn" data-track="fullstack">Full-Stack</button>
     </div>
   </div>
 
@@ -298,8 +308,8 @@ var CANDIDATE = {
   github: "github.com/Dhruvin255",
 
   edu: [
-    { left: "University of Southern California, Los Angeles, CA  |  M.S. Computer Science (Data Science), GPA: 3.40", date: "May 2026" },
-    { left: "NMIMS University, Mumbai, India  |  B.Tech. Computer Engineering, GPA: 3.61", date: "May 2023" }
+    { school: "University of Southern California, Los Angeles, CA", degree: "M.S. Computer Science (Data Science)", gpa: "3.40", date: "May 2026" },
+    { school: "NMIMS University, Mumbai, India", degree: "B.Tech. Computer Engineering", gpa: "3.61", date: "May 2024" }
   ],
 
   skillPools: {
@@ -310,7 +320,10 @@ var CANDIDATE = {
     dataeng:  { lang:"Python, SQL, Scala, Java, Bash, R, PySpark", fw:"dbt, Airflow, Spark, Kafka, Pandas, NumPy, ETL pipelines, Data modeling, LangChain, Scikit-learn", db:"BigQuery, Snowflake, Redshift, PostgreSQL, MongoDB, S3, AWS (Lambda, Glue, EC2), Docker, Kubernetes, GCS" },
     business: { lang:"Python, SQL, R, JavaScript, Java", fw:"Tableau, Power BI, Scikit-learn, Pandas, XGBoost, ETL, REST APIs, LangChain", db:"PostgreSQL, MongoDB, Redshift, Snowflake, AWS (S3, EC2), Docker, Google Analytics" },
     quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" },
-    ai_eng:   { lang:"Python, SQL, C++, JavaScript, Bash", fw:"PyTorch, LangChain, Hugging Face Transformers, BERT, RAG, LLM fine-tuning, FastAPI, Scikit-learn", db:"Pinecone, ChromaDB, FAISS, PostgreSQL, AWS (S3, EC2, Lambda), Docker, MLflow" }
+    ai_eng:   { lang:"Python, SQL, C++, JavaScript, Bash", fw:"PyTorch, LangChain, Hugging Face Transformers, BERT, RAG, LLM fine-tuning, FastAPI, Scikit-learn", db:"Pinecone, ChromaDB, FAISS, PostgreSQL, AWS (S3, EC2, Lambda), Docker, MLflow" },
+    platform:    { lang:"Python, C++, Go, Bash, SQL, Java", fw:"Docker, Kubernetes, Terraform, CI/CD, gRPC, Prometheus, Grafana", db:"AWS (EC2, S3, Lambda, Redshift), PostgreSQL, Redis, Kafka, Linux, Distributed Systems" },
+    applied_sci: { lang:"Python, SQL, R, C++, Scala", fw:"PyTorch, TensorFlow, BERT, Hugging Face, Scikit-learn, XGBoost, NumPy, SciPy, statsmodels", db:"AWS (S3, EC2, Redshift), PostgreSQL, Snowflake, Spark, Docker, MLflow" },
+    fullstack:   { lang:"JavaScript, TypeScript, Python, Java, SQL", fw:"React, Node.js, Express, Next.js, Django, REST APIs, JWT", db:"PostgreSQL, MongoDB, Redis, AWS (S3, EC2, Lambda), Docker, GCP" }
   },
 
   experiences: [
@@ -500,7 +513,8 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + 'R4 \u2014 ACTIVE VOICE: Past-tense verb first. Never "Worked on", "Helped", "Assisted".\n'
     + 'R5 \u2014 NO REPETITION: No phrase/noun/concept repeated across bullets in the same role.\n'
     + 'R6 \u2014 FACTS ONLY: Never invent tech, titles, dates, or metrics.\n'
-    + 'R7 \u2014 NO SKILL INFLATION: Mention a technology in a BULLET only if Dhruvin actually used it in that role. Do NOT pad bullets with studied-but-unused tech; modern ATS scores each skill by how convincingly it is supported, so a long tail of weakly-supported skills LOWERS the match and reads as inflated. Studied-but-unused tech may appear in the skills section ONLY if it is genuinely defensible in an interview, kept to a tight credible set. Favor depth he can speak to over breadth.\n\n'
+    + 'R7 \u2014 NO SKILL INFLATION: Mention a technology in a BULLET only if Dhruvin actually used it in that role. Do NOT pad bullets with studied-but-unused tech; modern ATS scores each skill by how convincingly it is supported, so a long tail of weakly-supported skills LOWERS the match and reads as inflated. Studied-but-unused tech may appear in the skills section ONLY if it is genuinely defensible in an interview, kept to a tight credible set. Favor depth he can speak to over breadth.\n'
+    + 'R8 \u2014 VARY THE SHAPE (anti-monotony): Not every bullet is verb+metric. Across the whole resume, 2 to 3 bullets should be ownership/scope bullets that lead with what Dhruvin owned, built, or decided and land on scope (systems, users, nodes, teams, tiers) instead of a percentage. A uniform metric-first rhythm where every bullet looks structurally identical is a top AI-writing tell and reads as generated; break it on purpose. The GDSC bullets especially should read as initiative and ownership, not statistics. KEEP every defensible metric already present; do NOT strip numbers and do NOT force a number into every single line.\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 5 \u2014 EXPERIENCE CONTEXT \u2550\u2550\u2550\u2550\n'
     + expLines + '\n\n'
@@ -562,6 +576,7 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords){
     + '  \u25a1 Number of bullets you emit per section matches the ALLOC value\n'
     + '  \u25a1 Verbs read human: at most ONE engineered/architected-class verb, no power-verb clustering\n'
     + '  \u25a1 No skill inflation: every tech in a bullet was actually used in that role\n'
+    + '  \u25a1 Bullet shape varies: not every bullet is metric-first; 2-3 are ownership/scope bullets\n'
     + (mustUseKeywords && mustUseKeywords.trim() ? '  \u25a1 All mandatory keywords appear somewhere in the resume\n' : '')
     + 'Fix any fail before outputting.';
 }
@@ -986,14 +1001,18 @@ async function generate(type){
   unlockBtns();
 }
 
+function eduLeft(e,showGpa){return e.school+'  |  '+e.degree+((showGpa&&e.gpa)?', GPA: '+e.gpa:'');}
+function showUscGpa(){var el=document.getElementById('showUscGpa');return el?el.checked:false;}
+function showBtechGpa(){var el=document.getElementById('showBtechGpa');return el?el.checked:true;}
+
 function buildPreviewText(d){
   var lines=[];
   lines.push('DHRUVIN JHAVERI');
   lines.push(CANDIDATE.phone+'  |  '+CANDIDATE.email+'  |  '+CANDIDATE.linkedin+'  |  '+CANDIDATE.github+'  |  '+d.loc);
   lines.push('');lines.push('EDUCATION');
-  lines.push('University of Southern California  |  M.S. CS (Data Science), GPA: 3.40  |  May 2026');
+  lines.push(eduLeft(CANDIDATE.edu[0],showUscGpa())+'  |  '+CANDIDATE.edu[0].date);
   lines.push('Relevant Coursework: '+d.coursework);
-  lines.push('NMIMS University  |  B.Tech. Computer Engineering, GPA: 3.61  |  May 2023');
+  lines.push(eduLeft(CANDIDATE.edu[1],showBtechGpa())+'  |  '+CANDIDATE.edu[1].date);
   lines.push('');lines.push('TECHNICAL SKILLS');
   lines.push('Languages: '+d.skillLang);lines.push('Frameworks & Libraries: '+d.skillFw);lines.push('Databases & Cloud: '+d.skillDb);
   lines.push('');lines.push('EXPERIENCE');
@@ -1051,9 +1070,9 @@ function buildDocXML(d){
   p.push(pN(CANDIDATE.name));
   p.push(pC(CANDIDATE.phone+'  |  '+CANDIDATE.email+'  |  '+CANDIDATE.linkedin+'  |  '+CANDIDATE.github+'  |  '+d.loc));
   p.push(pS('EDUCATION'));
-  p.push(pE(CANDIDATE.edu[0].left,CANDIDATE.edu[0].date));
+  p.push(pE(eduLeft(CANDIDATE.edu[0],showUscGpa()),CANDIDATE.edu[0].date));
   p.push(pCr(d.coursework));
-  p.push(pE(CANDIDATE.edu[1].left,CANDIDATE.edu[1].date));
+  p.push(pE(eduLeft(CANDIDATE.edu[1],showBtechGpa()),CANDIDATE.edu[1].date));
   p.push(pS('TECHNICAL SKILLS'));
   p.push(pSk('Languages',d.skillLang));p.push(pSk('Frameworks & Libraries',d.skillFw));p.push(pSk('Databases & Cloud',d.skillDb));
   p.push(pS('EXPERIENCE'));
