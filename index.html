@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v26 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v27 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -602,6 +602,9 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + 'CRITICAL FORMATTING: Values must be plain text ONLY. NEVER wrap values in [ ], { }, or quotes.\n'
     + 'WRONG: COURSEWORK: [Machine Learning, NLP, Algorithms, Data Mining]\n'
     + 'RIGHT:  COURSEWORK: Machine Learning, NLP, Algorithms, Data Mining\n\n'
+    + 'SKILL_LANG, SKILL_FW, SKILL_DB, COURSEWORK: output ONLY the comma-separated items. NO count like "(6 ...)", NO justification or notes (defensible, JD-listed, used, for stats, all JD-matched), NO dashes, NO trailing commentary of any kind. A parenthesis is allowed ONLY as a tech grouping such as AWS (S3, EC2, Lambda).\n'
+    + 'WRONG: SKILL_LANG: Python, SQL, C++, Java, R, Go (6 \u2014 Go is JD-listed, defensible via studied; R for stats)\n'
+    + 'RIGHT:  SKILL_LANG: Python, SQL, C++, Java, R, Go\n\n'
     + 'FINAL SELF-CHECK before outputting:\n'
     + '  \u25a1 ALLOC_EXP1 \u2208 {3,4} and defaults to 4, ALLOC_EXP4 = 2, all other ALLOC \u2208 {2,3}\n'
     + '  \u25a1 Sum of all ALLOC values is between 16 and 18\n'
@@ -610,6 +613,7 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + '  \u25a1 EVERY opening verb is unique across all bullets (no verb repeated, not even twice)\n'
     + '  \u25a1 EVERY bullet is 13-18 words and NONE exceed 18 (count them) so the resume stays one page\n'
     + '  \u25a1 Verbs are plain, not showy: at most ONE engineered/architected-class verb, no power-verb clustering\n'
+    + '  \u25a1 Skill and coursework lines are clean comma lists: no counts, no notes, no dashes, no parenthetical justification\n'
     + '  \u25a1 No skill inflation: every tech in a bullet was actually used in that role\n'
     + '  \u25a1 Bullet shape varies: not every bullet is metric-first; 2-3 are ownership/scope bullets\n'
     + '  \u25a1 Zero em dashes, en dashes, or " - " used as punctuation anywhere in any bullet\n'
@@ -1127,6 +1131,26 @@ function trimBullet(b,maxW){
   while(kept.length>1){var last=normKey(kept[kept.length-1]);if(PREPS[last]||FILLER[last]){kept.pop();}else break;}
   return kept.join(' ').replace(/\s+([;,:.])/g,'$1').replace(/[ ,;:]+$/,'');
 }
+// Strip model rationale that leaks into skill/coursework lines: counts like "(6 ...)", notes, and dashes,
+// while KEEPING legit tech groupings like AWS (S3, EC2, Lambda).
+function sanitizeSkillLine(s){
+  if(!s)return s;
+  var v=String(s);
+  v=v.replace(/\(([^)]*)\)?/g,function(m,inner){
+    return /[\u2014\u2013;:]|defensible|studied|\bused\b|matched|clearly|listed|\bvia\b|bonus|\bJD\b|^\s*\d+\s/i.test(inner)?' ':m;
+  });
+  v=v.replace(/\s+(?:\u2014|\u2013|--|-)\s+.*$/,'');
+  v=v.replace(/[\[\]\{\}"']/g,' ');
+  var parts=[],depth=0,cur='';
+  for(var i=0;i<v.length;i++){var ch=v[i];if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);if(ch===','&&depth===0){parts.push(cur);cur='';}else cur+=ch;}
+  parts.push(cur);
+  var seen={},out=[];
+  parts.forEach(function(t){t=t.replace(/\s+/g,' ').trim();if(!t)return;
+    if(/defensible|studied|matched|\blisted\b|clearly|bonus|\bJD\b|\bvia\b|for stats/i.test(t))return;
+    var k=t.toLowerCase();if(!seen[k]){seen[k]=1;out.push(t);}
+  });
+  return out.join(', ');
+}
 // Trim every bullet to <=18 words, then force unique opening verbs. Both scored dimensions become deterministic.
 function normalizeResumeBullets(d){
   var groups=[];d.expBullets.forEach(function(arr){groups.push(arr);});groups.push(d.proj1.bullets);groups.push(d.proj2.bullets);
@@ -1182,7 +1206,7 @@ async function generate(type){
       var autoKw=autoKwList.join(', ');
       var raw=await callAPI(key,buildTailorPrompt(company,title,loc,jd,selectedTrack,keywords,autoKw));
       var parsed=parseTailored(raw);
-      resumeData={loc:loc,company:company,alloc:parsed.alloc,reason:parsed.reason,coursework:clean(parsed.coursework)||'Distributed Systems, Database Systems, Machine Learning, Algorithms',skillLang:clean(parsed.skillLang)||CANDIDATE.skillPools[selectedTrack].lang,skillFw:clean(parsed.skillFw)||CANDIDATE.skillPools[selectedTrack].fw,skillDb:clean(parsed.skillDb)||CANDIDATE.skillPools[selectedTrack].db,expBullets:[ensureBullets(parsed.exp1,CANDIDATE.experiences[0].defaultBullets,parsed.alloc.exp1),ensureBullets(parsed.exp2,CANDIDATE.experiences[1].defaultBullets,parsed.alloc.exp2),ensureBullets(parsed.exp3,CANDIDATE.experiences[2].defaultBullets,parsed.alloc.exp3),ensureBullets(parsed.exp4,CANDIDATE.experiences[3].defaultBullets,parsed.alloc.exp4)],proj1:{key:parsed.proj1.key,bullets:ensureBullets(parsed.proj1.bullets,CANDIDATE.projects[parsed.proj1.key].defaultBullets,parsed.alloc.proj1)},proj2:{key:parsed.proj2.key,bullets:ensureBullets(parsed.proj2.bullets,CANDIDATE.projects[parsed.proj2.key].defaultBullets,parsed.alloc.proj2)}};
+      resumeData={loc:loc,company:company,alloc:parsed.alloc,reason:parsed.reason,coursework:sanitizeSkillLine(clean(parsed.coursework))||'Distributed Systems, Database Systems, Machine Learning, Algorithms',skillLang:sanitizeSkillLine(clean(parsed.skillLang))||CANDIDATE.skillPools[selectedTrack].lang,skillFw:sanitizeSkillLine(clean(parsed.skillFw))||CANDIDATE.skillPools[selectedTrack].fw,skillDb:sanitizeSkillLine(clean(parsed.skillDb))||CANDIDATE.skillPools[selectedTrack].db,expBullets:[ensureBullets(parsed.exp1,CANDIDATE.experiences[0].defaultBullets,parsed.alloc.exp1),ensureBullets(parsed.exp2,CANDIDATE.experiences[1].defaultBullets,parsed.alloc.exp2),ensureBullets(parsed.exp3,CANDIDATE.experiences[2].defaultBullets,parsed.alloc.exp3),ensureBullets(parsed.exp4,CANDIDATE.experiences[3].defaultBullets,parsed.alloc.exp4)],proj1:{key:parsed.proj1.key,bullets:ensureBullets(parsed.proj1.bullets,CANDIDATE.projects[parsed.proj1.key].defaultBullets,parsed.alloc.proj1)},proj2:{key:parsed.proj2.key,bullets:ensureBullets(parsed.proj2.bullets,CANDIDATE.projects[parsed.proj2.key].defaultBullets,parsed.alloc.proj2)}};
       normalizeResumeBullets(resumeData);
       var preview=buildPreviewText(resumeData);
       document.getElementById('rPreview').textContent=preview;document.getElementById('rPreview').style.display='block';document.getElementById('rEmpty').style.display='none';document.getElementById('rb').style.display='inline-flex';document.getElementById('dlR').disabled=false;switchTab('resume');
