@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v27 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v28 — Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -324,7 +324,7 @@ var CANDIDATE = {
   github: "github.com/Dhruvin255",
 
   edu: [
-    { school: "University of Southern California, Los Angeles, CA", degree: "M.S. Computer Science (Data Science)", gpa: "3.40", date: "May 2026" },
+    { school: "University of Southern California, Los Angeles, CA", degree: "M.S. Computer Science (Data Science)", gpa: "3.40", date: "Dec 2026" },
     { school: "NMIMS University, Mumbai, India", degree: "B.Tech. Computer Engineering", gpa: "3.61", date: "May 2024" }
   ],
 
@@ -381,15 +381,33 @@ var CANDIDATE = {
       title: "Co-Founder, Competitive Coding Dept.",
       company: "Google Developer Student Clubs (GDSC), Mumbai",
       date: "Jul 2022 \u2013 Jul 2023",
-      tech: "Java, DSA, Competitive Programming, LeetCode, Codeforces, Hackerrank",
+      tech: "Java, Data Structures, Mentoring, Workshops, Event Organization",
       defaultBullets: [
-        "Founded GDSC coding department from scratch; scaled to 200+ active members and 40+ competitions in one year",
-        "Mentored 45+ students across LeetCode, Codeforces, and Hackerrank; multiple placements in ACM SemiCode"
+        "Founded a GDSC technical department from scratch and grew it to 200+ active members within one year",
+        "Mentored 45+ students through weekly problem-solving sessions, pairing newcomers with experienced members"
       ]
     }
   ],
 
   projects: {
+    resumeforge: {
+      name: "ResumeForge: AI Resume Generation Tool",
+      stack: "JavaScript, HTML, Anthropic API, ATS Scoring",
+      defaultBullets: [
+        "Shipped a single-file JavaScript tool calling the Anthropic API to generate tailored resumes, cover letters, and ATS scores",
+        "Iterated through 28 versions, adding deterministic post-processing, sanitizers, and keyword injection for consistent DOCX output",
+        "Wrote a JD keyword extractor and ATS scorer covering 250+ skill aliases across 11 role tracks"
+      ]
+    },
+    bwtree: {
+      name: "Latch-Free Bw-Tree Index for PostgreSQL 16 (Open Source)",
+      stack: "C++17, PostgreSQL, Concurrency, ThreadSanitizer",
+      defaultBullets: [
+        "Implemented a latch-free Bw-tree in C++17 with 8 CAS sites and epoch-based reclamation, verified ThreadSanitizer-clean",
+        "Integrated the index into PostgreSQL 16 as a custom access method, wiring IndexAmRoutine callbacks and SQL test oracles",
+        "Benchmarked against a sharded hash map at 16 threads, achieving ~9\u00b5s p99 latency versus ~37\u00b5s on write-heavy workloads"
+      ]
+    },
     artist: {
       name: "Full Stack Artist Search Application",
       stack: "Node.js, GCP, React, Android, Express, JWT, MapReduce",
@@ -429,10 +447,6 @@ var CANDIDATE = {
     {
       title: "Study Australia Entrepreneurship Challenge",
       desc:  "Runner-up; AUD 10,000 prize awarded for PharmaChain blockchain supply chain innovation. Harvard-recognized program."
-    },
-    {
-      title: "ACM SemiCode",
-      desc:  "National finalist, inter-college competitive programming competition; top placement among 500+ participants."
     },
     {
       title: "Head of Communication",
@@ -511,7 +525,7 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + '  \u2022 EXP1 (AWS): 3 OR 4 bullets. AWS is the FLAGSHIP role and should be the most prominent block. DEFAULT to 4 bullets. Only drop to 3 if the JD is almost entirely non-technical (pure business/analytics with no engineering at all).\n'
     + '  \u2022 EXP2 (Paypoint): 2 OR 3 bullets.\n'
     + '  \u2022 EXP3 (Imarticus): 2 OR 3 bullets.\n'
-    + '  \u2022 EXP4 (GDSC): ALWAYS 2 bullets. Frame these around INITIATIVE and OWNERSHIP: founded the department from nothing, drove change, took action and led. This block exists to prove he builds and leads, not just executes.\n'
+    + '  \u2022 EXP4 (GDSC): ALWAYS 2 bullets. Frame these around INITIATIVE, OWNERSHIP, and MENTORING: founded the department from nothing, grew it, coached people. Do NOT mention LeetCode, Codeforces, HackerRank, competitive programming, contests, or ACM unless the JD explicitly values algorithms competitions.\n'
     + '  \u2022 PROJ1 (first project slot): 2 OR 3 bullets.\n'
     + '  \u2022 PROJ2 (second project slot): 2 OR 3 bullets.\n\n'
     + 'TOTAL BULLET COUNT must land between 16 and 18 (inclusive). This is a hard page-fit constraint.\n\n'
@@ -521,19 +535,22 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + '  - With AWS at 4, a clean default is 4/3/3/2/3/3 (total 18) or 4/3/2/2/3/3 (total 17).\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 3 \u2014 PROJECT SELECTION \u2550\u2550\u2550\u2550\n'
-    + 'Three projects are available. You must pick EXACTLY 2 and assign them to PROJ1 and PROJ2 slots:\n\n'
+    + 'Five projects are available. You must pick EXACTLY 2 and assign them to PROJ1 and PROJ2 slots:\n\n'
     + projBlock + '\n\n'
     + 'Selection rules:\n'
     + '  - Pick the 2 projects whose stack and domain best match the JD.\n'
     + '  - PROJ1 is the first project shown, so put the MORE JD-relevant one in PROJ1.\n'
     + '  - PharmaChain (pharma) is a LIVE, interactable deployed project and the candidate\u2019s strongest showcase. Prefer including it unless the JD is a clear poor fit (e.g. pure data-analytics with zero engineering). When the JD touches backend, full-stack, blockchain, systems, or product engineering, favor pharma as PROJ1.\n'
-    + '  - Return the project keys exactly as shown (artist, pharma, volumetric).\n\n'
+    + '  - resumeforge: favor for full-stack, JavaScript, AI/LLM product, developer tooling, or "personal projects beyond the curriculum" JDs.\n'
+    + '  - bwtree: favor ONLY for systems, databases, storage, concurrency, C++, or infra JDs. Never pick it for analytics, business, or pure ML roles.\n'
+    + '  - Show RANGE: avoid picking two projects that tell the same story. One project should never dominate the resume.\n'
+    + '  - Return the project keys exactly as shown (resumeforge, bwtree, artist, pharma, volumetric).\n\n'
 
     + '\u2550\u2550\u2550\u2550 STEP 4 \u2014 BULLET RULES (NON-NEGOTIABLE) \u2550\u2550\u2550\u2550\n'
     + 'Formula: [accurate verb] + [what / how] + [semicolon or comma] + [quantified result]\n'
     + 'R1 \u2014 UNIQUE PLAIN VERBS (SCORED): Every bullet must OPEN with a different verb. No opening verb may repeat anywhere in the resume, not even twice. With 16 to 18 bullets you need 16 to 18 distinct opening verbs, and there are plenty of plain ones, so you never need to reuse "Built" or reach for showy ones. PREFER plain accurate verbs (Built, Designed, Cut, Ran, Tuned, Trained, Wrote, Shipped, Delivered, Launched, Automated, Integrated, Reduced, Scaled, Deployed, Rewrote, Prototyped, Standardized, Measured, Mentored, Founded, Configured, Migrated, Modeled, Processed, Optimized, Analyzed, Tested). Do NOT cluster showy power-verbs (Spearheaded, Orchestrated, Pioneered, Leveraged, Overhauled) and cap "Engineered/Architected"-class verbs at ONE in the entire resume. Reference bank: '+verbBank+'\n'
     + 'R2 \u2014 LENGTH (HARD, ONE-PAGE CRITICAL): Every bullet is 13 to 18 words. Aim for 13 to 17 and treat 18 as the absolute ceiling. A bullet of 19+ words is a failure: it wraps to an extra line, pushes the resume onto a second page, and loses ATS points. COUNT the words in each bullet before finalizing. Vary length only WITHIN the 13 to 18 range; never exceed 18.\n'
-    + 'R3 \u2014 METRICS: Most bullets should contain a number, but a strong qualitative bullet without one is acceptable. Preserve existing metrics (35%, 99.8%, 23%, 94%, 18%, 500k+, 50k+, 90%, 92%, 172ms P95, 10k, 50%, 95%, 25%, 45+, 200+, 40+, 961, 33x, 29). Do not invent.\n'
+    + 'R3 \u2014 METRICS: Most bullets should contain a number, but a strong qualitative bullet without one is acceptable. Preserve existing metrics (35%, 99.8%, 23%, 94%, 18%, 500k+, 50k+, 90%, 92%, 172ms P95, 10k, 50%, 95%, 25%, 45+, 200+, 961, 33x, 29, 8 CAS, 9\u00b5s vs 37\u00b5s, 16 threads, 28 versions, 250+, 11). Do not invent.\n'
     + 'R4 \u2014 ACTIVE VOICE: Past-tense verb first. Never "Worked on", "Helped", "Assisted".\n'
     + 'R5 \u2014 NO REPETITION: No phrase/noun/concept repeated across bullets in the same role.\n'
     + 'R6 \u2014 FACTS ONLY: Never invent tech, titles, dates, or metrics.\n'
@@ -580,8 +597,8 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     + 'ALLOC_EXP4: 2\n'
     + 'ALLOC_PROJ1: <2 or 3>\n'
     + 'ALLOC_PROJ2: <2 or 3>\n'
-    + 'PROJ1_KEY: <artist|pharma|volumetric>\n'
-    + 'PROJ2_KEY: <artist|pharma|volumetric>\n'
+    + 'PROJ1_KEY: <resumeforge|bwtree|artist|pharma|volumetric>\n'
+    + 'PROJ2_KEY: <resumeforge|bwtree|artist|pharma|volumetric>\n'
     + 'ALLOC_REASON: <one sentence explaining your allocation and project choice>\n'
     + 'COURSEWORK: <4 course names comma-separated, NO brackets, NO quotes>\n'
     + 'SKILL_LANG: <languages comma-separated, NO brackets, NO quotes>\n'
@@ -642,52 +659,51 @@ function buildTrackSuggestPrompt(title, jd){
 }
 
 function buildCoverPrompt(company, title, loc, jd){
-  return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+' in '+loc+'.\n\n'
-    + '\u2550\u2550\u2550\u2550 WHO DHRUVIN IS \u2550\u2550\u2550\u2550\n'
-    + 'USC MS Computer Science (Data Science), graduating May 2026, GPA 3.40\n'
-    + 'AWS SDE Intern \u2014 C++ auto-scaling framework for Redshift Serverless, 35% query improvement, 99.8% uptime across 12 nodes\n'
-    + 'Paypoint India \u2014 XGBoost credit risk model 94% accuracy, ETL pipelines 500k+ records/day\n'
-    + 'Imarticus Learning \u2014 BERT+LangChain NLP pipeline 92% accuracy, automated 90% of content-tagging\n'
-    + 'GDSC \u2014 co-founded competitive coding dept from scratch, scaled to 200+ members\n'
-    + 'PharmaChain \u2014 Harvard-recognized Study Australia runner-up, AUD 10,000 prize\n'
-    + 'IEEE ICISAA 2024 \u2014 published BERT classifier, F1: 0.91\n'
-    + 'Relocating to Bay Area / NYC mid-June 2026\n\n'
-    + 'PERSONALITY:\n'
-    + '- Chess player. Thinks in patterns and long sequences. Naturally looks 3 moves ahead on any problem.\n'
-    + '- Has a problem-solving itch, cannot leave a broken system alone.\n'
-    + '- Founded GDSC competitive coding dept from zero members. Not a joiner, a builder.\n'
-    + '- From Mumbai, studying in LA, moving to a new city, comfortable being the new person and figuring things out.\n'
-    + '- Genuinely curious about how systems work at the edges: what breaks, what scales, what does not.\n\n'
-    + '\u2550\u2550\u2550\u2550 JOB DESCRIPTION \u2550\u2550\u2550\u2550\n'
+  return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+' ('+loc+').\n\n'
+    + '════ VERIFIED FACTS (use ONLY these) ════\n'
+    + 'MS Computer Science (Data Science), USC Viterbi. Graduates December 16, 2026; can start January 2027.\n'
+    + 'Moved from Mumbai to Los Angeles in 2024 for USC. Moved to Santa Clara in summer 2025 for the AWS internship. Relocating to the New York City area after graduation.\n'
+    + 'AWS (Amazon Web Services), Redshift Serverless, SDE Intern: C++ fault-tolerant auto-scaling, cut p99 query latency 23% under bursty traffic, CI/CD across 12 nodes.\n'
+    + 'Paypoint India (Mumbai), Data Analyst Intern: XGBoost credit risk model at 94% accuracy, Python/PostgreSQL ETL on 500k+ records daily.\n'
+    + 'Imarticus Learning (Mumbai), Product Enablement Intern: automated 90% of content tagging with Node.js, saving engineers 4 hours a day; BERT/LangChain pipeline.\n'
+    + 'PharmaChain: Ethereum supply chain platform, started as a side project, 2nd place at the Study Australia Entrepreneurship Challenge.\n'
+    + 'ResumeForge: his own Anthropic API tool for resumes and cover letters, iterated through 28 versions because he uses it daily.\n'
+    + 'Bw-tree: latch-free C++ index plugged into PostgreSQL 16 (only for systems/database roles).\n'
+    + 'Co-founded a GDSC technical department, grew it to 200+ members, mentored 45+ students.\n'
+    + 'IEEE ICISAA 2024 publication: BERT toxic comment classifier, F1 0.91.\n'
+    + 'Languages: C++, Python, JavaScript, Java, SQL.\n\n'
+    + '════ JOB DESCRIPTION ════\n'
     + jd+'\n\n'
-    + '\u2550\u2550\u2550\u2550 EXAMPLE COVER LETTER (match this voice) \u2550\u2550\u2550\u2550\n'
-    + '---\nDear Hiring Team,\n\n'
-    + 'Tinder works on a problem that sounds simple but is actually one of the hardest in technology: using behavioral data to create conditions for genuine human connection. The matching logic, the network economics, the psychology of how people present themselves and respond to others. All of it is fascinating. I am finishing my MS in Computer Science at USC this May and moving to New York, and the Rotation Program Analyst role is exactly the kind of start I am looking for.\n\n'
-    + 'Why I am the right fit:\n\n'
-    + '- I analyze complex problems and build models that drive decisions. At Amazon I developed analytical models evaluating system performance and forecasting scaling behavior to inform product and roadmap priorities. At Paypoint I built financial analytics pipelines and dashboards that directly influenced risk strategy and executive decision-making.\n\n'
-    + '- I present findings to senior stakeholders and drive alignment. Across every internship I presented data-driven recommendations to product, risk, and engineering leadership, adapting the depth and framing to the audience.\n\n'
-    + '- I demonstrate ownership and curiosity in fast-paced environments. At Imarticus I identified a business problem independently, built the solution end to end, and delivered a 90% reduction in manual overhead. The PharmaChain platform I built as a student project received industry funding and placed 2nd in a Harvard-recognized entrepreneurship competition.\n\n'
-    + 'New York is the move and Match Group is where I want to start building. Thank you for your time.\n\nSincerely,\nDhruvin Jhaveri\n---\n\n'
-    + '\u2550\u2550\u2550\u2550 RULES \u2550\u2550\u2550\u2550\n'
-    + 'STRUCTURE:\n'
-    + '  Dear Hiring Manager,\n'
-    + '  [Opening: 2-4 sentences. Genuine specific observation about THIS company. No "I am excited to apply".]\n'
-    + '  Why I am the right fit:\n'
-    + '  [3-4 bullet arguments. Each = CLAIM + EVIDENCE, not a resume line.]\n'
-    + '  [Closing: 1-2 sentences. NYC relocation mention. Confident not desperate.]\n'
-    + '  Sincerely,\n  Dhruvin Jhaveri\n\n'
-    + 'VOICE RULES:\n'
-    + '  - NO DASHES AS PUNCTUATION: never an em dash (\u2014), en dash (\u2013), " -- ", or " - " to join or interrupt a clause. Use a comma, colon, period, or restructure. Hyphens inside compounds (fast-paced, full-stack) are fine.\n'
-    + '  - BANNED PHRASES: "I am excited to", "I am thrilled", "I would love the opportunity", "I am confident that", "I hope this message finds you well", "leverage", "passion for", "passionate about", "team player", "hit the ground running", "wear many hats", "in today\u2019s fast-paced", "as a dedicated", "detail-oriented".\n'
-    + '  - BANNED WORDS: seamless, robust, cutting-edge, state-of-the-art, holistic, synergy, spearheaded, utilize.\n'
-    + '  - Contractions are welcome (I\u2019m, it\u2019s, that\u2019s); they read human.\n'
-    + '  - End sentences on substance, not sentiment. No gushing in the sign-off.\n'
-    + '  - Do NOT stack a three-item list in every sentence; vary sentence length.\n'
-    + '  - DO NOT repeat exact metrics from the resume. Reference the STORY, not the number.\n'
-    + '  - Each bullet: one CLAIM about who he is, then brief proof.\n'
-    + '  - No visa/OPT language.\n\n'
-    + 'LENGTH: 280-340 words.\n'
-    + 'OUTPUT: Letter text only. No preamble, no explanation.';
+    + '════ STRUCTURE ════\n'
+    + 'Dear '+company+' Hiring Team,\n\n'
+    + '1. STORY OPENER (2 to 4 sentences): tell a short, concrete story from his REAL journey (the Mumbai to Los Angeles move, the Santa Clara move, or the upcoming New York move) and draw ONE lesson from it about how he works: problem solving, adapting fast, owning the outcome. Do not invent details (people, weather, objects, emotions) that are not in the facts.\n'
+    + '2. BRIDGE (2 to 3 sentences): make the story ANALOGOUS to something specific about '+company+' taken from the JD (how the team works, what they build, a stated value). Then name the '+title+' role.\n'
+    + '3. "Why I fit:" then 3 or 4 bullets. Each bullet = a short bold first-person claim ending in a period (e.g. "I fix what breaks under pressure.") followed by ONE sentence of proof. Use a DIFFERENT experience for each bullet. Across the bullets cover: problem-solving mindset, learning new stacks fast, building for the people who use it, going past the brief.\n'
+    + '4. CLOSE (1 to 2 sentences): "I finish my MS in Computer Science at USC on December 16, 2026 and can start in January 2027." plus one line tied to '+company+'.\n'
+    + 'Best,\nDhruvin Jhaveri\n\n'
+    + '════ EXAMPLE (match this voice, not this content) ════\n'
+    + '---\nDear Canonical Hiring Team,\n\n'
+    + 'In 2024 I left Mumbai for Los Angeles to start my master’s at USC. A year later I was in Santa Clara, writing C++ for Amazon Web Services in a codebase I had never seen before. Two moves, two new worlds, and the same lesson both times: you belong somewhere faster when you stop waiting to feel ready and start solving the problem in front of you.\n\n'
+    + 'Canonical runs on that idea. Your engineers are spread across the globe, meet at sprints twice a year, and ship software that has to work on machines they will never touch. That is the kind of team I want to grow up in, and why I am applying for the Graduate Software Engineer role.\n\n'
+    + 'Why I fit:\n'
+    + '- I fix what breaks under pressure. At AWS I tuned the Redshift Serverless scaling path and cut p99 query latency 23% under bursty traffic.\n'
+    + '- I pick up new stacks fast. Python at Paypoint, Node.js at Imarticus, Solidity for PharmaChain, C++ at AWS. Four stacks, each delivering real results.\n'
+    + '- I build for the people using it. At Imarticus I automated 90% of content tagging and gave engineers back 4 hours every day.\n'
+    + '- I go past the brief. PharmaChain started as a side project and took 2nd place at the Study Australia Entrepreneurship Challenge.\n\n'
+    + 'I finish my MS in Computer Science at USC on December 16, 2026 and can start in January 2027. I would love to bring that problem solving habit to Ubuntu and its users.\n\n'
+    + 'Best,\nDhruvin Jhaveri\n---\n\n'
+    + '════ HUMANIZER RULES (hard) ════\n'
+    + '  - NO dashes as punctuation: never an em dash (—), en dash (–), " -- ", or " - " joining clauses. Hyphens inside compound words are fine. Bullets start with "- ".\n'
+    + '  - BANNED: "I am excited to", "I am thrilled", "I am writing to", "I would love the opportunity", "I am confident that", "passionate", "passion for", "leverage", "utilize", "seamless", "robust", "cutting-edge", "synergy", "spearheaded", "dynamic", "unique opportunity", "team player", "hit the ground running", "fast-paced", "detail-oriented", "delve", "testament".\n'
+    + '  - Vary sentence length: mix short punchy lines with longer ones. One fragment is fine.\n'
+    + '  - Human, excitable professional tone. Confident, never arrogant or needy.\n'
+    + '  - Do NOT mention chess, competitive programming, LeetCode, or contests.\n'
+    + '  - Mention the Bw-tree ONLY if the JD is squarely databases, storage, or concurrency, and in at most one bullet.\n'
+    + '  - Every claim about '+company+' must come from the JD. No generic praise.\n'
+    + '  - No visa, OPT, sponsorship, salary, or travel commitments.\n'
+    + '  - If a sentence could be sent to any company, rewrite it.\n\n'
+    + 'LENGTH: 230 to 270 words.\n'
+    + 'OUTPUT: Letter text only, starting at "Dear". No preamble, no explanation.';
 }
 
 // ─── LINKEDIN ADDITION: prompt builder for the two DMs ───
@@ -698,7 +714,7 @@ function buildLinkedInPrompt(company, title, recName, alumName, jd){
 
   return 'You are writing two cold LinkedIn messages whose ONLY job is to get a reply. Not to impress, not to summarize a resume. Get a reply. A reply happens when the reader thinks "this person is worth 30 seconds, and answering is easy."\n\n'
 
-    + 'CANDIDATE: Dhruvin Jhaveri. Graduating USC M.S. Computer Science (Data Science), May 2026. Last summer: SDE intern at AWS Redshift, where he built a C++ auto-scaling framework for a serverless database. Before that: an XGBoost credit-risk model at a fintech, and a BERT/LangChain NLP pipeline. He co-founded a competitive-coding org and grew it from nothing to 200+ members. He plays chess and tends to think a few moves ahead.\n\n'
+    + 'CANDIDATE: Dhruvin Jhaveri. Graduating USC M.S. Computer Science (Data Science) on December 16, 2026, available from January 2027. Last summer: SDE intern at AWS Redshift, where he built a C++ auto-scaling framework for a serverless database. Before that: an XGBoost credit-risk model at a fintech, and a BERT/LangChain NLP pipeline. He co-founded a student tech department and grew it from nothing to 200+ members.\n\n'
 
     + 'TARGET COMPANY: '+company+'\n'
     + 'TARGET ROLE: '+title+'\n'
@@ -1038,9 +1054,9 @@ function parseTailored(text){
   var total=a1+a2+a3+a4+ap1+ap2;var guard=0;
   while(total>18&&guard++<6){if(ap2===3){ap2=2;}else if(ap1===3){ap1=2;}else if(a3===3){a3=2;}else if(a2===3){a2=2;}else if(a1===4){a1=3;}else break;total=a1+a2+a3+a4+ap1+ap2;}
   guard=0;while(total<16&&guard++<6){if(a1===3){a1=4;}else if(a2===2){a2=3;}else if(a3===2){a3=3;}else if(ap1===2){ap1=3;}else if(ap2===2){ap2=3;}else break;total=a1+a2+a3+a4+ap1+ap2;}
-  var validKeys={artist:1,pharma:1,volumetric:1};
+  var validKeys={resumeforge:1,bwtree:1,artist:1,pharma:1,volumetric:1};
   var pk1=(g('PROJ1_KEY')||'').toLowerCase();var pk2=(g('PROJ2_KEY')||'').toLowerCase();
-  if(!validKeys[pk1])pk1='pharma';if(!validKeys[pk2]||pk2===pk1){var remaining=['pharma','artist','volumetric'].filter(function(k){return k!==pk1;});pk2=remaining[0];}
+  if(!validKeys[pk1])pk1='pharma';if(!validKeys[pk2]||pk2===pk1){var remaining=['pharma','artist','resumeforge','bwtree','volumetric'].filter(function(k){return k!==pk1;});pk2=remaining[0];}
   function collect(prefix,n){var out=[];for(var i=1;i<=n;i++){var v=g(prefix+'_B'+i);if(v)out.push(v);}return out;}
   return{alloc:{exp1:a1,exp2:a2,exp3:a3,exp4:a4,proj1:ap1,proj2:ap2,total:total},reason:g('ALLOC_REASON'),coursework:g('COURSEWORK'),skillLang:g('SKILL_LANG'),skillFw:g('SKILL_FW'),skillDb:g('SKILL_DB'),exp1:collect('EXP1',a1),exp2:collect('EXP2',a2),exp3:collect('EXP3',a3),exp4:collect('EXP4',a4),proj1:{key:pk1,bullets:collect('PROJ1',ap1)},proj2:{key:pk2,bullets:collect('PROJ2',ap2)}};
 }
@@ -1357,7 +1373,7 @@ async function downloadCover(){
     var body=lines.map(function(line){
       var t=line.trim();
       if(!t)return '<w:p><w:pPr><w:spacing w:after="0" w:before="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>';
-      if(t.match(/^Why I am/i)||t.match(/^Why Dhruvin/i))return '<w:p><w:pPr>'+sp2(80,40)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>';
+      if(t.match(/^Why I am/i)||t.match(/^Why I fit/i)||t.match(/^Why Dhruvin/i))return '<w:p><w:pPr>'+sp2(80,40)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>';
       if(t[0]==='\u2022'||t[0]==='-'){var bt=t.replace(/^[\u2022\-]\s*/,'');var dot=bt.indexOf('. ');var inner=(dot>0)?rn(bt.slice(0,dot+1),{b:true,sz:21})+rn(' '+bt.slice(dot+2),{sz:21}):rn(bt,{sz:21});return '<w:p><w:pPr><w:ind w:left="360" w:hanging="220"/><w:spacing w:after="120" w:line="260" w:lineRule="auto"/></w:pPr><w:r><w:rPr>'+F2+'<w:sz w:val="21"/><w:szCs w:val="21"/></w:rPr><w:t xml:space="preserve">\u2022  </w:t></w:r>'+inner+'</w:p>';}
       if(t==='Dhruvin Jhaveri')return '<w:p><w:pPr>'+sp2(0,0)+'</w:pPr>'+rn(t,{b:true,sz:22})+'</w:p>';
       return '<w:p><w:pPr>'+sp2(0,120)+'</w:pPr>'+rn(t,{sz:22})+'</w:p>';
