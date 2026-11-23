@@ -124,7 +124,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="sidebar">
   <div class="logo">
     <div class="logo-icon">✦</div>
-    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v28 — Resume Builder</div></div>
+    <div><div class="logo-text">Billo Rani</div><div class="logo-sub">v29 — Fact-locked Resume Builder</div></div>
   </div>
 
   <div class="field-group">
@@ -146,7 +146,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 
   <div class="field-group">
     <div class="field-label">Location on Resume</div>
-    <input type="text" id="location" value="New York, NY">
+    <input type="text" id="location" value="New York, NY (Relocating Dec 2026)">
   </div>
 
   <div class="field-group">
@@ -183,7 +183,7 @@ table.tlog tr:hover td{background:var(--surface2);}
   <div class="field-group">
     <div class="field-label">Must-Use Keywords (Optional)</div>
     <textarea id="keywords" placeholder="e.g., dbt, BigQuery, Airflow, Kafka, Spark..." style="min-height:80px;"></textarea>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Comma-separated keywords that MUST appear in the resume. Woven into Tech lines and skills naturally.</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:-6px;">Comma-separated. Used only if they are in your fact base (used or familiar tech); anything else is skipped, never faked.</div>
   </div>
 
   <!-- ─── LINKEDIN ADDITION (sidebar inputs, optional) ─── -->
@@ -203,6 +203,7 @@ table.tlog tr:hover td{background:var(--surface2);}
 <div class="main">
   <div class="toolbar">
     <button class="btn btn-primary" onclick="generate('resume')"><span>◎</span> Generate Resume</button>
+    <button class="btn btn-secondary" onclick="loadMaster()"><span>★</span> Master Resume</button>
     <button class="btn btn-secondary" onclick="generate('cover')"><span>✉</span> Cover Letter</button>
     <button class="btn btn-secondary" onclick="generateLinkedIn()"><span>in</span> LinkedIn DMs</button>
     <div style="flex:1"></div>
@@ -215,7 +216,7 @@ table.tlog tr:hover td{background:var(--surface2);}
   <div class="tabs">
     <div class="tab active" data-tab="resume" onclick="switchTab('resume')">Resume <span class="badge" id="rb" style="display:none">✓</span></div>
     <div class="tab" data-tab="cover" onclick="switchTab('cover')">Cover Letter <span class="badge" id="cb" style="display:none">✓</span></div>
-    <div class="tab" data-tab="ats" onclick="switchTab('ats')">ATS Score <span class="badge" id="ab" style="display:none">✓</span></div>
+    <div class="tab" data-tab="ats" onclick="switchTab('ats')">Screen Check <span class="badge" id="ab" style="display:none">✓</span></div>
     <div class="tab" data-tab="linkedin" onclick="switchTab('linkedin')">LinkedIn <span class="badge" id="lb" style="display:none">✓</span></div>
     <div class="tab" data-tab="tracker" onclick="switchTab('tracker')">Tracker <span class="badge" id="tb" style="display:none" id="tcnt">0</span></div>
   </div>
@@ -230,7 +231,7 @@ table.tlog tr:hover td{background:var(--surface2);}
       <div id="cPreview" class="preview" style="display:none"></div>
     </div>
     <div id="atsTab" style="display:none">
-      <div class="empty" id="aEmpty"><div class="empty-icon">◉</div><div class="empty-title">No ATS analysis yet</div><div class="empty-sub">Generate a resume first — the score will appear here automatically</div></div>
+      <div class="empty" id="aEmpty"><div class="empty-icon">◉</div><div class="empty-title">No screen check yet</div><div class="empty-sub">Generate a resume or load the master; the check runs automatically</div></div>
       <div id="aReport" style="display:none"></div>
     </div>
     <!-- ─── LINKEDIN ADDITION (new tab panel) ─── -->
@@ -324,160 +325,192 @@ var CANDIDATE = {
   github: "github.com/Dhruvin255",
 
   edu: [
-    { school: "University of Southern California, Los Angeles, CA", degree: "M.S. Computer Science (Data Science)", gpa: "3.40", date: "Dec 2026" },
+    { school: "University of Southern California, Los Angeles, CA", degree: "M.S. Computer Science (Data Science)", gpa: "3.40", date: "Expected Dec 2026" },
     { school: "NMIMS University, Mumbai, India", degree: "B.Tech. Computer Engineering", gpa: "3.61", date: "May 2024" }
   ],
 
+  // v29: coursework he actually took. The model may only pick from this list.
+  courses: ["Analysis of Algorithms", "Database Systems", "Machine Learning", "Web Technologies", "Multimedia Systems", "Optimization"],
+
+  // v29 FACT BASE. usedTech = used in a job or project (safe anywhere). familiarTech = coursework level (skills line only, never bullets).
+  usedTech: "C++, C++17, Python, SQL, Java, JavaScript, TypeScript, Solidity, Node.js, Express, React, REST APIs, JWT, XGBoost, scikit-learn, Pandas, NumPy, BERT, NLP, Selenium, Tableau, Qlik Sense, PostgreSQL, MongoDB, Amazon Redshift, Redshift Serverless, AWS, Amazon S3, AWS EC2, AWS CLI, GCP, Docker, Git, Linux, Ethereum, Web3.js, Truffle, MapReduce, Concurrency, Distributed Systems, Low Latency, ThreadSanitizer, Machine Learning, ETL, Android",
+  familiarTech: "PyTorch, TensorFlow, Hugging Face, Flask, Django, FastAPI, Redis, Kubernetes, Kafka, Spark, Airflow, Snowflake, R, Go, LangChain, CI/CD, GitHub Actions, Statistics, A/B Testing",
+
   skillPools: {
-    sde:      { lang:"Python, C++, Java, SQL, JavaScript, TypeScript", fw:"Node.js, Express, React, Django, Flask, PyTorch, LangChain, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, REST APIs" },
-    backend:  { lang:"Python, Java, SQL, JavaScript, TypeScript, C++", fw:"Node.js, Express, Django, Flask, REST APIs, LangChain, BERT, Scikit-learn", db:"PostgreSQL, MongoDB, Redshift, AWS (S3, EC2, Lambda), Docker, CI/CD, Kubernetes" },
-    ds_ml:    { lang:"Python, SQL, R, Scala, Java, C++, PySpark", fw:"PyTorch, TensorFlow, BERT, LangChain, Scikit-learn, XGBoost, Spark MLlib, Pandas, NumPy", db:"AWS Redshift, PostgreSQL, MongoDB, S3, Tableau, Qlik Sense, Docker, EC2, Snowflake" },
-    analytics:{ lang:"Python, SQL, R, Java, Scala, C++", fw:"Scikit-learn, XGBoost, Pandas, NumPy, Tableau, Power BI, Spark, ETL pipelines", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Qlik Sense" },
-    dataeng:  { lang:"Python, SQL, Scala, Java, Bash, R, PySpark", fw:"dbt, Airflow, Spark, Kafka, Pandas, NumPy, ETL pipelines, Data modeling, LangChain, Scikit-learn", db:"BigQuery, Snowflake, Redshift, PostgreSQL, MongoDB, S3, AWS (Lambda, Glue, EC2), Docker, Kubernetes, GCS" },
-    business: { lang:"Python, SQL, R, JavaScript, Java", fw:"Tableau, Power BI, Scikit-learn, Pandas, XGBoost, ETL, REST APIs, LangChain", db:"PostgreSQL, MongoDB, Redshift, Snowflake, AWS (S3, EC2), Docker, Google Analytics" },
-    quant:    { lang:"Python, C++, SQL, R, Scala, Java", fw:"Scikit-learn, XGBoost, PyTorch, BERT, Pandas, NumPy, Spark MLlib, SciPy, statsmodels", db:"PostgreSQL, Redshift, MongoDB, Snowflake, AWS (S3, EC2), Docker, Bloomberg API" },
-    ai_eng:   { lang:"Python, SQL, C++, JavaScript, Bash", fw:"PyTorch, LangChain, Hugging Face Transformers, BERT, RAG, LLM fine-tuning, FastAPI, Scikit-learn", db:"Pinecone, ChromaDB, FAISS, PostgreSQL, AWS (S3, EC2, Lambda), Docker, MLflow" },
-    platform:    { lang:"Python, C++, Go, Bash, SQL, Java", fw:"Docker, Kubernetes, Terraform, CI/CD, gRPC, Prometheus, Grafana", db:"AWS (EC2, S3, Lambda, Redshift), PostgreSQL, Redis, Kafka, Linux, Distributed Systems" },
-    applied_sci: { lang:"Python, SQL, R, C++, Scala", fw:"PyTorch, TensorFlow, BERT, Hugging Face, Scikit-learn, XGBoost, NumPy, SciPy, statsmodels", db:"AWS (S3, EC2, Redshift), PostgreSQL, Snowflake, Spark, Docker, MLflow" },
-    fullstack:   { lang:"JavaScript, TypeScript, Python, Java, SQL", fw:"React, Node.js, Express, Next.js, Django, REST APIs, JWT", db:"PostgreSQL, MongoDB, Redis, AWS (S3, EC2, Lambda), Docker, GCP" }
+    sde:        { lang:"C++, Python, Java, SQL, JavaScript, TypeScript", fw:"Node.js, Express, React, REST APIs, XGBoost, scikit-learn, Pandas", db:"PostgreSQL, MongoDB, Amazon Redshift, AWS (S3, EC2), Docker, Git, Linux" },
+    backend:    { lang:"C++, Python, Java, SQL, JavaScript, TypeScript", fw:"Node.js, Express, REST APIs, JWT, Pandas, Selenium", db:"PostgreSQL, MongoDB, Amazon Redshift, AWS (S3, EC2), Docker, GCP, Linux" },
+    ds_ml:      { lang:"Python, SQL, C++, Java", fw:"XGBoost, scikit-learn, Pandas, NumPy, BERT, PyTorch", db:"PostgreSQL, Amazon Redshift, MongoDB, AWS (S3, EC2), Tableau, Docker" },
+    analytics:  { lang:"Python, SQL, JavaScript", fw:"Pandas, NumPy, scikit-learn, XGBoost, Tableau, Qlik Sense", db:"PostgreSQL, Amazon Redshift, MongoDB, AWS (S3, EC2), Excel" },
+    dataeng:    { lang:"Python, SQL, C++, Java", fw:"Pandas, NumPy, ETL, Selenium, MapReduce", db:"Amazon Redshift, Amazon S3, PostgreSQL, MongoDB, AWS EC2, Docker, Linux" },
+    business:   { lang:"Python, SQL", fw:"Tableau, Qlik Sense, Pandas, scikit-learn, XGBoost", db:"PostgreSQL, Amazon Redshift, AWS, Excel" },
+    quant:      { lang:"Python, C++, SQL, Java", fw:"XGBoost, scikit-learn, Pandas, NumPy", db:"PostgreSQL, Amazon Redshift, AWS (S3, EC2), Linux" },
+    ai_eng:     { lang:"Python, SQL, JavaScript, C++", fw:"BERT, NLP, scikit-learn, Pandas, Node.js, Anthropic API", db:"PostgreSQL, MongoDB, AWS (S3, EC2), Docker, Git" },
+    platform:   { lang:"C++, Python, SQL, Java", fw:"Concurrency, Distributed Systems, ThreadSanitizer, Node.js", db:"Amazon Redshift, AWS (S3, EC2, CLI), PostgreSQL, Docker, Linux, Git" },
+    applied_sci:{ lang:"Python, SQL, C++", fw:"BERT, XGBoost, scikit-learn, NumPy, Pandas", db:"AWS (S3, EC2), PostgreSQL, Docker" },
+    fullstack:  { lang:"JavaScript, TypeScript, Python, SQL, Java", fw:"React, Node.js, Express, REST APIs, JWT, Web3.js", db:"PostgreSQL, MongoDB, AWS (S3, EC2), GCP, Docker, Git" }
   },
 
+  // Reverse chronological. Every number below is verified; the fact lock only allows these numbers.
   experiences: [
     {
+      key: "aws",
       title: "Software Development Engineer Intern",
-      company: "AWS (Amazon Web Services), Santa Clara, CA",
-      date: "May \u2013 Aug 2025",
-      tech: "C++, SQL, AWS Redshift, AWS S3, CI/CD, Distributed Systems",
+      company: "Amazon Web Services (Redshift Serverless), Santa Clara, CA",
+      date: "May – Aug 2025",
+      tech: "C++, SQL, Amazon Redshift Serverless, Amazon S3, AWS CLI",
+      facts: "Extended the existing C++ Redshift Serverless scaling codebase. Built a latency-aware workload scaling framework that adjusts compute (RPUs) based on SLO compliance. Designed auto-resizing logic for Serverless clusters using GUC-based configuration. Built a persistent workload history layer on S3 so scaling decisions use data across runs. Result: 35% better query performance stability (queries consistently meeting latency targets) across benchmark customer workloads.",
       defaultBullets: [
-        "Engineered latency-aware C++ auto-scaling framework for Redshift Serverless; improved query stability 35% in production",
-        "Designed auto-resizing mechanism with GUC config logic; built S3 workload history for persistent SQL scaling analytics",
-        "Built CI/CD regression pipelines across 12 distributed nodes; achieved 99.8% uptime with zero-downtime deploys",
-        "Reduced p99 query latency 23% under bursty load by tuning lock-free ring buffers in the C++ scaling path"
+        "Built a latency-aware C++ auto-scaling framework for Redshift Serverless that adjusts compute (RPUs) by SLO compliance",
+        "Improved query performance stability 35% across benchmark customer workloads, keeping queries within latency targets",
+        "Designed auto-resizing logic for Serverless clusters driven by GUC configuration, extending the existing C++ scaling codebase",
+        "Added a persistent workload history layer on Amazon S3 so scaling decisions draw on performance data across runs"
       ]
     },
     {
-      title: "Data Analyst Intern",
-      company: "Paypoint India, Mumbai, India",
-      date: "Apr \u2013 Jul 2023",
-      tech: "Python, XGBoost, SQL, PostgreSQL, Tableau, Qlik Sense, Docker, AWS EC2",
-      defaultBullets: [
-        "Trained XGBoost credit risk model with RFE feature selection; achieved 94% accuracy on 1,000+ daily loan applications",
-        "Built Tableau and Qlik Sense dashboards tracking 12 KPIs; identified patterns cutting loan default rate 18%",
-        "Implemented ETL pipelines in PostgreSQL and Python, processing 500k+ financial records daily with auto-reconciliation"
-      ]
-    },
-    {
+      key: "imarticus",
       title: "Product Enablement Intern",
       company: "Imarticus Learning, Mumbai, India",
-      date: "Jan \u2013 Apr 2024",
-      tech: "Python, BERT, LangChain, Node.js, PostgreSQL, MongoDB, REST APIs",
+      date: "Jan – Apr 2024",
+      tech: "Python, BERT, NLP, Selenium",
+      facts: "Built an NLP system using a BERT transformer model to evaluate 5,000+ monthly IVR call transcripts for quality and compliance at 92% accuracy. Automated call data collection for customer experience analytics, cutting manual effort by roughly 90%.",
       defaultBullets: [
-        "Built NLP evaluation pipeline with BERT and LangChain; classified 50k+ daily learner events at 92% accuracy",
-        "Automated 90% of content-tagging via Node.js microservices and REST APIs, saving 4 engineering hours daily",
-        "Integrated PostgreSQL analytics endpoints; enabled real-time performance dashboards for 5 product managers"
+        "Built a BERT-based NLP classifier that scored 5,000+ monthly IVR call transcripts for quality and compliance at 92% accuracy",
+        "Automated IVR call data collection with Python and Selenium, cutting manual analytics effort roughly 90%"
       ]
     },
     {
-      title: "Co-Founder, Competitive Coding Dept.",
-      company: "Google Developer Student Clubs (GDSC), Mumbai",
-      date: "Jul 2022 \u2013 Jul 2023",
-      tech: "Java, Data Structures, Mentoring, Workshops, Event Organization",
+      key: "paypoint",
+      title: "Data Analyst Intern",
+      company: "Paypoint India, Mumbai, India",
+      date: "Apr – Jul 2023",
+      tech: "Python, XGBoost, scikit-learn, SQL, PostgreSQL, MongoDB, Node.js, Tableau, Qlik Sense, AWS EC2",
+      facts: "Trained an XGBoost credit risk model (RFE feature selection, GridSearchCV tuning) with 94% validation accuracy. Built a Node.js and Express REST API backed by PostgreSQL and MongoDB, deployed on AWS EC2, that the business used to score 1,000+ loan applications daily. Built Tableau and Qlik Sense dashboards that turned model outputs into KPIs for risk and product teams.",
       defaultBullets: [
-        "Founded a GDSC technical department from scratch and grew it to 200+ active members within one year",
-        "Mentored 45+ students through weekly problem-solving sessions, pairing newcomers with experienced members"
+        "Trained an XGBoost credit risk model with RFE feature selection and GridSearchCV tuning, reaching 94% validation accuracy",
+        "Shipped a Node.js and Express REST API on PostgreSQL, MongoDB, and AWS EC2 that scored 1,000+ loan applications daily",
+        "Delivered Tableau and Qlik Sense dashboards that turned model scores into daily KPI views for the risk and product teams"
       ]
     }
   ],
 
   projects: {
-    resumeforge: {
-      name: "ResumeForge: AI Resume Generation Tool",
-      stack: "JavaScript, HTML, Anthropic API, ATS Scoring",
-      defaultBullets: [
-        "Shipped a single-file JavaScript tool calling the Anthropic API to generate tailored resumes, cover letters, and ATS scores",
-        "Iterated through 28 versions, adding deterministic post-processing, sanitizers, and keyword injection for consistent DOCX output",
-        "Wrote a JD keyword extractor and ATS scorer covering 250+ skill aliases across 11 role tracks"
-      ]
-    },
     bwtree: {
-      name: "Latch-Free Bw-Tree Index for PostgreSQL 16 (Open Source)",
+      name: "Latch-Free Bw-Tree Index for PostgreSQL 16",
       stack: "C++17, PostgreSQL, Concurrency, ThreadSanitizer",
+      url: "https://github.com/Dhruvin255/Bwtree",
       defaultBullets: [
-        "Implemented a latch-free Bw-tree in C++17 with 8 CAS sites and epoch-based reclamation, verified ThreadSanitizer-clean",
-        "Integrated the index into PostgreSQL 16 as a custom access method, wiring IndexAmRoutine callbacks and SQL test oracles",
-        "Benchmarked against a sharded hash map at 16 threads, achieving ~9\u00b5s p99 latency versus ~37\u00b5s on write-heavy workloads"
-      ]
-    },
-    artist: {
-      name: "Full Stack Artist Search Application",
-      stack: "Node.js, GCP, React, Android, Express, JWT, MapReduce",
-      defaultBullets: [
-        "Delivered 13 REST API endpoints with JWT auth across web and Android; recorded 172ms P95 latency under 10k concurrent users",
-        "Launched MapReduce adjacency-graph caching for similar-artist recommendations; reduced duplicate upstream API calls 50%",
-        "Shipped React web and Android interfaces with 10+ reusable Bootstrap and Jetpack components deployed on GCP infrastructure"
+        "Implemented a latch-free Bw-tree in C++17 with 8 CAS sites and epoch-based reclamation; ThreadSanitizer-clean",
+        "Wired it into PostgreSQL 16 as a custom access method through IndexAmRoutine callbacks, checked by SQL oracles",
+        "Measured ~9µs p99 latency versus ~37µs for a sharded hash map at 16 threads on write-heavy workloads"
       ]
     },
     pharma: {
-      name: "PharmaChain: Blockchain Supply Chain Platform (Live Demo)",
+      name: "PharmaChain: Blockchain Supply Chain Platform",
       stack: "Ethereum, Solidity, Node.js, Web3.js",
+      url: "https://github.com/Dhruvin255/PharmaChain",
       defaultBullets: [
-        "Architected Ethereum smart contracts with off-chain aggregation layer; improved traceability 95% across 4 supplier tiers",
-        "Cut on-chain gas costs 25% via test-driven contract optimization; team won 2nd at Study Australia Challenge, AUD 10,000",
-        "Integrated MetaMask wallet auth and Web3.js event listeners; deployed via Truffle with automated smart contract tests"
+        "Designed Ethereum smart contracts with an off-chain data aggregation layer, improving drug traceability 95% across suppliers",
+        "Raised on-chain efficiency 25% through test-driven contract validation before deployment",
+        "Integrated MetaMask wallet auth and Web3.js event listeners; deployed with Truffle and automated contract tests"
       ]
     },
     volumetric: {
       name: "Volumetric Implants: AI Training Dataset for Cranial Reconstruction",
-      stack: "Python, 3D Mesh Processing, Affine Registration, Medical Imaging, Mendeley Data",
+      stack: "Python, 3D Mesh Processing, Image Registration, Medical Imaging",
+      url: "https://doi.org/10.17632/ywnjr7gnty.1",
       defaultBullets: [
-        "Engineered Mesh-to-Volume voxelization pipeline; generated 961 skull-implant training pairs from 29 CT scans for generative AI models",
-        "Applied Affine and Non-Rigid Registration augmentation to 3D medical volumes; expanded AI training dataset 33x for model evaluation",
-        "Published cranial implant dataset on Mendeley Data (DOI: 10.17632/ywnjr7gnty.1); supports surgical AI simulation and implant design research"
+        "Wrote a mesh-to-volume voxelization pipeline in Python that generated 961 skull-implant training pairs from 29 CT scans",
+        "Expanded the training set 33x with affine and non-rigid registration augmentation on 3D medical volumes",
+        "Published the dataset on Mendeley Data (DOI 10.17632/ywnjr7gnty.1) for surgical AI and implant design research"
+      ]
+    },
+    artist: {
+      name: "Full-Stack Artist Search Application",
+      stack: "Node.js, Express, React, Android, JWT, GCP",
+      url: "",
+      defaultBullets: [
+        "Built 13 REST API endpoints in Node.js and Express with JWT auth, serving React web and Android clients on GCP",
+        "Added MapReduce adjacency-graph caching for similar-artist recommendations, cutting duplicate upstream API calls 50%",
+        "Shipped React web and Android interfaces from shared reusable Bootstrap and Jetpack components"
+      ]
+    },
+    resumeforge: {
+      name: "ResumeForge: Resume Generation Tool on the Anthropic API",
+      stack: "JavaScript, HTML, Anthropic API",
+      url: "",
+      defaultBullets: [
+        "Shipped a single-file JavaScript tool on the Anthropic API that tailors resumes, cover letters, and outreach messages",
+        "Wrote a fact lock that rejects any generated metric missing from a verified source list, blocking fabricated claims",
+        "Iterated through 29 versions driven by daily use, adding DOCX generation, keyword coverage checks, and an application tracker"
       ]
     }
   },
 
   pub: {
-    title: "Toxic Comment Classification using BERT-based Transformer Models",
-    venue: "IEEE ICISAA 2024, Mumbai, India",
-    desc:  "Multi-label toxic comment classification on 160k Reddit comments using fine-tuned BERT; achieved F1: 0.91. Co-authored with team of 4."
+    title: "Enhancing Toxic Comment Classification: A Deep Learning Approach with Pre-trained Language Models",
+    venue: "IEEE ICISAA 2024",
+    url: "https://ieeexplore.ieee.org/document/10829297",
+    desc: "Co-author; fine-tuned BERT for multi-label toxic comment classification, F1 0.91"
   },
 
-  leadership: [
-    {
-      title: "Study Australia Entrepreneurship Challenge",
-      desc:  "Runner-up; AUD 10,000 prize awarded for PharmaChain blockchain supply chain innovation. Harvard-recognized program."
-    },
-    {
-      title: "Head of Communication",
-      desc:  "Chancellor\u2019s Challenge NMIMS; led cross-team communications for university\u2019s flagship innovation competition across 11 months."
-    }
+  awards: [
+    { title: "2nd Place, Study Australia Entrepreneurship Challenge", desc: "PharmaChain; Harvard-recognized program; AUD 4,000 prize" },
+    { title: "Co-Founder, GDSC Competitive Coding Department", desc: "Grew it from zero to 200+ members; mentored 45+ students in weekly problem-solving sessions" },
+    { title: "Published Dataset, Mendeley Data", desc: "Volumetric cranial implant dataset, DOI 10.17632/ywnjr7gnty.1", skipIfProject: "volumetric" }
   ],
 
-  studiedTech: {
-    languages: "Python, Java, C++, C, JavaScript, TypeScript, SQL, R, Scala, Go, Kotlin, Swift, Bash, HTML, CSS",
-    ml_ai:     "PyTorch, TensorFlow, Keras, Scikit-learn, XGBoost, Pandas, NumPy, SciPy, Hugging Face, Transformers, BERT, LangChain, LLM, RAG, AI Agents, Vector Embeddings, ChromaDB, Pinecone, FAISS, Fine-tuning, Prompt Engineering, LLMOps, MLOps, Feature Engineering, Model Evaluation, Hyperparameter Tuning, Cross-validation, Time Series, Statistical Analysis, A/B Testing",
-    web:       "Node.js, Express, React, Next.js, Django, Flask, FastAPI, REST APIs, GraphQL, JWT, OAuth, Microservices, WebSockets, gRPC",
-    data:      "Spark, Kafka, Airflow, dbt, MLflow, ETL, Data Pipelines, Data Warehousing, Snowflake, Databricks, BigQuery",
-    databases: "PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, Elasticsearch, Cassandra, Neo4j",
-    cloud:     "AWS (EC2, S3, Lambda, Redshift, RDS, SQS), GCP, Azure, Docker, Kubernetes, Terraform, CI/CD, GitHub Actions, Jenkins, Linux, Git",
-    distrib:   "System Design, Scalability, High Availability, Load Balancing, Caching, Async Processing, Event-driven, Pub/Sub, Concurrency, Low Latency, Throughput",
-    practices: "TDD, Unit Testing, Integration Testing, Code Review, Agile, Scrum, Design Patterns, OOP, Functional Programming",
-    blockchain:"Ethereum, Solidity, Smart Contracts, Web3, Truffle",
-    analytics: "Tableau, Power BI, Qlik Sense, Looker, Excel"
-  }
+  // v29: claims that appeared on earlier resumes but do NOT match Dhruvin's own descriptions. Never used until he confirms them.
+  pendingClaims: [
+    "AWS: CI/CD regression pipelines across 12 nodes, 99.8% uptime",
+    "AWS: p99 latency cut 23% by tuning lock-free ring buffers",
+    "Paypoint: loan default rate cut 18%, 12 KPIs, 500k+ records daily ETL",
+    "Imarticus: 50k+ daily learner events, content tagging, 4 engineering hours, 5 product managers",
+    "PharmaChain: AUD 10,000 prize (fact base says AUD 4,000), 4 supplier tiers",
+    "Artist app: 172ms P95 under 10k concurrent users",
+    "ACM SemiCode national finalist; GDSC 40+ competitions"
+  ]
 };
+
+// Every number that may legally appear in a bullet. Built from the fact base above.
+var FACT_NUMBERS = (function(){
+  var src = [];
+  CANDIDATE.experiences.forEach(function(e){ src.push(e.facts, e.tech, e.title, e.company); src = src.concat(e.defaultBullets); });
+  Object.keys(CANDIDATE.projects).forEach(function(k){ var p = CANDIDATE.projects[k]; src.push(p.name, p.stack); src = src.concat(p.defaultBullets); });
+  src.push(CANDIDATE.pub.title, CANDIDATE.pub.desc, CANDIDATE.pub.venue);
+  CANDIDATE.awards.forEach(function(a){ src.push(a.title, a.desc); });
+  var set = {};
+  src.join(' ').replace(/\d[\d,.]*/g, function(m){ set[normNum(m)] = 1; return m; });
+  return set;
+})();
+function normNum(s){ return String(s).replace(/,/g,'').replace(/\.$/,''); }
+
+function masterResumeData(loc){
+  var ex = CANDIDATE.experiences;
+  return {
+    loc: loc || 'New York, NY (Relocating Dec 2026)', company: 'Master',
+    alloc: { exp1: 4, exp2: 2, exp3: 3, proj1: 3, proj2: 3 },
+    reason: 'Master resume built from the verified fact base (no AI).',
+    coursework: 'Analysis of Algorithms, Database Systems, Machine Learning, Web Technologies',
+    skillLang: 'C++, Python, SQL, Java, JavaScript, TypeScript',
+    skillFw: 'Node.js, Express, React, REST APIs, XGBoost, scikit-learn, Pandas, BERT',
+    skillDb: 'PostgreSQL, MongoDB, Amazon Redshift, AWS (S3, EC2), GCP, Docker, Git, Linux',
+    expBullets: [ex[0].defaultBullets.slice(), ex[1].defaultBullets.slice(), ex[2].defaultBullets.slice()],
+    proj1: { key: 'bwtree', bullets: CANDIDATE.projects.bwtree.defaultBullets.slice() },
+    proj2: { key: 'pharma', bullets: CANDIDATE.projects.pharma.defaultBullets.slice() }
+  };
+}
 
 // ═══════════════════════════════════════════════════════════
 // PROMPTS
 // ═══════════════════════════════════════════════════════════
 function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, autoKeywords){
-  var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.ds_ml;
+  var pool = CANDIDATE.skillPools[track] || CANDIDATE.skillPools.sde;
 
   var expLines = CANDIDATE.experiences.map(function(e,i){
-    return 'EXP'+(i+1)+' ('+e.title+' @ '+e.company+'):\n'
-      + '  Tech context: '+e.tech+'\n'
-      + '  Default bullets (pick the most relevant and rewrite):\n'
+    return 'EXP'+(i+1)+' ('+e.title+' @ '+e.company+', '+e.date+'):\n'
+      + '  Verified facts: '+e.facts+'\n'
+      + '  Tech actually used: '+e.tech+'\n'
+      + '  Approved bullets (reorder, re-emphasize, or reword for this JD; keep every fact true):\n'
       + e.defaultBullets.map(function(b){return '    - '+b;}).join('\n');
   }).join('\n\n');
 
@@ -485,158 +518,74 @@ function buildTailorPrompt(company, title, loc, jd, track, mustUseKeywords, auto
     var p = CANDIDATE.projects[key];
     return 'PROJECT ['+key+']: '+p.name+'\n'
       + '  Stack: '+p.stack+'\n'
-      + '  Default bullets:\n'
+      + '  Approved bullets:\n'
       + p.defaultBullets.map(function(b){return '    - '+b;}).join('\n');
   }).join('\n\n');
 
-  var verbBank = 'Built,Led,Designed,Trained,Shipped,Cut,Wrote,Ran,Tuned,Reduced,Migrated,Modeled,Processed,Validated,Refactored,Configured,Mentored,Founded,Integrated,Delivered,Automated,Launched,Scaled,Deployed,Rewrote,Prototyped,Standardized,Measured,Optimized,Analyzed,Tested,Debugged,Created,Developed,Implemented';
-
   var keywordsHint = '';
   if(mustUseKeywords && mustUseKeywords.trim()){
-    keywordsHint = '\n\n\u2550\u2550\u2550\u2550 MANDATORY KEYWORDS \u2550\u2550\u2550\u2550\n'
-      + 'The user has specified these keywords that MUST appear somewhere in the resume:\n'
-      + mustUseKeywords + '\n\n'
-      + 'INTEGRATION RULES:\n'
-      + '  \u2022 Weave these into the \u201cTech:\u201d lines after each experience where contextually appropriate\n'
-      + '  \u2022 Add them to the skills section (Languages, Frameworks, Databases/Cloud) where they fit\n'
-      + '  \u2022 If a keyword fits naturally into a bullet point, include it there too\n'
-      + '  \u2022 Only use keywords where they make factual sense \u2014 never fabricate usage\n'
-      + '  \u2022 Prioritize Tech lines and skills section over forcing them into bullets\n';
+    keywordsHint = '\n\nUSER KEYWORDS: '+mustUseKeywords+'\n'
+      + 'Include each one ONLY if it appears in USED TECH or FAMILIAR TECH below. Used tech may go in bullets or skills; familiar tech goes in the skills line only. Silently skip any keyword he does not have. Never fabricate usage.\n';
   }
-
-  var autoKwHint='';
+  var autoKwHint = '';
   if(autoKeywords && autoKeywords.trim()){
-    autoKwHint = '\n\n\u2550\u2550\u2550\u2550 JD-MATCHED DEFENSIBLE SKILLS (prioritize within caps) \u2550\u2550\u2550\u2550\n'
-      + 'These skills appear in the JD AND are genuinely in Dhruvin\u2019s background, so he can defend them in an interview:\n'
-      + autoKeywords + '\n'
-      + 'Within the normal skill caps (5-6 languages, 6-7 frameworks, 6-7 databases/cloud), PRIORITIZE these JD-matched skills over generic pool items, swapping out less-relevant skills to make room. Every one of these that fits a category should appear in the skills section. Do NOT exceed the caps, do NOT invent tools he lacks, and keep the list tight and defensible.\n';
+    autoKwHint = '\n\nJD SKILLS HE GENUINELY HAS: '+autoKeywords+'\n'
+      + 'Prefer these over generic pool items in the skills lines, within the caps. Use the JD’s exact spelling (e.g. "PostgreSQL" vs "Postgres") when it names the same tool.\n';
   }
 
-  return 'You are an elite resume writer AND a structural allocator writing in the candidate\u2019s real, human voice. You make TWO decisions: (1) how to allocate bullets across sections based on JD fit, and (2) how to rewrite each bullet so it reads like a specific person describing specific work, NOT like an AI-optimized template.\n\n'
-    + 'ROLE: '+title+' at '+company+'\nLOCATION: '+loc+'\nTRACK: '+track+keywordsHint+autoKwHint+'\n\n'
+  return 'You are tailoring Dhruvin Jhaveri’s resume to one job. A recruiter will skim it for about 30 seconds and a hiring engineer may grill him on every line, so every claim must be true and every line must be easy to defend out loud.\n\n'
+    + 'ROLE: '+title+' at '+company+'\nTRACK: '+track+keywordsHint+autoKwHint+'\n\n'
     + 'JOB DESCRIPTION:\n'+jd+'\n\n'
 
-    + '\u2550\u2550\u2550\u2550 STEP 1 \u2014 KEYWORD EXTRACTION \u2550\u2550\u2550\u2550\n'
-    + 'Mentally extract from the JD: core tech skills, domain verbs, impact metrics, seniority signals.\n'
-    + 'Where a JD keyword genuinely fits real work, use it naturally. Do NOT force or jam keywords; modern semantic ATS penalizes phrases that do not read naturally in context.\n\n'
-
-    + '\u2550\u2550\u2550\u2550 STEP 2 \u2014 STRUCTURAL ALLOCATION (CRITICAL) \u2550\u2550\u2550\u2550\n'
-    + 'You decide the bullet count for each section subject to STRICT constraints:\n'
-    + '  \u2022 EXP1 (AWS): 3 OR 4 bullets. AWS is the FLAGSHIP role and should be the most prominent block. DEFAULT to 4 bullets. Only drop to 3 if the JD is almost entirely non-technical (pure business/analytics with no engineering at all).\n'
-    + '  \u2022 EXP2 (Paypoint): 2 OR 3 bullets.\n'
-    + '  \u2022 EXP3 (Imarticus): 2 OR 3 bullets.\n'
-    + '  \u2022 EXP4 (GDSC): ALWAYS 2 bullets. Frame these around INITIATIVE, OWNERSHIP, and MENTORING: founded the department from nothing, grew it, coached people. Do NOT mention LeetCode, Codeforces, HackerRank, competitive programming, contests, or ACM unless the JD explicitly values algorithms competitions.\n'
-    + '  \u2022 PROJ1 (first project slot): 2 OR 3 bullets.\n'
-    + '  \u2022 PROJ2 (second project slot): 2 OR 3 bullets.\n\n'
-    + 'TOTAL BULLET COUNT must land between 16 and 18 (inclusive). This is a hard page-fit constraint.\n\n'
-    + 'Allocation principles:\n'
-    + '  - More bullets = more emphasis. AWS leads. Give 3 to roles/projects whose tech and scope match the JD.\n'
-    + '  - Demote a role/project to 2 if its content is less relevant to THIS JD.\n'
-    + '  - With AWS at 4, a clean default is 4/3/3/2/3/3 (total 18) or 4/3/2/2/3/3 (total 17).\n\n'
-
-    + '\u2550\u2550\u2550\u2550 STEP 3 \u2014 PROJECT SELECTION \u2550\u2550\u2550\u2550\n'
-    + 'Five projects are available. You must pick EXACTLY 2 and assign them to PROJ1 and PROJ2 slots:\n\n'
-    + projBlock + '\n\n'
-    + 'Selection rules:\n'
-    + '  - Pick the 2 projects whose stack and domain best match the JD.\n'
-    + '  - PROJ1 is the first project shown, so put the MORE JD-relevant one in PROJ1.\n'
-    + '  - PharmaChain (pharma) is a LIVE, interactable deployed project and the candidate\u2019s strongest showcase. Prefer including it unless the JD is a clear poor fit (e.g. pure data-analytics with zero engineering). When the JD touches backend, full-stack, blockchain, systems, or product engineering, favor pharma as PROJ1.\n'
-    + '  - resumeforge: favor for full-stack, JavaScript, AI/LLM product, developer tooling, or "personal projects beyond the curriculum" JDs.\n'
-    + '  - bwtree: favor ONLY for systems, databases, storage, concurrency, C++, or infra JDs. Never pick it for analytics, business, or pure ML roles.\n'
-    + '  - Show RANGE: avoid picking two projects that tell the same story. One project should never dominate the resume.\n'
-    + '  - Return the project keys exactly as shown (resumeforge, bwtree, artist, pharma, volumetric).\n\n'
-
-    + '\u2550\u2550\u2550\u2550 STEP 4 \u2014 BULLET RULES (NON-NEGOTIABLE) \u2550\u2550\u2550\u2550\n'
-    + 'Formula: [accurate verb] + [what / how] + [semicolon or comma] + [quantified result]\n'
-    + 'R1 \u2014 UNIQUE PLAIN VERBS (SCORED): Every bullet must OPEN with a different verb. No opening verb may repeat anywhere in the resume, not even twice. With 16 to 18 bullets you need 16 to 18 distinct opening verbs, and there are plenty of plain ones, so you never need to reuse "Built" or reach for showy ones. PREFER plain accurate verbs (Built, Designed, Cut, Ran, Tuned, Trained, Wrote, Shipped, Delivered, Launched, Automated, Integrated, Reduced, Scaled, Deployed, Rewrote, Prototyped, Standardized, Measured, Mentored, Founded, Configured, Migrated, Modeled, Processed, Optimized, Analyzed, Tested). Do NOT cluster showy power-verbs (Spearheaded, Orchestrated, Pioneered, Leveraged, Overhauled) and cap "Engineered/Architected"-class verbs at ONE in the entire resume. Reference bank: '+verbBank+'\n'
-    + 'R2 \u2014 LENGTH (HARD, ONE-PAGE CRITICAL): Every bullet is 13 to 18 words. Aim for 13 to 17 and treat 18 as the absolute ceiling. A bullet of 19+ words is a failure: it wraps to an extra line, pushes the resume onto a second page, and loses ATS points. COUNT the words in each bullet before finalizing. Vary length only WITHIN the 13 to 18 range; never exceed 18.\n'
-    + 'R3 \u2014 METRICS: Most bullets should contain a number, but a strong qualitative bullet without one is acceptable. Preserve existing metrics (35%, 99.8%, 23%, 94%, 18%, 500k+, 50k+, 90%, 92%, 172ms P95, 10k, 50%, 95%, 25%, 45+, 200+, 961, 33x, 29, 8 CAS, 9\u00b5s vs 37\u00b5s, 16 threads, 28 versions, 250+, 11). Do not invent.\n'
-    + 'R4 \u2014 ACTIVE VOICE: Past-tense verb first. Never "Worked on", "Helped", "Assisted".\n'
-    + 'R5 \u2014 NO REPETITION: No phrase/noun/concept repeated across bullets in the same role.\n'
-    + 'R6 \u2014 FACTS ONLY: Never invent tech, titles, dates, or metrics.\n'
-    + 'R7 \u2014 NO SKILL INFLATION: Mention a technology in a BULLET only if Dhruvin actually used it in that role. Do NOT pad bullets with studied-but-unused tech; modern ATS scores each skill by how convincingly it is supported, so a long tail of weakly-supported skills LOWERS the match and reads as inflated. Studied-but-unused tech may appear in the skills section ONLY if it is genuinely defensible in an interview, kept to a tight credible set. Favor depth he can speak to over breadth.\n'
-    + 'R8 \u2014 VARY THE SHAPE (anti-monotony): Not every bullet is verb+metric. Across the whole resume, 2 to 3 bullets should be ownership/scope bullets that lead with what Dhruvin owned, built, or decided and land on scope (systems, users, nodes, teams, tiers) instead of a percentage. A uniform metric-first rhythm where every bullet looks structurally identical is a top AI-writing tell and reads as generated; break it on purpose. The GDSC bullets especially should read as initiative and ownership, not statistics. KEEP every defensible metric already present; do NOT strip numbers and do NOT force a number into every single line.\n\n'
-
-    + '\u2550\u2550\u2550\u2550 STEP 4B \u2014 SOUND HUMAN, NOT GENERATED (HARD FILTER) \u2550\u2550\u2550\u2550\n'
-    + 'A recruiter spots an AI-written resume in seconds. These are the exact tells. Eliminate ALL of them.\n'
-    + 'H1 \u2014 NO DASHES AS PUNCTUATION: Never use an em dash (\u2014), an en dash (\u2013), or " - " to join, interrupt, or append a clause. This is the single biggest visual AI tell on a resume. Hyphens INSIDE a compound word (auto-scaling, lock-free, real-time, full-stack) are fine. If tempted to write "... \u2014 extra clause", delete the clause or make it a clean separate phrase. Zero dashes as connectors.\n'
-    + 'H2 \u2014 NO SOFT TAILS: End every bullet on the concrete result. Delete the mood or explanation tails a generator adds, e.g. "for the first time", "that they actually used", "throughout the internship", "end to end", "across sessions", "in the supply chain", "taking home the prize", "with minimal manual review", "to catch upstream discrepancies". If a trailing phrase is not load-bearing, cut it.\n'
-    + 'H3 \u2014 BANNED WORDS (never use): leverage, utilize, seamless, seamlessly, robust, cutting-edge, state-of-the-art, spearheaded, orchestrated, pioneered, holistic, comprehensive, meticulous, significantly, successfully, dramatically, various, numerous, empower. Use plain verbs and specific nouns.\n'
-    + 'H4 \u2014 BREAK THE SKELETON: Do NOT make every bullet "Verb thing; metric result". Vary the structure. Some bullets end on a noun or outcome with no semicolon and no percentage. Identical skeletons across bullets ARE the tell. Varying structure does NOT mean longer: every bullet still stays within 13 to 18 words.\n'
-    + 'H5 \u2014 NO HYPE ADVERBS OR FILLER: cut successfully, effectively, efficiently, carefully unless truly load-bearing.\n'
-    + 'H6 \u2014 ENGINEER VOICE: if a phrase sounds like marketing copy, rewrite it the way Dhruvin would describe the work to a teammate. Plain and specific beats polished.\n\n'
-
-    + '\u2550\u2550\u2550\u2550 STEP 5 \u2014 EXPERIENCE CONTEXT \u2550\u2550\u2550\u2550\n'
+    + '==== FACT BASE (the only source of truth) ====\n'
     + expLines + '\n\n'
+    + 'USED TECH (safe in bullets and skills): '+CANDIDATE.usedTech+'\n'
+    + 'FAMILIAR TECH (skills line only, never in a bullet): '+CANDIDATE.familiarTech+'\n\n'
 
-    + '\u2550\u2550\u2550\u2550 STEP 6 \u2014 STUDIED TECH POOL (skills section only, if defensible) \u2550\u2550\u2550\u2550\n'
-    + 'Languages studied: '+CANDIDATE.studiedTech.languages+'\n'
-    + 'ML/AI studied: '+CANDIDATE.studiedTech.ml_ai+'\n'
-    + 'Web/Backend studied: '+CANDIDATE.studiedTech.web+'\n'
-    + 'Data infra studied: '+CANDIDATE.studiedTech.data+'\n'
-    + 'Databases studied: '+CANDIDATE.studiedTech.databases+'\n'
-    + 'Cloud/DevOps studied: '+CANDIDATE.studiedTech.cloud+'\n'
-    + 'Distributed systems studied: '+CANDIDATE.studiedTech.distrib+'\n'
-    + 'Practices studied: '+CANDIDATE.studiedTech.practices+'\n'
-    + 'Blockchain studied: '+CANDIDATE.studiedTech.blockchain+'\n'
-    + 'Analytics studied: '+CANDIDATE.studiedTech.analytics+'\n\n'
+    + '==== STEP 1: ALLOCATE ====\n'
+    + '  EXP1 (AWS, flagship): 3 or 4 bullets, default 4.\n'
+    + '  EXP2 (Imarticus): exactly 2 bullets.\n'
+    + '  EXP3 (Paypoint): 2 or 3 bullets.\n'
+    + '  PROJ1 and PROJ2: 2 or 3 bullets each.\n'
+    + '  Total bullets: 12 to 15.\n\n'
 
-    + '\u2550\u2550\u2550\u2550 STEP 7 \u2014 SKILLS & COURSEWORK SELECTION \u2550\u2550\u2550\u2550\n'
-    + 'Select skills from BOTH the track pool AND the studied tech pool, prioritizing items that match the JD AND that he can defend in an interview.\n'
-    + 'SKILL_LANG: 5-6 languages best matching JD (only ones he can defend): '+pool.lang+'\n'
-    + 'SKILL_FW: 6-7 frameworks best matching JD (only ones he can defend): '+pool.fw+'\n'
-    + 'SKILL_DB: 6-7 databases/cloud best matching JD (only ones he can defend): '+pool.db+'\n'
-    + 'Favor a short defensible list over a long padded one. A long tail of weak skills hurts the semantic match.\n'
-    + 'COURSEWORK: 4 courses from: Distributed Systems, Database Systems, Machine Learning, Statistical Learning, Data Mining, NLP, Algorithms, Computer Vision, Big Data Analytics\n\n'
+    + '==== STEP 2: PICK 2 PROJECTS ====\n'
+    + projBlock + '\n\n'
+    + '  bwtree: systems, databases, backend, infra, C++, low latency, finance engineering. Strongest SDE project.\n'
+    + '  pharma: backend, full-stack, product, blockchain. Live deployed project.\n'
+    + '  volumetric: ML, computer vision, data, research.\n'
+    + '  artist: full-stack, web, mobile.\n'
+    + '  resumeforge: AI/LLM product, developer tools, JavaScript.\n'
+    + '  PROJ1 is the more JD-relevant one. Pick two that tell different stories.\n\n'
 
-    + '\u2550\u2550\u2550\u2550 OUTPUT FORMAT \u2014 STRICT \u2550\u2550\u2550\u2550\n'
+    + '==== STEP 3: WRITE BULLETS ====\n'
+    + 'F1 FACTS LOCKED: Use only facts from the fact base. Never add a number, percentage, team size, user count, dollar amount, or scale that is not already in that role’s facts or approved bullets. A post-check rejects any unknown number.\n'
+    + 'F2 NO SKILL INFLATION: A technology may appear in a bullet only if it is in that role’s "Tech actually used" or the project stack.\n'
+    + 'F3 MIRROR THE JD HONESTLY: When a JD term names something he really did (e.g. JD says "auto-scaling" or "REST APIs"), use the JD’s wording. Never stretch a fact to fit a term.\n'
+    + 'F4 SHAPE: Start with a plain past-tense verb. Action, then what or how, then the result where one exists. Lengths should VARY between 9 and 22 words; do not make every bullet the same length or the same skeleton.\n'
+    + 'F5 VERBS: No opening verb more than twice in the whole resume. Plain verbs (Built, Designed, Wrote, Trained, Added, Cut, Automated, Measured, Shipped, Delivered). At most one "Engineered" or "Architected".\n'
+    + 'F6 HUMAN VOICE: No dashes as punctuation (no em dash, en dash, or " - " joining clauses; hyphens inside words like latch-free are fine). Banned: leverage, utilize, seamless, robust, cutting-edge, spearheaded, orchestrated, pioneered, holistic, comprehensive, meticulous, significantly, successfully, dramatically, various, numerous, empower, synergy, cross-functional, end-to-end. Write the way he would explain the work to another engineer.\n'
+    + 'F7 COMPLETE SENTENCES: Every bullet must end on a complete thought. Never end on a dangling number, preposition, or "and".\n\n'
+
+    + '==== STEP 4: SKILLS AND COURSEWORK ====\n'
+    + 'SKILL_LANG: 4 to 6 items. SKILL_FW: 5 to 8 items. SKILL_DB: 5 to 8 items. Draw from USED TECH first, then at most 2 FAMILIAR TECH items total and only if the JD asks for them. Start from this track default and swap toward the JD:\n'
+    + '  Languages: '+pool.lang+'\n  Frameworks: '+pool.fw+'\n  Databases & Cloud: '+pool.db+'\n'
+    + 'COURSEWORK: exactly 4 from this list only: '+CANDIDATE.courses.join(', ')+'\n\n'
+
+    + '==== OUTPUT FORMAT (strict, plain text values, no brackets, no quotes, no notes) ====\n'
     + 'OUTPUT_START\n'
-    + 'ALLOC_EXP1: <3 or 4>\n'
-    + 'ALLOC_EXP2: <2 or 3>\n'
-    + 'ALLOC_EXP3: <2 or 3>\n'
-    + 'ALLOC_EXP4: 2\n'
-    + 'ALLOC_PROJ1: <2 or 3>\n'
-    + 'ALLOC_PROJ2: <2 or 3>\n'
-    + 'PROJ1_KEY: <resumeforge|bwtree|artist|pharma|volumetric>\n'
-    + 'PROJ2_KEY: <resumeforge|bwtree|artist|pharma|volumetric>\n'
-    + 'ALLOC_REASON: <one sentence explaining your allocation and project choice>\n'
-    + 'COURSEWORK: <4 course names comma-separated, NO brackets, NO quotes>\n'
-    + 'SKILL_LANG: <languages comma-separated, NO brackets, NO quotes>\n'
-    + 'SKILL_FW: <frameworks comma-separated, NO brackets, NO quotes>\n'
-    + 'SKILL_DB: <databases/cloud comma-separated, NO brackets, NO quotes>\n'
-    + 'EXP1_B1: <bullet>\nEXP1_B2: <bullet>\nEXP1_B3: <bullet>\n'
-    + 'EXP1_B4: <bullet, OR omit this line entirely if ALLOC_EXP1=3>\n'
+    + 'ALLOC_EXP1: <3 or 4>\nALLOC_EXP2: 2\nALLOC_EXP3: <2 or 3>\nALLOC_PROJ1: <2 or 3>\nALLOC_PROJ2: <2 or 3>\n'
+    + 'PROJ1_KEY: <bwtree|pharma|volumetric|artist|resumeforge>\nPROJ2_KEY: <different key>\n'
+    + 'ALLOC_REASON: <one sentence>\n'
+    + 'COURSEWORK: <4 comma-separated>\nSKILL_LANG: <comma-separated>\nSKILL_FW: <comma-separated>\nSKILL_DB: <comma-separated>\n'
+    + 'EXP1_B1: <bullet>\nEXP1_B2: <bullet>\nEXP1_B3: <bullet>\nEXP1_B4: <bullet, omit line if ALLOC_EXP1=3>\n'
     + 'EXP2_B1: <bullet>\nEXP2_B2: <bullet>\n'
-    + 'EXP2_B3: <bullet, OR omit this line entirely if ALLOC_EXP2=2>\n'
-    + 'EXP3_B1: <bullet>\nEXP3_B2: <bullet>\n'
-    + 'EXP3_B3: <bullet, OR omit this line entirely if ALLOC_EXP3=2>\n'
-    + 'EXP4_B1: <bullet>\nEXP4_B2: <bullet>\n'
-    + 'PROJ1_B1: <bullet>\nPROJ1_B2: <bullet>\n'
-    + 'PROJ1_B3: <bullet, OR omit this line entirely if ALLOC_PROJ1=2>\n'
-    + 'PROJ2_B1: <bullet>\nPROJ2_B2: <bullet>\n'
-    + 'PROJ2_B3: <bullet, OR omit this line entirely if ALLOC_PROJ2=2>\n'
+    + 'EXP3_B1: <bullet>\nEXP3_B2: <bullet>\nEXP3_B3: <bullet, omit line if ALLOC_EXP3=2>\n'
+    + 'PROJ1_B1: <bullet>\nPROJ1_B2: <bullet>\nPROJ1_B3: <bullet, omit line if ALLOC_PROJ1=2>\n'
+    + 'PROJ2_B1: <bullet>\nPROJ2_B2: <bullet>\nPROJ2_B3: <bullet, omit line if ALLOC_PROJ2=2>\n'
     + 'OUTPUT_END\n\n'
-    + 'CRITICAL FORMATTING: Values must be plain text ONLY. NEVER wrap values in [ ], { }, or quotes.\n'
-    + 'WRONG: COURSEWORK: [Machine Learning, NLP, Algorithms, Data Mining]\n'
-    + 'RIGHT:  COURSEWORK: Machine Learning, NLP, Algorithms, Data Mining\n\n'
-    + 'SKILL_LANG, SKILL_FW, SKILL_DB, COURSEWORK: output ONLY the comma-separated items. NO count like "(6 ...)", NO justification or notes (defensible, JD-listed, used, for stats, all JD-matched), NO dashes, NO trailing commentary of any kind. A parenthesis is allowed ONLY as a tech grouping such as AWS (S3, EC2, Lambda).\n'
-    + 'WRONG: SKILL_LANG: Python, SQL, C++, Java, R, Go (6 \u2014 Go is JD-listed, defensible via studied; R for stats)\n'
-    + 'RIGHT:  SKILL_LANG: Python, SQL, C++, Java, R, Go\n\n'
-    + 'FINAL SELF-CHECK before outputting:\n'
-    + '  \u25a1 ALLOC_EXP1 \u2208 {3,4} and defaults to 4, ALLOC_EXP4 = 2, all other ALLOC \u2208 {2,3}\n'
-    + '  \u25a1 Sum of all ALLOC values is between 16 and 18\n'
-    + '  \u25a1 PROJ1_KEY and PROJ2_KEY are different\n'
-    + '  \u25a1 Number of bullets you emit per section matches the ALLOC value\n'
-    + '  \u25a1 EVERY opening verb is unique across all bullets (no verb repeated, not even twice)\n'
-    + '  \u25a1 EVERY bullet is 13-18 words and NONE exceed 18 (count them) so the resume stays one page\n'
-    + '  \u25a1 Verbs are plain, not showy: at most ONE engineered/architected-class verb, no power-verb clustering\n'
-    + '  \u25a1 Skill and coursework lines are clean comma lists: no counts, no notes, no dashes, no parenthetical justification\n'
-    + '  \u25a1 No skill inflation: every tech in a bullet was actually used in that role\n'
-    + '  \u25a1 Bullet shape varies: not every bullet is metric-first; 2-3 are ownership/scope bullets\n'
-    + '  \u25a1 Zero em dashes, en dashes, or " - " used as punctuation anywhere in any bullet\n'
-    + '  \u25a1 No soft trailing clauses and none of the banned AI words (leverage, seamless, robust, spearheaded, etc.)\n'
-    + (mustUseKeywords && mustUseKeywords.trim() ? '  \u25a1 All mandatory keywords appear somewhere in the resume\n' : '')
-    + 'Fix any fail before outputting.';
+    + 'Skill and coursework lines are ONLY comma lists. A parenthesis is allowed only as a grouping like AWS (S3, EC2). No counts, no justifications.\n'
+    + 'Before outputting, check: every number exists in the fact base; no tech outside each role’s list; no verb used 3+ times; lengths vary; no dashes as punctuation; no banned words; every bullet ends on a complete thought.';
 }
 
 function buildTrackSuggestPrompt(title, jd){
@@ -660,25 +609,24 @@ function buildTrackSuggestPrompt(title, jd){
 
 function buildCoverPrompt(company, title, loc, jd){
   return 'Write a cover letter for Dhruvin Jhaveri applying to '+title+' at '+company+' ('+loc+').\n\n'
-    + '════ VERIFIED FACTS (use ONLY these) ════\n'
+    + '════ VERIFIED FACTS (use ONLY these; never add a number that is not here) ════\n'
     + 'MS Computer Science (Data Science), USC Viterbi. Graduates December 16, 2026; can start January 2027.\n'
     + 'Moved from Mumbai to Los Angeles in 2024 for USC. Moved to Santa Clara in summer 2025 for the AWS internship. Relocating to the New York City area after graduation.\n'
-    + 'AWS (Amazon Web Services), Redshift Serverless, SDE Intern: C++ fault-tolerant auto-scaling, cut p99 query latency 23% under bursty traffic, CI/CD across 12 nodes.\n'
-    + 'Paypoint India (Mumbai), Data Analyst Intern: XGBoost credit risk model at 94% accuracy, Python/PostgreSQL ETL on 500k+ records daily.\n'
-    + 'Imarticus Learning (Mumbai), Product Enablement Intern: automated 90% of content tagging with Node.js, saving engineers 4 hours a day; BERT/LangChain pipeline.\n'
-    + 'PharmaChain: Ethereum supply chain platform, started as a side project, 2nd place at the Study Australia Entrepreneurship Challenge.\n'
-    + 'ResumeForge: his own Anthropic API tool for resumes and cover letters, iterated through 28 versions because he uses it daily.\n'
-    + 'Bw-tree: latch-free C++ index plugged into PostgreSQL 16 (only for systems/database roles).\n'
-    + 'Co-founded a GDSC technical department, grew it to 200+ members, mentored 45+ students.\n'
-    + 'IEEE ICISAA 2024 publication: BERT toxic comment classifier, F1 0.91.\n'
-    + 'Languages: C++, Python, JavaScript, Java, SQL.\n\n'
+    + 'Amazon Web Services, Redshift Serverless, SDE Intern: extended the C++ scaling codebase with a latency-aware auto-scaling framework that adjusts compute based on SLO compliance; improved query performance stability 35% across benchmark customer workloads; added a persistent S3 workload history layer.\n'
+    + 'Imarticus Learning (Mumbai), Product Enablement Intern: BERT NLP classifier scoring 5,000+ monthly IVR call transcripts at 92% accuracy; automated call data collection, cutting manual effort about 90%.\n'
+    + 'Paypoint India (Mumbai), Data Analyst Intern: XGBoost credit risk model at 94% validation accuracy; Node.js REST API on AWS EC2 scoring 1,000+ loan applications daily; Tableau and Qlik Sense dashboards for risk and product teams.\n'
+    + 'PharmaChain: Ethereum supply chain platform, started as a side project, 2nd place at the Study Australia Entrepreneurship Challenge (AUD 4,000).\n'
+    + 'Bw-tree: latch-free C++17 index plugged into PostgreSQL 16, ~9µs p99 vs ~37µs for a sharded hash map at 16 threads (only for systems/database/low-latency roles).\n'
+    + 'ResumeForge: his own Anthropic API tool for resumes and cover letters, iterated through 29 versions because he uses it daily.\n'
+    + 'Co-founded a GDSC competitive coding department, grew it to 200+ members, mentored 45+ students.\n'
+    + 'IEEE ICISAA 2024 publication: BERT toxic comment classifier, F1 0.91.\n\n'
     + '════ JOB DESCRIPTION ════\n'
     + jd+'\n\n'
     + '════ STRUCTURE ════\n'
     + 'Dear '+company+' Hiring Team,\n\n'
-    + '1. STORY OPENER (2 to 4 sentences): tell a short, concrete story from his REAL journey (the Mumbai to Los Angeles move, the Santa Clara move, or the upcoming New York move) and draw ONE lesson from it about how he works: problem solving, adapting fast, owning the outcome. Do not invent details (people, weather, objects, emotions) that are not in the facts.\n'
-    + '2. BRIDGE (2 to 3 sentences): make the story ANALOGOUS to something specific about '+company+' taken from the JD (how the team works, what they build, a stated value). Then name the '+title+' role.\n'
-    + '3. "Why I fit:" then 3 or 4 bullets. Each bullet = a short bold first-person claim ending in a period (e.g. "I fix what breaks under pressure.") followed by ONE sentence of proof. Use a DIFFERENT experience for each bullet. Across the bullets cover: problem-solving mindset, learning new stacks fast, building for the people who use it, going past the brief.\n'
+    + '1. STORY OPENER (2 to 4 sentences): a short, concrete story from his REAL journey (Mumbai to Los Angeles, the Santa Clara move, or the upcoming New York move) and ONE lesson about how he works. Do not invent details (people, weather, objects, emotions).\n'
+    + '2. BRIDGE (2 to 3 sentences): tie the story to something specific about '+company+' taken from the JD. Then name the '+title+' role.\n'
+    + '3. "Why I fit:" then 3 or 4 bullets. Each bullet = a short bold first-person claim ending in a period, then ONE sentence of proof from a DIFFERENT experience. Cover: problem solving, learning new stacks fast, building for the people who use it, going past the brief.\n'
     + '4. CLOSE (1 to 2 sentences): "I finish my MS in Computer Science at USC on December 16, 2026 and can start in January 2027." plus one line tied to '+company+'.\n'
     + 'Best,\nDhruvin Jhaveri\n\n'
     + '════ EXAMPLE (match this voice, not this content) ════\n'
@@ -686,19 +634,17 @@ function buildCoverPrompt(company, title, loc, jd){
     + 'In 2024 I left Mumbai for Los Angeles to start my master’s at USC. A year later I was in Santa Clara, writing C++ for Amazon Web Services in a codebase I had never seen before. Two moves, two new worlds, and the same lesson both times: you belong somewhere faster when you stop waiting to feel ready and start solving the problem in front of you.\n\n'
     + 'Canonical runs on that idea. Your engineers are spread across the globe, meet at sprints twice a year, and ship software that has to work on machines they will never touch. That is the kind of team I want to grow up in, and why I am applying for the Graduate Software Engineer role.\n\n'
     + 'Why I fit:\n'
-    + '- I fix what breaks under pressure. At AWS I tuned the Redshift Serverless scaling path and cut p99 query latency 23% under bursty traffic.\n'
-    + '- I pick up new stacks fast. Python at Paypoint, Node.js at Imarticus, Solidity for PharmaChain, C++ at AWS. Four stacks, each delivering real results.\n'
-    + '- I build for the people using it. At Imarticus I automated 90% of content tagging and gave engineers back 4 hours every day.\n'
+    + '- I fix what breaks under load. At AWS I built a latency-aware scaling framework for Redshift Serverless that made query performance 35% more stable.\n'
+    + '- I pick up new stacks fast. Python at Paypoint, BERT at Imarticus, Solidity for PharmaChain, C++ at AWS. Four stacks, each shipped.\n'
+    + '- I build for the people using it. At Imarticus I automated call data collection and cut the team’s manual work by about 90%.\n'
     + '- I go past the brief. PharmaChain started as a side project and took 2nd place at the Study Australia Entrepreneurship Challenge.\n\n'
     + 'I finish my MS in Computer Science at USC on December 16, 2026 and can start in January 2027. I would love to bring that problem solving habit to Ubuntu and its users.\n\n'
     + 'Best,\nDhruvin Jhaveri\n---\n\n'
     + '════ HUMANIZER RULES (hard) ════\n'
-    + '  - NO dashes as punctuation: never an em dash (—), en dash (–), " -- ", or " - " joining clauses. Hyphens inside compound words are fine. Bullets start with "- ".\n'
+    + '  - NO dashes as punctuation: never an em dash, en dash, " -- ", or " - " joining clauses. Hyphens inside compound words are fine. Bullets start with "- ".\n'
     + '  - BANNED: "I am excited to", "I am thrilled", "I am writing to", "I would love the opportunity", "I am confident that", "passionate", "passion for", "leverage", "utilize", "seamless", "robust", "cutting-edge", "synergy", "spearheaded", "dynamic", "unique opportunity", "team player", "hit the ground running", "fast-paced", "detail-oriented", "delve", "testament".\n'
-    + '  - Vary sentence length: mix short punchy lines with longer ones. One fragment is fine.\n'
-    + '  - Human, excitable professional tone. Confident, never arrogant or needy.\n'
+    + '  - Vary sentence length. One fragment is fine. Human, excitable professional tone.\n'
     + '  - Do NOT mention chess, competitive programming, LeetCode, or contests.\n'
-    + '  - Mention the Bw-tree ONLY if the JD is squarely databases, storage, or concurrency, and in at most one bullet.\n'
     + '  - Every claim about '+company+' must come from the JD. No generic praise.\n'
     + '  - No visa, OPT, sponsorship, salary, or travel commitments.\n'
     + '  - If a sentence could be sent to any company, rewrite it.\n\n'
@@ -714,7 +660,7 @@ function buildLinkedInPrompt(company, title, recName, alumName, jd){
 
   return 'You are writing two cold LinkedIn messages whose ONLY job is to get a reply. Not to impress, not to summarize a resume. Get a reply. A reply happens when the reader thinks "this person is worth 30 seconds, and answering is easy."\n\n'
 
-    + 'CANDIDATE: Dhruvin Jhaveri. Graduating USC M.S. Computer Science (Data Science) on December 16, 2026, available from January 2027. Last summer: SDE intern at AWS Redshift, where he built a C++ auto-scaling framework for a serverless database. Before that: an XGBoost credit-risk model at a fintech, and a BERT/LangChain NLP pipeline. He co-founded a student tech department and grew it from nothing to 200+ members.\n\n'
+    + 'CANDIDATE: Dhruvin Jhaveri. Graduating USC M.S. Computer Science (Data Science) on December 16, 2026, available from January 2027. Last summer: SDE intern at AWS Redshift, where he built a C++ auto-scaling framework for a serverless database. Before that: an XGBoost credit-risk model at a fintech, and a BERT NLP pipeline that scored customer call transcripts. He co-founded a student tech department and grew it from nothing to 200+ members.\n\n'
 
     + 'TARGET COMPANY: '+company+'\n'
     + 'TARGET ROLE: '+title+'\n'
@@ -892,19 +838,11 @@ function atsStripIndustry(keywords){var drop={};ATS_INDUSTRY_WORDS.forEach(funct
 function atsExtractKeywords(jd,company){var lc=atsStripContext(jd,company);var found={};ATS_VOCAB.forEach(function(entry){var canon=entry[0];for(var i=0;i<entry.length;i++){if(atsContains(lc,entry[i])){found[canon]=(found[canon]||0)+1;break;}}});var kws=Object.keys(found).sort(function(a,b){return found[b]-found[a];});return atsStripIndustry(kws);}
 function atsResumeCorpus(d){var parts=[d.coursework,d.skillLang,d.skillFw,d.skillDb];d.expBullets.forEach(function(arr){parts=parts.concat(arr);});parts=parts.concat(d.proj1.bullets).concat(d.proj2.bullets);CANDIDATE.experiences.forEach(function(e){parts.push(e.tech);parts.push(e.title);parts.push(e.company);});parts.push(CANDIDATE.projects[d.proj1.key].stack);parts.push(CANDIDATE.projects[d.proj2.key].stack);parts.push(CANDIDATE.projects[d.proj1.key].name);parts.push(CANDIDATE.projects[d.proj2.key].name);parts.push(CANDIDATE.pub.title);parts.push(CANDIDATE.pub.desc);return parts.join(' ').toLowerCase();}
 function atsKeywordMatch(canonicalKeywords,resumeCorpus){var hits=[],misses=[];var aliasMap={};ATS_VOCAB.forEach(function(entry){aliasMap[entry[0]]=entry;});canonicalKeywords.forEach(function(canon){var aliases=aliasMap[canon]||[canon];var found=false;for(var i=0;i<aliases.length;i++){if(atsContains(resumeCorpus,aliases[i])){found=true;break;}}(found?hits:misses).push(canon);});return{hits:hits,misses:misses,pct:canonicalKeywords.length?hits.length/canonicalKeywords.length:0};}
-function atsVerbDiversity(allBullets){var verbCounts={};allBullets.forEach(function(b){var v=(b.trim().split(/\s+/)[0]||'').toLowerCase();if(v)verbCounts[v]=(verbCounts[v]||0)+1;});var dupes=[];Object.keys(verbCounts).forEach(function(v){if(verbCounts[v]>1)dupes.push({verb:v,count:verbCounts[v]});});return{dupes:dupes,unique:Object.keys(verbCounts).length,total:allBullets.length};}
-function atsMetrics(allBullets){var withMetric=allBullets.filter(function(b){return /\d/.test(b);}).length;return{withMetric:withMetric,total:allBullets.length,pct:allBullets.length?withMetric/allBullets.length:0};}
-function atsLengths(allBullets){var inRange=0,details=[];allBullets.forEach(function(b){var wc=b.trim().split(/\s+/).filter(Boolean).length;var ok=wc>=13&&wc<=18;if(ok)inRange++;details.push({bullet:b,wc:wc,ok:ok});});return{inRange:inRange,total:allBullets.length,pct:allBullets.length?inRange/allBullets.length:0,details:details};}
-function atsFormatFlags(d,allBullets){var flags=[];var bracketHits=0;allBullets.forEach(function(b){if(/\[|\]/.test(b))bracketHits++;});if(/\[|\]/.test(d.skillLang||'')||/\[|\]/.test(d.skillFw||'')||/\[|\]/.test(d.skillDb||'')||/\[|\]/.test(d.coursework||'')){bracketHits++;}if(bracketHits)flags.push({ok:false,msg:'Brackets found in '+bracketHits+' place(s)'});else flags.push({ok:true,msg:'No brackets'});var total=d.alloc.exp1+d.alloc.exp2+d.alloc.exp3+d.alloc.exp4+d.alloc.proj1+d.alloc.proj2;if(total>=16&&total<=18)flags.push({ok:true,msg:'Allocation '+total+' bullets (page fit OK)'});else flags.push({ok:false,msg:'Allocation '+total+' bullets (out of 16-18 range)'});if(d.skillLang&&d.skillFw&&d.skillDb)flags.push({ok:true,msg:'All skill categories filled'});else flags.push({ok:false,msg:'Missing skill categories'});var cwCount=(d.coursework||'').split(',').filter(function(x){return x.trim();}).length;if(cwCount===4)flags.push({ok:true,msg:'Coursework has 4 items'});else flags.push({ok:false,msg:'Coursework has '+cwCount+' items (need 4)'});var okCount=flags.filter(function(f){return f.ok;}).length;return{flags:flags,pct:flags.length?okCount/flags.length:0};}
 
 function candidateSkillTokens(){
-  var all=[];
-  Object.keys(CANDIDATE.studiedTech).forEach(function(k){
-    CANDIDATE.studiedTech[k].split(',').forEach(function(t){t=t.trim();if(t)all.push(t);});
-  });
-  return all;
+  return (CANDIDATE.usedTech+', '+CANDIDATE.familiarTech).split(',').map(function(t){return t.trim();}).filter(Boolean);
 }
-// JD keywords that Dhruvin can genuinely defend (present in his studied tech). Used to auto-fill must-use skills.
+// JD keywords Dhruvin genuinely has (used or familiar tech). Feeds the prompt; never forces anything in.
 function deriveDefensibleJDKeywords(jd,company){
   var jdCanon=atsExtractKeywords(jd,company);
   var corpus=candidateSkillTokens().join(' , ').toLowerCase();
@@ -918,36 +856,90 @@ function deriveDefensibleJDKeywords(jd,company){
   return out;
 }
 
-function computeATS(d,jd){
-  var allBullets=[];d.expBullets.forEach(function(arr){allBullets=allBullets.concat(arr);});allBullets=allBullets.concat(d.proj1.bullets).concat(d.proj2.bullets);
-  var keywords=atsExtractKeywords(jd,d.company);var corpus=atsResumeCorpus(d);var kw=atsKeywordMatch(keywords,corpus);var verbs=atsVerbDiversity(allBullets);var metrics=atsMetrics(allBullets);var lengths=atsLengths(allBullets);var format=atsFormatFlags(d,allBullets);
-  var sKw=Math.round(kw.pct*40);var sV=Math.max(0,15-verbs.dupes.reduce(function(acc,d){return acc+(d.count-1)*4;},0));var sM=Math.round(metrics.pct*15);var sL=Math.round(lengths.pct*15);var sF=Math.round(format.pct*15);
-  var total=sKw+sV+sM+sL+sF;var grade=total>=85?'A':total>=70?'B':total>=55?'C':'D';
-  return{total:total,grade:grade,keywords:keywords,breakdown:{kw:{score:sKw,max:40,data:kw},verbs:{score:sV,max:15,data:verbs},metrics:{score:sM,max:15,data:metrics},length:{score:sL,max:15,data:lengths},format:{score:sF,max:15,data:format}}};
+// ═══════════════════════════════════════════════════════════
+// SCREEN CHECK (v29): replaces the old 0-100 "ATS score".
+// Recruiters never see a match score. What matters: real coverage of the JD,
+// zero fabricated numbers, and no red flags a human spots in 30 seconds.
+// ═══════════════════════════════════════════════════════════
+var BANNED_WORDS=['leverage','leveraged','leveraging','utilize','utilized','seamless','seamlessly','robust','cutting-edge','state-of-the-art','spearheaded','orchestrated','pioneered','holistic','comprehensive','meticulous','significantly','successfully','dramatically','various','numerous','empower','empowered','synergy','cross-functional','end-to-end'];
+
+function allBulletsOf(d){var a=[];d.expBullets.forEach(function(arr){a=a.concat(arr);});return a.concat(d.proj1.bullets).concat(d.proj2.bullets);}
+
+function factLock(bullets){
+  var bad=[];
+  bullets.forEach(function(b){
+    (b.match(/\d[\d,.]*/g)||[]).forEach(function(n){var k=normNum(n);if(!FACT_NUMBERS[k])bad.push({num:n,bullet:b});});
+  });
+  return bad;
 }
 
-function renderATS(ats,d){
-  var gradeClass='ats-grade-'+ats.grade.toLowerCase();
-  var subText=ats.grade==='A'?'Strong match. Ready to submit.':ats.grade==='B'?'Solid match. Minor tweaks may help.':ats.grade==='C'?'Borderline. Consider regenerating or adjusting the track.':'Weak match. Review keywords and regenerate.';
-  var report='<div class="ats-wrap">';
-  report+='<div class="ats-hero"><div><div class="ats-score-big">'+ats.total+'<span class="den">/100</span></div><div class="ats-grade '+gradeClass+'">Grade '+ats.grade+'</div></div><div class="ats-hero-right"><div class="ats-hero-title">ATS Compatibility Score</div><div class="ats-hero-sub">'+subText+'</div><div class="ats-alloc">';
-  report+='<div class="ats-alloc-item">AWS <strong>'+d.alloc.exp1+'</strong></div><div class="ats-alloc-item">Paypoint <strong>'+d.alloc.exp2+'</strong></div><div class="ats-alloc-item">Imarticus <strong>'+d.alloc.exp3+'</strong></div><div class="ats-alloc-item">GDSC <strong>'+d.alloc.exp4+'</strong></div><div class="ats-alloc-item">'+CANDIDATE.projects[d.proj1.key].name.split(' ')[0]+' <strong>'+d.alloc.proj1+'</strong></div><div class="ats-alloc-item">'+CANDIDATE.projects[d.proj2.key].name.split(' ')[0]+' <strong>'+d.alloc.proj2+'</strong></div>';
-  report+='</div>'+(d.reason?'<div class="ats-hero-sub" style="margin-top:10px;font-style:italic;opacity:.75;">"'+esc(d.reason)+'"</div>':'')+'</div></div>';
-  report+='<div class="ats-grid">';
-  var kw=ats.breakdown.kw.data;var kwBar=Math.round(ats.breakdown.kw.score/ats.breakdown.kw.max*100);var kwColor=kwBar>=70?'#5febc4':kwBar>=50?'#ffb54d':'#f06b6b';
-  var hitsHTML=kw.hits.slice(0,15).map(function(k){return '<span class="ats-kw ats-kw-hit">'+esc(k)+'</span>';}).join('');
-  var missHTML=kw.misses.slice(0,15).map(function(k){return '<span class="ats-kw ats-kw-miss">'+esc(k)+'</span>';}).join('');
-  report+='<div class="ats-card" style="grid-column:1/-1"><div class="ats-card-head"><div class="ats-card-label">Keyword Match</div><div class="ats-card-score">'+ats.breakdown.kw.score+'<span style="color:var(--muted);font-size:13px;font-weight:400">/'+ats.breakdown.kw.max+'</span></div></div><div class="ats-bar"><div class="ats-bar-fill" style="width:'+kwBar+'%;background:'+kwColor+'"></div></div><div class="ats-card-body">'+kw.hits.length+' of '+(kw.hits.length+kw.misses.length)+' JD keywords present in resume</div>'+(hitsHTML?'<div class="ats-kw-chips">'+hitsHTML+'</div>':'')+(missHTML?'<div class="ats-kw-chips" style="margin-top:8px">'+missHTML+'</div>':'')+'</div>';
-  var vb=ats.breakdown.verbs;var vBar=Math.round(vb.score/vb.max*100);var vColor=vBar>=80?'#5febc4':vBar>=50?'#ffb54d':'#f06b6b';var dupText=vb.data.dupes.length?vb.data.dupes.map(function(x){return esc(x.verb)+' ('+x.count+')';}).join(', '):'No repeated verbs';
-  report+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Verb Diversity</div><div class="ats-card-score">'+vb.score+'<span style="color:var(--muted);font-size:13px;font-weight:400">/'+vb.max+'</span></div></div><div class="ats-bar"><div class="ats-bar-fill" style="width:'+vBar+'%;background:'+vColor+'"></div></div><div class="ats-card-body">'+vb.data.unique+' unique verbs across '+vb.data.total+' bullets. '+esc(dupText)+'.</div></div>';
-  var mt=ats.breakdown.metrics;var mBar=Math.round(mt.score/mt.max*100);var mColor=mBar>=80?'#5febc4':mBar>=50?'#ffb54d':'#f06b6b';
-  report+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Metrics Coverage</div><div class="ats-card-score">'+mt.score+'<span style="color:var(--muted);font-size:13px;font-weight:400">/'+mt.max+'</span></div></div><div class="ats-bar"><div class="ats-bar-fill" style="width:'+mBar+'%;background:'+mColor+'"></div></div><div class="ats-card-body">'+mt.data.withMetric+' of '+mt.data.total+' bullets contain a number.</div></div>';
-  var ln=ats.breakdown.length;var lBar=Math.round(ln.score/ln.max*100);var lColor=lBar>=80?'#5febc4':lBar>=50?'#ffb54d':'#f06b6b';var bad=ln.data.details.filter(function(x){return !x.ok;});var badMsg=bad.length?bad.length+' bullet(s) outside 13-18 words: '+bad.map(function(x){return x.wc+'w';}).join(', '):'All bullets in 13-18 word range';
-  report+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Bullet Length</div><div class="ats-card-score">'+ln.score+'<span style="color:var(--muted);font-size:13px;font-weight:400">/'+ln.max+'</span></div></div><div class="ats-bar"><div class="ats-bar-fill" style="width:'+lBar+'%;background:'+lColor+'"></div></div><div class="ats-card-body">'+esc(badMsg)+'.</div></div>';
-  var ft=ats.breakdown.format;var fBar=Math.round(ft.score/ft.max*100);var fColor=fBar>=80?'#5febc4':fBar>=50?'#ffb54d':'#f06b6b';var flagList=ft.data.flags.map(function(f){return '<div style="font-size:12px;color:'+(f.ok?'#5febc4':'#f06b6b')+';margin-top:4px;">'+(f.ok?'✓':'✗')+' '+esc(f.msg)+'</div>';}).join('');
-  report+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Format & Rules</div><div class="ats-card-score">'+ft.score+'<span style="color:var(--muted);font-size:13px;font-weight:400">/'+ft.max+'</span></div></div><div class="ats-bar"><div class="ats-bar-fill" style="width:'+fBar+'%;background:'+fColor+'"></div></div><div class="ats-card-body">'+flagList+'</div></div>';
-  report+='</div></div>';
-  document.getElementById('aReport').innerHTML=report;
+function redFlags(d,bullets){
+  var flags=[];
+  function add(ok,msg){flags.push({ok:ok,msg:msg});}
+  add(/Dec 2026/.test(CANDIDATE.edu[0].date),'Graduation shows Dec 2026');
+  add(/new york|ny\b|nyc/i.test(d.loc||''),'Header location targets New York');
+  var dashHits=bullets.filter(function(b){return /—|–|\s-\s|\s--\s/.test(b);}).length;
+  add(dashHits===0,dashHits?dashHits+' bullet(s) use a dash as punctuation':'No dashes as punctuation');
+  var bw=[];bullets.forEach(function(b){BANNED_WORDS.forEach(function(w){if(new RegExp('\\b'+atsEscape(w)+'\\b','i').test(b))bw.push(w);});});
+  add(bw.length===0,bw.length?'Banned words: '+bw.join(', '):'No stock AI words');
+  var dangling=bullets.filter(function(b){var tok=b.trim().replace(/[.;,]$/,'').split(/\s+/).pop()||'';var last=normKey(tok);return /^\d[\d,.]*[kKmM]?\+$/.test(tok)||PREPS[last]||last==='and';}).length;
+  add(dangling===0,dangling?dangling+' bullet(s) end mid-thought':'Every bullet ends on a complete thought');
+  var leaks=[d.skillLang,d.skillFw,d.skillDb,d.coursework].filter(function(s){return /defensible|JD|studied|matched|\(\d/i.test(s||'');}).length;
+  add(leaks===0,leaks?'Model notes leaked into skills/coursework':'Skills lines are clean lists');
+  var vc={};bullets.forEach(function(b){var v=normKey(firstWord(b));vc[v]=(vc[v]||0)+1;});
+  var over=Object.keys(vc).filter(function(v){return vc[v]>2;});
+  add(over.length===0,over.length?'Verb used 3+ times: '+over.join(', '):'No verb used more than twice');
+  var lens=bullets.map(function(b){return b.trim().split(/\s+/).length;});
+  var long=lens.filter(function(n){return n>24;}).length;
+  add(long===0,long?long+' bullet(s) over 24 words (may wrap to 3 lines)':'Bullet lengths fit');
+  var spread=Math.max.apply(null,lens)-Math.min.apply(null,lens);
+  add(spread>=5,spread>=5?'Bullet lengths vary naturally':'Bullets are all the same length (reads as generated)');
+  var total=bullets.length;
+  add(total>=12&&total<=15,total+' bullets (one-page target 12 to 15)');
+  return flags;
+}
+
+function computeATS(d,jd){
+  var bullets=allBulletsOf(d);
+  var keywords=atsExtractKeywords(jd,d.company);
+  var corpus=atsResumeCorpus(d);
+  var kw=atsKeywordMatch(keywords,corpus);
+  var mineCorpus=candidateSkillTokens().join(' , ').toLowerCase();
+  var addable=[],gaps=[];
+  kw.misses.forEach(function(k){var al=null;for(var i=0;i<ATS_VOCAB.length;i++){if(ATS_VOCAB[i][0]===k){al=ATS_VOCAB[i];break;}}al=al||[k];var has=al.some(function(a){return atsContains(mineCorpus,a);});(has?addable:gaps).push(k);});
+  var haveTotal=kw.hits.length+addable.length;
+  var coverage=haveTotal?kw.hits.length/haveTotal:1;
+  var fl=factLock(bullets);
+  var flags=redFlags(d,bullets);
+  var passCount=flags.filter(function(f){return f.ok;}).length;
+  var verdict=(fl.length===0&&coverage>=0.75&&passCount===flags.length)?'READY':(fl.length?'FIX FACTS':'REVIEW');
+  return{verdict:verdict,keywords:keywords,kw:kw,addable:addable,gaps:gaps,coverage:coverage,factBad:fl,flags:flags};
+}
+
+function renderATS(s,d){
+  var cls=s.verdict==='READY'?'ats-grade-a':s.verdict==='REVIEW'?'ats-grade-c':'ats-grade-d';
+  var sub=s.verdict==='READY'?'Covers the JD skills you really have, no unverified numbers, no red flags.':s.verdict==='REVIEW'?'No fabricated numbers, but fix the items marked below.':'A bullet contains a number that is not in your fact base. Fix or regenerate before sending.';
+  var pct=Math.round(s.coverage*100);
+  var h='<div class="ats-wrap">';
+  h+='<div class="ats-hero"><div><div class="ats-score-big">'+pct+'<span class="den">%</span></div><div class="ats-grade '+cls+'">'+s.verdict+'</div></div><div class="ats-hero-right"><div class="ats-hero-title">Screen Check</div><div class="ats-hero-sub">Coverage = JD skills you genuinely have that appear on this resume. '+esc(sub)+'</div><div class="ats-alloc">';
+  h+='<div class="ats-alloc-item">AWS <strong>'+d.alloc.exp1+'</strong></div><div class="ats-alloc-item">Imarticus <strong>'+d.alloc.exp2+'</strong></div><div class="ats-alloc-item">Paypoint <strong>'+d.alloc.exp3+'</strong></div><div class="ats-alloc-item">'+esc(CANDIDATE.projects[d.proj1.key].name.split(':')[0])+' <strong>'+d.alloc.proj1+'</strong></div><div class="ats-alloc-item">'+esc(CANDIDATE.projects[d.proj2.key].name.split(':')[0])+' <strong>'+d.alloc.proj2+'</strong></div>';
+  h+='</div>'+(d.reason?'<div class="ats-hero-sub" style="margin-top:10px;font-style:italic;opacity:.75;">"'+esc(d.reason)+'"</div>':'')+'</div></div>';
+  h+='<div class="ats-grid">';
+  function chips(arr,c){return arr.slice(0,20).map(function(k){return '<span class="ats-kw '+c+'">'+esc(k)+'</span>';}).join('');}
+  h+='<div class="ats-card" style="grid-column:1/-1"><div class="ats-card-head"><div class="ats-card-label">JD skills on this resume</div><div class="ats-card-score">'+s.kw.hits.length+'</div></div><div class="ats-kw-chips">'+chips(s.kw.hits,'ats-kw-hit')+'</div>'
+    +(s.addable.length?'<div class="ats-card-body" style="margin-top:12px">You have these but they are not on the page. Add to Must-Use Keywords and regenerate if they matter for this role:</div><div class="ats-kw-chips">'+chips(s.addable,'ats-kw-miss')+'</div>':'')
+    +(s.gaps.length?'<div class="ats-card-body" style="margin-top:12px">Real gaps (not in your background). Do NOT add these; mention a plan to learn them in an interview if asked:</div><div class="ats-kw-chips">'+s.gaps.slice(0,20).map(function(k){return '<span class="ats-kw" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border)">'+esc(k)+'</span>';}).join('')+'</div>':'')
+    +'</div>';
+  h+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Fact Lock</div><div class="ats-card-score" style="color:'+(s.factBad.length?'#f06b6b':'#5febc4')+'">'+(s.factBad.length?s.factBad.length+' issue(s)':'Clean')+'</div></div><div class="ats-card-body">'
+    +(s.factBad.length?s.factBad.map(function(x){return '<div style="color:#f06b6b;margin-top:4px">✗ "'+esc(x.num)+'" in: '+esc(x.bullet)+'</div>';}).join(''):'Every number in every bullet traces to your verified fact base.')
+    +'</div></div>';
+  h+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Red Flags</div><div class="ats-card-score">'+s.flags.filter(function(f){return f.ok;}).length+'/'+s.flags.length+'</div></div><div class="ats-card-body">'
+    +s.flags.map(function(f){return '<div style="font-size:12px;color:'+(f.ok?'#5febc4':'#f06b6b')+';margin-top:4px;">'+(f.ok?'✓':'✗')+' '+esc(f.msg)+'</div>';}).join('')
+    +'</div></div>';
+  h+='<div class="ats-card"><div class="ats-card-head"><div class="ats-card-label">Unconfirmed claims (excluded)</div></div><div class="ats-card-body">These appeared on older resumes but do not match your own descriptions. Confirm them before adding back to the fact base:'
+    +CANDIDATE.pendingClaims.map(function(c){return '<div style="margin-top:4px">• '+esc(c)+'</div>';}).join('')+'</div></div>';
+  h+='</div></div>';
+  document.getElementById('aReport').innerHTML=h;
   document.getElementById('aReport').style.display='block';
   document.getElementById('aEmpty').style.display='none';
 }
@@ -1045,117 +1037,55 @@ function parseTailored(text){
   var m=text.match(/OUTPUT_START([\s\S]*?)OUTPUT_END/);var block=m?m[1]:text;
   function g(key){var r=block.match(new RegExp('^'+key+':\\s*(.+)$','m'));if(!r)return '';var v=r[1].trim();v=v.replace(/^[\[\{"']+|[\]\}"']+$/g,'').trim();return v;}
   function gi(key,def){var v=parseInt(g(key),10);return isNaN(v)?def:v;}
-  var a1=gi('ALLOC_EXP1',4);if(a1<3)a1=3;if(a1>4)a1=4;
-  var a2=gi('ALLOC_EXP2',3);if(a2<2)a2=2;if(a2>3)a2=3;
-  var a3=gi('ALLOC_EXP3',3);if(a3<2)a3=2;if(a3>3)a3=3;
-  var a4=2;
-  var ap1=gi('ALLOC_PROJ1',3);if(ap1<2)ap1=2;if(ap1>3)ap1=3;
-  var ap2=gi('ALLOC_PROJ2',3);if(ap2<2)ap2=2;if(ap2>3)ap2=3;
-  var total=a1+a2+a3+a4+ap1+ap2;var guard=0;
-  while(total>18&&guard++<6){if(ap2===3){ap2=2;}else if(ap1===3){ap1=2;}else if(a3===3){a3=2;}else if(a2===3){a2=2;}else if(a1===4){a1=3;}else break;total=a1+a2+a3+a4+ap1+ap2;}
-  guard=0;while(total<16&&guard++<6){if(a1===3){a1=4;}else if(a2===2){a2=3;}else if(a3===2){a3=3;}else if(ap1===2){ap1=3;}else if(ap2===2){ap2=3;}else break;total=a1+a2+a3+a4+ap1+ap2;}
-  var validKeys={resumeforge:1,bwtree:1,artist:1,pharma:1,volumetric:1};
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+  var a1=clamp(gi('ALLOC_EXP1',4),3,4);
+  var a2=2;
+  var a3=clamp(gi('ALLOC_EXP3',3),2,3);
+  var ap1=clamp(gi('ALLOC_PROJ1',3),2,3);
+  var ap2=clamp(gi('ALLOC_PROJ2',2),2,3);
+  var total=a1+a2+a3+ap1+ap2;var guard=0;
+  while(total>15&&guard++<6){if(ap2===3){ap2=2;}else if(ap1===3){ap1=2;}else if(a3===3){a3=2;}else if(a1===4){a1=3;}else break;total=a1+a2+a3+ap1+ap2;}
+  guard=0;while(total<12&&guard++<6){if(a1===3){a1=4;}else if(a3===2){a3=3;}else if(ap1===2){ap1=3;}else if(ap2===2){ap2=3;}else break;total=a1+a2+a3+ap1+ap2;}
+  var validKeys={};Object.keys(CANDIDATE.projects).forEach(function(k){validKeys[k]=1;});
   var pk1=(g('PROJ1_KEY')||'').toLowerCase();var pk2=(g('PROJ2_KEY')||'').toLowerCase();
-  if(!validKeys[pk1])pk1='pharma';if(!validKeys[pk2]||pk2===pk1){var remaining=['pharma','artist','resumeforge','bwtree','volumetric'].filter(function(k){return k!==pk1;});pk2=remaining[0];}
+  if(!validKeys[pk1])pk1='bwtree';
+  if(!validKeys[pk2]||pk2===pk1){pk2=['pharma','bwtree','volumetric','artist','resumeforge'].filter(function(k){return k!==pk1;})[0];}
   function collect(prefix,n){var out=[];for(var i=1;i<=n;i++){var v=g(prefix+'_B'+i);if(v)out.push(v);}return out;}
-  return{alloc:{exp1:a1,exp2:a2,exp3:a3,exp4:a4,proj1:ap1,proj2:ap2,total:total},reason:g('ALLOC_REASON'),coursework:g('COURSEWORK'),skillLang:g('SKILL_LANG'),skillFw:g('SKILL_FW'),skillDb:g('SKILL_DB'),exp1:collect('EXP1',a1),exp2:collect('EXP2',a2),exp3:collect('EXP3',a3),exp4:collect('EXP4',a4),proj1:{key:pk1,bullets:collect('PROJ1',ap1)},proj2:{key:pk2,bullets:collect('PROJ2',ap2)}};
+  return{alloc:{exp1:a1,exp2:a2,exp3:a3,proj1:ap1,proj2:ap2,total:total},reason:g('ALLOC_REASON'),coursework:g('COURSEWORK'),skillLang:g('SKILL_LANG'),skillFw:g('SKILL_FW'),skillDb:g('SKILL_DB'),exp1:collect('EXP1',a1),exp2:collect('EXP2',a2),exp3:collect('EXP3',a3),proj1:{key:pk1,bullets:collect('PROJ1',ap1)},proj2:{key:pk2,bullets:collect('PROJ2',ap2)}};
 }
 
-function ensureBullets(aiArr,defaults,target){var out=(aiArr&&aiArr.length>=target)?aiArr.slice(0,target):(aiArr&&aiArr.length>0)?aiArr.concat(defaults).slice(0,target):defaults.slice(0,target);return out.map(clean);}
+// Missing AI bullets are filled from approved defaults that are NOT already used (no duplicates).
+function ensureBullets(aiArr,defaults,target){
+  var out=(aiArr||[]).map(clean).filter(Boolean).slice(0,target);
+  for(var i=0;out.length<target&&i<defaults.length;i++){if(out.indexOf(defaults[i])<0)out.push(defaults[i]);}
+  return out;
+}
 function clean(s){if(!s)return s;var v=String(s);v=v.replace(/^[\[\{"']+|[\]\}"']+$/g,'');v=v.replace(/[\[\]\{\}]/g,'');return v.trim();}
 
 // ═══════════════════════════════════════════════════════════
-// DETERMINISTIC NORMALIZATION (guarantees verb + length scores)
+// v29 NORMALIZATION: light touch only.
+// v28 chopped words to hit 18 and auto-swapped verbs, which produced truncated
+// bullets ("processing 500k+") and odd verbs ("Mechanized", "Clocked").
+// Now: strip filler adverbs and dash punctuation. The Screen Check flags the rest.
 // ═══════════════════════════════════════════════════════════
-var VERB_SYN={
-  built:['Built','Created','Developed','Assembled','Constructed'],
-  created:['Created','Built','Developed','Assembled'],
-  developed:['Developed','Built','Created','Produced'],
-  designed:['Designed','Structured','Modeled','Devised','Formulated','Shaped'],
-  integrated:['Integrated','Connected','Wired','Linked','Embedded','Bridged'],
-  cut:['Cut','Reduced','Trimmed','Lowered','Slashed','Shaved'],
-  reduced:['Reduced','Cut','Lowered','Trimmed','Decreased','Shrank'],
-  ran:['Ran','Operated','Executed','Drove'],
-  trained:['Trained','Fitted','Tuned','Calibrated'],
-  automated:['Automated','Scripted','Mechanized','Systematized'],
-  launched:['Launched','Shipped','Released','Debuted'],
-  delivered:['Delivered','Produced','Provided','Supplied'],
-  shipped:['Shipped','Released','Launched','Delivered'],
-  founded:['Founded','Started','Established','Created'],
-  mentored:['Mentored','Coached','Guided','Advised'],
-  wrote:['Wrote','Authored','Coded','Composed'],
-  tuned:['Tuned','Optimized','Refined','Adjusted'],
-  improved:['Improved','Boosted','Raised','Increased','Lifted'],
-  processed:['Processed','Handled','Parsed','Crunched'],
-  deployed:['Deployed','Shipped','Released','Provisioned'],
-  scaled:['Scaled','Grew','Expanded','Extended'],
-  measured:['Measured','Recorded','Benchmarked','Clocked'],
-  implemented:['Implemented','Built','Added','Wrote'],
-  modeled:['Modeled','Designed','Formulated'],
-  configured:['Configured','Tuned','Provisioned'],
-  migrated:['Migrated','Moved','Ported','Shifted'],
-  analyzed:['Analyzed','Examined','Assessed','Studied'],
-  engineered:['Engineered','Built','Developed','Designed'],
-  architected:['Architected','Designed','Structured','Modeled']
-};
-var VERB_FALLBACK=['Delivered','Produced','Handled','Managed','Drove','Created','Developed','Established','Operated','Provided','Directed','Oversaw','Launched','Rebuilt'];
+var FILLER={successfully:1,effectively:1,efficiently:1,carefully:1,significantly:1,dramatically:1,seamlessly:1,robustly:1};
+var PREPS={for:1,in:1,on:1,at:1,with:1,as:1,by:1,of:1,to:1,and:1,or:1,using:1,across:1,per:1,throughout:1,within:1,into:1,from:1,under:1,over:1,through:1,via:1};
 function normKey(w){return (w||'').toLowerCase().replace(/[^a-z]/g,'');}
 function firstWord(b){return (b.trim().split(/\s+/)[0]||'');}
-function replaceFirstWord(b,w){var parts=b.trim().split(/\s+/);parts[0]=w;return parts.join(' ');}
-function dedupeVerbs(flat){
-  var used={};
-  return flat.map(function(b){
-    var v=firstWord(b);var lv=normKey(v);
-    if(lv&&!used[lv]){used[lv]=1;return b;}
-    var pick='';var syns=VERB_SYN[lv]||[];
-    for(var i=0;i<syns.length;i++){if(!used[normKey(syns[i])]){pick=syns[i];break;}}
-    if(!pick){for(var j=0;j<VERB_FALLBACK.length;j++){if(!used[normKey(VERB_FALLBACK[j])]){pick=VERB_FALLBACK[j];break;}}}
-    if(!pick)pick=v;
-    used[normKey(pick)]=1;
-    return replaceFirstWord(b,pick);
-  });
+function lightClean(b){
+  var v=clean(b);
+  v=v.replace(/\s*[—–]\s*/g,', ').replace(/\s+--?\s+/g,', ');
+  v=v.split(/\s+/).filter(function(w,i){return i===0||!FILLER[normKey(w)];}).join(' ');
+  v=v.replace(/\s+([;,:.])/g,'$1').replace(/[ ,;:]+$/,'').replace(/\.$/,'');
+  return v;
 }
-var FILLER={a:1,an:1,the:1,that:1,which:1,really:1,just:1,very:1,successfully:1,effectively:1,efficiently:1,carefully:1,various:1,numerous:1,thereby:1,overall:1,actually:1,basically:1,simply:1,entirely:1,fully:1,completely:1,significantly:1,dramatically:1,seamlessly:1,robustly:1};
-function hasDigit(w){return /\d/.test(w);}
-var PREPS={for:1,in:1,on:1,at:1,with:1,as:1,by:1,of:1,to:1,and:1,or:1,using:1,across:1,per:1,throughout:1,within:1,into:1,from:1,under:1,over:1,through:1,via:1};
-function endsClause(tok){return /[;,]$/.test(tok);}
-// Trim to <=maxW by removing whole trailing prepositional phrases that contain no number,
-// protecting the opening verb and every metric. Falls back to word removal only if nothing else works.
-function trimBullet(b,maxW){
-  var w=b.trim().split(/\s+/);
-  if(w.length<=maxW)return b;
-  var kept=[];
-  for(var i=0;i<w.length;i++){var lw=normKey(w[i]);if(i>0&&FILLER[lw]&&!hasDigit(w[i]))continue;kept.push(w[i]);}
-  var guard=0;
-  while(kept.length>maxW && guard++<30){
-    var bestP=-1,bestE=-1;
-    for(var p=kept.length-1;p>=1;p--){
-      if(!PREPS[normKey(kept[p])])continue;
-      var e=p+1;
-      while(e<kept.length){if(PREPS[normKey(kept[e])])break;if(endsClause(kept[e])){e++;break;}e++;}
-      var seg=kept.slice(p,e);
-      var noDigit=seg.every(function(t){return !hasDigit(t);});
-      if(noDigit&&seg.length>0){bestP=p;bestE=e;break;}
-    }
-    if(bestP>=0){
-      var segLast=kept[bestE-1];var carry=(endsClause(segLast)&&bestE<kept.length)?segLast.slice(-1):'';
-      kept=kept.slice(0,bestP).concat(kept.slice(bestE));
-      if(carry&&bestP-1>=0&&!/[;,]$/.test(kept[bestP-1])){kept[bestP-1]=kept[bestP-1]+carry;}
-    }
-    else{var idx=-1;for(var k=kept.length-1;k>=1;k--){if(!hasDigit(kept[k])){idx=k;break;}}if(idx===-1)break;kept.splice(idx,1);}
-  }
-  while(kept.length>1){var last=normKey(kept[kept.length-1]);if(PREPS[last]||FILLER[last]){kept.pop();}else break;}
-  return kept.join(' ').replace(/\s+([;,:.])/g,'$1').replace(/[ ,;:]+$/,'');
-}
-// Strip model rationale that leaks into skill/coursework lines: counts like "(6 ...)", notes, and dashes,
-// while KEEPING legit tech groupings like AWS (S3, EC2, Lambda).
 function sanitizeSkillLine(s){
   if(!s)return s;
   var v=String(s);
   v=v.replace(/\(([^)]*)\)?/g,function(m,inner){
-    return /[\u2014\u2013;:]|defensible|studied|\bused\b|matched|clearly|listed|\bvia\b|bonus|\bJD\b|^\s*\d+\s/i.test(inner)?' ':m;
+    return /[—–;:]|defensible|studied|\bused\b|matched|clearly|listed|\bvia\b|bonus|\bJD\b|^\s*\d+\s/i.test(inner)?' ':m;
   });
-  v=v.replace(/\s+(?:\u2014|\u2013|--|-)\s+.*$/,'');
+  v=v.replace(/\s+(?:—|–|--|-)\s+.*$/,'');
   v=v.replace(/[\[\]\{\}"']/g,' ');
   var parts=[],depth=0,cur='';
   for(var i=0;i<v.length;i++){var ch=v[i];if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);if(ch===','&&depth===0){parts.push(cur);cur='';}else cur+=ch;}
@@ -1167,13 +1097,17 @@ function sanitizeSkillLine(s){
   });
   return out.join(', ');
 }
-// Trim every bullet to <=18 words, then force unique opening verbs. Both scored dimensions become deterministic.
+// Coursework: keep only real courses.
+function sanitizeCoursework(s){
+  var allowed={};CANDIDATE.courses.forEach(function(c){allowed[c.toLowerCase()]=c;});
+  var out=sanitizeSkillLine(s||'').split(',').map(function(t){return allowed[t.trim().toLowerCase()];}).filter(Boolean);
+  CANDIDATE.courses.forEach(function(c){if(out.length<4&&out.indexOf(c)<0)out.push(c);});
+  return out.slice(0,4).join(', ');
+}
 function normalizeResumeBullets(d){
-  var groups=[];d.expBullets.forEach(function(arr){groups.push(arr);});groups.push(d.proj1.bullets);groups.push(d.proj2.bullets);
-  var flat=[];groups.forEach(function(g){g.forEach(function(b){flat.push(b);});});
-  flat=flat.map(function(b){return trimBullet(clean(b),18);});
-  flat=dedupeVerbs(flat);
-  var idx=0;groups.forEach(function(g){for(var i=0;i<g.length;i++){g[i]=flat[idx++];}});
+  d.expBullets=d.expBullets.map(function(arr){return arr.map(lightClean);});
+  d.proj1.bullets=d.proj1.bullets.map(lightClean);
+  d.proj2.bullets=d.proj2.bullets.map(lightClean);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1208,38 +1142,61 @@ async function generate(type){
   var key=document.getElementById('apiKey').value.trim();
   var company=document.getElementById('company').value.trim()||'Company';
   var title=document.getElementById('jobTitle').value.trim()||'Role';
-  var loc=document.getElementById('location').value.trim()||'New York, NY';
+  var loc=document.getElementById('location').value.trim()||'New York, NY (Relocating Dec 2026)';
   var jd=document.getElementById('jd').value.trim();
   var keywords=document.getElementById('keywords').value.trim();
   if(!key)return setS('API key required','err');
   if(!jd)return setS('Paste a job description first','err');
-  if(!selectedTrack)return setS('Select a track','err');
+  if(type==='resume'&&!selectedTrack)return setS('Select a track','err');
   lockBtns();
   if(type==='resume'){
-    setS('<span class="spin"></span>&nbsp; Allocating structure + tailoring bullets...','info');
+    setS('<span class="spin"></span>&nbsp; Tailoring from the verified fact base...','info');
     try{
       var autoKwList=deriveDefensibleJDKeywords(jd,company).slice(0,12);
-      var autoKw=autoKwList.join(', ');
-      var raw=await callAPI(key,buildTailorPrompt(company,title,loc,jd,selectedTrack,keywords,autoKw));
+      var raw=await callAPI(key,buildTailorPrompt(company,title,loc,jd,selectedTrack,keywords,autoKwList.join(', ')));
       var parsed=parseTailored(raw);
-      resumeData={loc:loc,company:company,alloc:parsed.alloc,reason:parsed.reason,coursework:sanitizeSkillLine(clean(parsed.coursework))||'Distributed Systems, Database Systems, Machine Learning, Algorithms',skillLang:sanitizeSkillLine(clean(parsed.skillLang))||CANDIDATE.skillPools[selectedTrack].lang,skillFw:sanitizeSkillLine(clean(parsed.skillFw))||CANDIDATE.skillPools[selectedTrack].fw,skillDb:sanitizeSkillLine(clean(parsed.skillDb))||CANDIDATE.skillPools[selectedTrack].db,expBullets:[ensureBullets(parsed.exp1,CANDIDATE.experiences[0].defaultBullets,parsed.alloc.exp1),ensureBullets(parsed.exp2,CANDIDATE.experiences[1].defaultBullets,parsed.alloc.exp2),ensureBullets(parsed.exp3,CANDIDATE.experiences[2].defaultBullets,parsed.alloc.exp3),ensureBullets(parsed.exp4,CANDIDATE.experiences[3].defaultBullets,parsed.alloc.exp4)],proj1:{key:parsed.proj1.key,bullets:ensureBullets(parsed.proj1.bullets,CANDIDATE.projects[parsed.proj1.key].defaultBullets,parsed.alloc.proj1)},proj2:{key:parsed.proj2.key,bullets:ensureBullets(parsed.proj2.bullets,CANDIDATE.projects[parsed.proj2.key].defaultBullets,parsed.alloc.proj2)}};
+      var pool=CANDIDATE.skillPools[selectedTrack]||CANDIDATE.skillPools.sde;
+      var ex=CANDIDATE.experiences;
+      resumeData={
+        loc:loc,company:company,alloc:parsed.alloc,reason:parsed.reason,
+        coursework:sanitizeCoursework(clean(parsed.coursework)),
+        skillLang:sanitizeSkillLine(clean(parsed.skillLang))||pool.lang,
+        skillFw:sanitizeSkillLine(clean(parsed.skillFw))||pool.fw,
+        skillDb:sanitizeSkillLine(clean(parsed.skillDb))||pool.db,
+        expBullets:[ensureBullets(parsed.exp1,ex[0].defaultBullets,parsed.alloc.exp1),ensureBullets(parsed.exp2,ex[1].defaultBullets,parsed.alloc.exp2),ensureBullets(parsed.exp3,ex[2].defaultBullets,parsed.alloc.exp3)],
+        proj1:{key:parsed.proj1.key,bullets:ensureBullets(parsed.proj1.bullets,CANDIDATE.projects[parsed.proj1.key].defaultBullets,parsed.alloc.proj1)},
+        proj2:{key:parsed.proj2.key,bullets:ensureBullets(parsed.proj2.bullets,CANDIDATE.projects[parsed.proj2.key].defaultBullets,parsed.alloc.proj2)}
+      };
       normalizeResumeBullets(resumeData);
-      var preview=buildPreviewText(resumeData);
-      document.getElementById('rPreview').textContent=preview;document.getElementById('rPreview').style.display='block';document.getElementById('rEmpty').style.display='none';document.getElementById('rb').style.display='inline-flex';document.getElementById('dlR').disabled=false;switchTab('resume');
-      var ats=computeATS(resumeData,jd);renderATS(ats,resumeData);document.getElementById('ab').style.display='inline-flex';
-      var allBullets=[];resumeData.expBullets.forEach(function(arr){allBullets=allBullets.concat(arr);});allBullets=allBullets.concat(resumeData.proj1.bullets).concat(resumeData.proj2.bullets);
-      var allocStr='AWS:'+parsed.alloc.exp1+' Pay:'+parsed.alloc.exp2+' Ima:'+parsed.alloc.exp3+' GDSC:'+parsed.alloc.exp4+' P1:'+parsed.alloc.proj1+' P2:'+parsed.alloc.proj2;
-      setS('&#10003; Ready \u2014 '+allBullets.length+' bullets ['+allocStr+'] \u2014 ATS '+ats.total+'/100 \u2014 auto-added '+autoKwList.length+' JD-matched skills','ok');
+      showResume(resumeData,jd);
+      var s=computeATS(resumeData,jd);
+      setS('&#10003; Ready — Screen Check: '+s.verdict+(s.factBad.length?' ('+s.factBad.length+' unverified number(s), see Screen Check tab)':'')+' — coverage '+Math.round(s.coverage*100)+'%',s.factBad.length?'err':'ok');
     }catch(e){setS('Error: '+e.message,'err');console.error(e);}
   }else{
     setS('<span class="spin"></span>&nbsp; Writing cover letter...','info');
     try{
       coverText=await callAPI(key,buildCoverPrompt(company,title,loc,jd));
       document.getElementById('cPreview').textContent=coverText;document.getElementById('cPreview').style.display='block';document.getElementById('cEmpty').style.display='none';document.getElementById('cb').style.display='inline-flex';document.getElementById('dlC').disabled=false;switchTab('cover');
-      setS('&#10003; Cover letter ready \u2014 click Cover DOCX to download','ok');
+      setS('&#10003; Cover letter ready — click Cover DOCX to download','ok');
     }catch(e){setS('Error: '+e.message,'err');console.error(e);}
   }
   unlockBtns();
+}
+
+function showResume(d,jd){
+  document.getElementById('rPreview').textContent=buildPreviewText(d);
+  document.getElementById('rPreview').style.display='block';document.getElementById('rEmpty').style.display='none';
+  document.getElementById('rb').style.display='inline-flex';document.getElementById('dlR').disabled=false;switchTab('resume');
+  renderATS(computeATS(d,jd||''),d);document.getElementById('ab').style.display='inline-flex';
+}
+
+// v29: the master resume, straight from the fact base. No API call, no AI.
+function loadMaster(){
+  var loc=document.getElementById('location').value.trim();
+  resumeData=masterResumeData(loc);
+  document.getElementById('company').value=document.getElementById('company').value||'';
+  showResume(resumeData,document.getElementById('jd').value.trim());
+  setS('&#10003; Master resume loaded from the verified fact base. Click Resume DOCX to download.','ok');
 }
 
 function eduLeft(e,showGpa){return e.school+'  |  '+e.degree+((showGpa&&e.gpa)?', GPA: '+e.gpa:'');}
@@ -1255,51 +1212,61 @@ function buildPreviewText(d){
   lines.push('Relevant Coursework: '+d.coursework);
   lines.push(eduLeft(CANDIDATE.edu[1],showBtechGpa())+'  |  '+CANDIDATE.edu[1].date);
   lines.push('');lines.push('TECHNICAL SKILLS');
-  lines.push('Languages: '+d.skillLang);lines.push('Frameworks & Libraries: '+d.skillFw);lines.push('Databases & Cloud: '+d.skillDb);
+  lines.push('Languages: '+d.skillLang);lines.push('Frameworks & Libraries: '+d.skillFw);lines.push('Databases, Cloud & Tools: '+d.skillDb);
   lines.push('');lines.push('EXPERIENCE');
-  CANDIDATE.experiences.forEach(function(e,i){lines.push(e.title+' | '+e.company+' | '+e.date);lines.push('Tech: '+e.tech);d.expBullets[i].forEach(function(b){lines.push('\u2022 '+b);});lines.push('');});
+  CANDIDATE.experiences.forEach(function(e,i){lines.push(e.title+' | '+e.company+' | '+e.date);lines.push('Tech: '+e.tech);d.expBullets[i].forEach(function(b){lines.push('• '+b);});lines.push('');});
   lines.push('PROJECTS');
-  [d.proj1,d.proj2].forEach(function(p){var pr=CANDIDATE.projects[p.key];lines.push(pr.name+' | '+pr.stack);p.bullets.forEach(function(b){lines.push('\u2022 '+b);});lines.push('');});
-  lines.push('PUBLICATION');lines.push(CANDIDATE.pub.title+'  |  '+CANDIDATE.pub.venue);lines.push(CANDIDATE.pub.desc);
-  lines.push('');lines.push('LEADERSHIP & RECOGNITION');
-  CANDIDATE.leadership.forEach(function(l){lines.push(l.title+'  |  '+l.desc);});
+  [d.proj1,d.proj2].forEach(function(p){var pr=CANDIDATE.projects[p.key];lines.push(pr.name+' | '+pr.stack+(pr.url?' | '+pr.url.replace(/^https?:\/\//,''):''));p.bullets.forEach(function(b){lines.push('• '+b);});lines.push('');});
+  lines.push('PUBLICATIONS & AWARDS');
+  lines.push(CANDIDATE.pub.venue+'  |  "'+CANDIDATE.pub.title+'"  |  '+CANDIDATE.pub.desc);
+  awardsFor(d).forEach(function(a){lines.push(a.title+'  |  '+a.desc);});
   return lines.join('\n');
 }
+function awardsFor(d){return CANDIDATE.awards.filter(function(a){return !(a.skipIfProject&&(d.proj1.key===a.skipIfProject||d.proj2.key===a.skipIfProject));});}
 
 // ═══════════════════════════════════════════════════════════
-// DOCX BUILDER — v16 spacing (one-page guaranteed)
+// DOCX BUILDER (v29: single column, no tables, real hyperlinks)
 // ═══════════════════════════════════════════════════════════
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 var F='<w:rFonts w:ascii="Calibri" w:cs="Calibri" w:eastAsia="Calibri" w:hAnsi="Calibri"/>';
-function mkR(t,o){o=o||{};var sz=o.sz||19;var rp=F+(o.b?'<w:b/><w:bCs/>':'')+(o.i?'<w:i/><w:iCs/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>'+(o.c?'<w:color w:val="'+o.c+'"/>':'');return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>';}
+function mkR(t,o){o=o||{};var sz=o.sz||20;var rp=F+(o.b?'<w:b/><w:bCs/>':'')+(o.i?'<w:i/><w:iCs/>':'')+(o.c?'<w:color w:val="'+o.c+'"/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>'+(o.u?'<w:u w:val="single"/>':'');return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>';}
 
-// v16 PATCH: default line height 252→240 (1.05→1.0)
+var DOC_LINKS=[];
+function mkLink(text,url,o){
+  if(!url)return mkR(text,o);
+  if(!/^(https?:|mailto:)/.test(url))url='https://'+url;
+  var id='rIdL'+(DOC_LINKS.length+1);DOC_LINKS.push({id:id,url:url});
+  o=o||{};o.c=o.c||'1f3864';
+  return '<w:hyperlink r:id="'+id+'" w:history="1">'+mkR(text,o)+'</w:hyperlink>';
+}
+
 function sp(b,a,l){l=l||240;return '<w:spacing w:after="'+a+'" w:before="'+b+'" w:line="'+l+'" w:lineRule="auto"/>';}
-
 var RT='<w:tabs><w:tab w:val="right" w:pos="10800"/></w:tabs>';
 
 function pN(t){return '<w:p><w:pPr>'+sp(0,28)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{b:true,sz:26})+'</w:p>';}
-// v16 PATCH: contact after 110→80
-function pC(t){return '<w:p><w:pPr>'+sp(0,80)+'<w:jc w:val="center"/></w:pPr>'+mkR(t,{sz:18})+'</w:p>';}
-// v16 PATCH: section header before 118→80, after 36→24
-function pS(t){return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:color="1f3864" w:sz="6" w:space="1"/></w:pBdr>'+sp(80,24)+'</w:pPr>'+mkR(t,{b:true,sz:21,c:'1f3864'})+'</w:p>';}
+function pContact(loc){
+  var sep=mkR('  |  ',{sz:18});
+  return '<w:p><w:pPr>'+sp(0,80)+'<w:jc w:val="center"/></w:pPr>'
+    +mkR(CANDIDATE.phone,{sz:18})+sep
+    +mkLink(CANDIDATE.email,'mailto:'+CANDIDATE.email,{sz:18,c:'000000'})+sep
+    +mkLink(CANDIDATE.linkedin,CANDIDATE.linkedin,{sz:18,c:'000000'})+sep
+    +mkLink(CANDIDATE.github,CANDIDATE.github,{sz:18,c:'000000'})+sep
+    +mkR(loc,{sz:18})+'</w:p>';
+}
+function pS(t){return '<w:p><w:pPr><w:keepNext/><w:pBdr><w:bottom w:val="single" w:color="1f3864" w:sz="6" w:space="1"/></w:pBdr>'+sp(80,24)+'</w:pPr>'+mkR(t,{b:true,sz:21,c:'1f3864'})+'</w:p>';}
 function pE(l,d){return '<w:p><w:pPr>'+RT+sp(0,18)+'</w:pPr>'+mkR(l,{b:true})+mkR('\t'+d,{})+'</w:p>';}
-// v16 PATCH: coursework after 52→28
-function pCr(t){t=(t||'').replace(/^\[|\]$/g,'');return '<w:p><w:pPr>'+sp(0,28)+'</w:pPr>'+mkR('Relevant Coursework: ',{b:true})+mkR(t,{})+'</w:p>';}
-function pSk(l,v){v=(v||'').replace(/^\[|\]$/g,'');return '<w:p><w:pPr>'+sp(0,18)+'</w:pPr>'+mkR(l+': ',{b:true})+mkR(v,{})+'</w:p>';}
-// v16 PATCH: exp role header before 72→48
-function pXH(ti,co,dt){return '<w:p><w:pPr>'+RT+sp(48,14)+'</w:pPr>'+mkR(ti+'  |  '+co,{b:true})+mkR('\t'+dt,{b:true})+'</w:p>';}
-// v16 PATCH: tech line after 16→8
-function pT(t){return '<w:p><w:pPr>'+sp(0,8)+'</w:pPr>'+mkR('Tech: '+t,{i:true,sz:18,c:'444444'})+'</w:p>';}
-// v16 PATCH: bullet after 34→20
+function pCr(t){return '<w:p><w:pPr>'+sp(0,28)+'</w:pPr>'+mkR('Relevant Coursework: ',{b:true})+mkR(t||'',{})+'</w:p>';}
+function pSk(l,v){return '<w:p><w:pPr>'+sp(0,18)+'</w:pPr>'+mkR(l+': ',{b:true})+mkR(v||'',{})+'</w:p>';}
+function pXH(ti,co,dt){return '<w:p><w:pPr><w:keepNext/>'+RT+sp(48,14)+'</w:pPr>'+mkR(ti,{b:true})+mkR('  |  '+co,{})+mkR('\t'+dt,{b:true})+'</w:p>';}
+function pT(t){return '<w:p><w:pPr><w:keepNext/>'+sp(0,8)+'</w:pPr>'+mkR('Tech: '+t,{i:true,sz:18,c:'444444'})+'</w:p>';}
 function pB(t){return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr>'+sp(0,20)+'</w:pPr>'+mkR(t,{})+'</w:p>';}
-// v16 PATCH: project header before 68→44
-function pPH(n,s){return '<w:p><w:pPr>'+sp(44,14)+'</w:pPr>'+mkR(n,{b:true})+mkR('  |  '+s,{sz:18,c:'444444'})+'</w:p>';}
-function pMx(b,pl){return '<w:p><w:pPr>'+sp(0,0)+'</w:pPr>'+mkR(b,{b:true})+mkR(pl,{})+'</w:p>';}
-function pPl(t){return '<w:p><w:pPr>'+sp(0,0)+'</w:pPr>'+mkR(t,{})+'</w:p>';}
+function pPH(n,s,url){return '<w:p><w:pPr><w:keepNext/>'+RT+sp(44,14)+'</w:pPr>'+mkR(n,{b:true})+mkR('  |  '+s,{sz:18,c:'444444'})+(url?mkR('\t',{})+mkLink(url.replace(/^https?:\/\//,''),url,{sz:18}):'')+'</w:p>';}
+function pAw(b,rest){return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr>'+sp(0,20)+'</w:pPr>'+mkR(b,{b:true})+mkR('  |  '+rest,{})+'</w:p>';}
+function pPub(){var p=CANDIDATE.pub;return '<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr>'+sp(0,20)+'</w:pPr>'+mkR(p.venue,{b:true})+mkR('  |  ',{})+mkLink('“'+p.title+'”',p.url,{i:true})+mkR('  |  '+p.desc,{})+'</w:p>';}
 
 function buildDocXML(d){
+  DOC_LINKS=[];
   var NS='xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" '
        +'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" '
        +'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
@@ -1309,22 +1276,20 @@ function buildDocXML(d){
   p.push('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
   p.push('<w:document '+NS+'><w:body>');
   p.push(pN(CANDIDATE.name));
-  p.push(pC(CANDIDATE.phone+'  |  '+CANDIDATE.email+'  |  '+CANDIDATE.linkedin+'  |  '+CANDIDATE.github+'  |  '+d.loc));
+  p.push(pContact(d.loc));
   p.push(pS('EDUCATION'));
   p.push(pE(eduLeft(CANDIDATE.edu[0],showUscGpa()),CANDIDATE.edu[0].date));
   p.push(pCr(d.coursework));
   p.push(pE(eduLeft(CANDIDATE.edu[1],showBtechGpa()),CANDIDATE.edu[1].date));
   p.push(pS('TECHNICAL SKILLS'));
-  p.push(pSk('Languages',d.skillLang));p.push(pSk('Frameworks & Libraries',d.skillFw));p.push(pSk('Databases & Cloud',d.skillDb));
+  p.push(pSk('Languages',d.skillLang));p.push(pSk('Frameworks & Libraries',d.skillFw));p.push(pSk('Databases, Cloud & Tools',d.skillDb));
   p.push(pS('EXPERIENCE'));
   CANDIDATE.experiences.forEach(function(e,i){p.push(pXH(e.title,e.company,e.date));p.push(pT(e.tech));d.expBullets[i].forEach(function(b){p.push(pB(b));});});
   p.push(pS('PROJECTS'));
-  [d.proj1,d.proj2].forEach(function(pr){var proj=CANDIDATE.projects[pr.key];p.push(pPH(proj.name,proj.stack));pr.bullets.forEach(function(b){p.push(pB(b));});});
-  p.push(pS('PUBLICATION'));
-  p.push(pMx(CANDIDATE.pub.title,'  |  '+CANDIDATE.pub.venue));
-  p.push(pPl(CANDIDATE.pub.desc));
-  p.push(pS('LEADERSHIP \u0026 RECOGNITION'));
-  CANDIDATE.leadership.forEach(function(l){p.push(pMx(l.title,'  |  '+l.desc));});
+  [d.proj1,d.proj2].forEach(function(pr){var proj=CANDIDATE.projects[pr.key];p.push(pPH(proj.name,proj.stack,proj.url));pr.bullets.forEach(function(b){p.push(pB(b));});});
+  p.push(pS('PUBLICATIONS & AWARDS'));
+  p.push(pPub());
+  awardsFor(d).forEach(function(a){p.push(pAw(a.title,a.desc));});
   p.push('<w:sectPr>'
     +'<w:pgSz w:w="12240" w:h="15840"/>'
     +'<w:pgMar w:top="432" w:right="720" w:bottom="432" w:left="720" w:header="360" w:footer="360" w:gutter="0"/>'
@@ -1333,17 +1298,23 @@ function buildDocXML(d){
   return p.join('');
 }
 
-async function makeDOCX(docXML,filename){
-  if(typeof JSZip==='undefined')throw new Error('JSZip not loaded \u2014 reload the page');
+function buildDocxZip(docXML,links){
+  links=links||[];
   var zip=new JSZip();
   zip.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
   zip.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default ContentType="application/vnd.openxmlformats-package.relationships+xml" Extension="rels"/><Default ContentType="application/xml" Extension="xml"/><Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml" PartName="/word/document.xml"/><Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml" PartName="/word/styles.xml"/><Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml" PartName="/word/numbering.xml"/><Override ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml" PartName="/word/settings.xml"/></Types>');
-  zip.file('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/></Relationships>');
-  zip.file('word/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault/><w:pPrDefault/></w:docDefaults><w:style w:type="paragraph" w:styleId="ListParagraph"><w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:qFormat/></w:style></w:styles>');
-  zip.file('word/numbering.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:abstractNum w:abstractNumId="2"><w:multiLevelType w:val="hybridMultilevel"/><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x2022;"/><w:lvlJc w:val="left"/><w:pPr><w:spacing w:after="22"/><w:ind w:left="280" w:hanging="200"/></w:pPr><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:sz w:val="19"/><w:szCs w:val="19"/></w:rPr></w:lvl></w:abstractNum><w:num w:numId="2"><w:abstractNumId w:val="2"/></w:num></w:numbering>');
+  var linkRels=links.map(function(l){return '<Relationship Id="'+l.id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="'+esc(l.url)+'" TargetMode="External"/>';}).join('');
+  zip.file('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>'+linkRels+'</Relationships>');
+  zip.file('word/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri" w:eastAsia="Calibri"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:rPrDefault><w:pPrDefault/></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="paragraph" w:styleId="ListParagraph"><w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:qFormat/></w:style></w:styles>');
+  zip.file('word/numbering.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:abstractNum w:abstractNumId="2"><w:multiLevelType w:val="hybridMultilevel"/><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#x2022;"/><w:lvlJc w:val="left"/><w:pPr><w:spacing w:after="22"/><w:ind w:left="280" w:hanging="200"/></w:pPr><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr></w:lvl></w:abstractNum><w:num w:numId="2"><w:abstractNumId w:val="2"/></w:num></w:numbering>');
   zip.file('word/settings.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:compat><w:compatSetting w:val="15" w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word"/></w:compat></w:settings>');
   zip.file('word/document.xml',docXML);
-  var content=await zip.generateAsync({type:'uint8array'});
+  return zip;
+}
+
+async function makeDOCX(docXML,filename,links){
+  if(typeof JSZip==='undefined')throw new Error('JSZip not loaded — reload the page');
+  var content=await buildDocxZip(docXML,links).generateAsync({type:'uint8array'});
   var blob=new Blob([content],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
 }
@@ -1353,8 +1324,8 @@ async function downloadResume(){
   setS('<span class="spin"></span>&nbsp; Building DOCX...','info');
   try{
     var xml=buildDocXML(resumeData);
-    var co=document.getElementById('company').value.trim()||'Company';
-    await makeDOCX(xml,'Dhruvin_Jhaveri_Resume_'+co.replace(/\s+/g,'_')+'.docx');
+    var co=document.getElementById('company').value.trim()||'Master';
+    await makeDOCX(xml,'Dhruvin_Jhaveri_Resume_'+co.replace(/\s+/g,'_')+'.docx',DOC_LINKS);
     logEntry('resume');setS('&#10003; Resume DOCX downloaded \u2014 logged to Tracker','ok');
   }catch(e){setS('DOCX error: '+e.message,'err');console.error(e);}
 }
